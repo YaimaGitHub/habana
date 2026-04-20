@@ -26,6 +26,62 @@
         padding-right: 35px!important;
     }
 
+    /* Buscador en móvil */
+    .search-wrapper {
+        margin-bottom: 18px;
+    }
+
+    .search-wrapper .search-input {
+        height: 46px;
+        font-size: 14px;
+        padding: 0 44px 0 44px;
+    }
+
+    .search-wrapper .search-icon {
+        left: 16px;
+        font-size: 14px;
+    }
+
+    .search-wrapper .search-clear {
+        width: 30px;
+        height: 30px;
+        right: 8px;
+    }
+
+    /* Lightbox en móvil */
+    .lightbox {
+        padding: 12px;
+    }
+
+    .lightbox-img {
+        max-width: 95vw;
+        max-height: 75vh;
+    }
+
+    .lightbox-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .lightbox-zoom {
+        bottom: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .lightbox.zoomed .lightbox-img {
+        transform: scale(1.5);
+    }
+
+    .lightbox-caption {
+        font-size: 14px;
+        padding: 5px 12px;
+    }
+
     .navbar-toggler-icon {
         padding-top: 5px;
     }

@@ -30,6 +30,23 @@ cardapio.eventos = {
         cardapio.metodos.obterItensCardapio();
         cardapio.metodos.carregarBotaoLigar();
         cardapio.metodos.carregarBotaoReserva();
+
+        // cerrar lightbox con la tecla ESC
+        $(document).on('keydown', (ev) => {
+            if (ev.key === 'Escape' || ev.keyCode === 27) {
+                if (!$("#lightboxProducto").hasClass('hidden')) {
+                    cardapio.metodos.cerrarLightbox(null, true);
+                }
+            }
+        });
+
+        // activar imagen con teclado (Enter/Espacio) cuando tiene foco
+        $(document).on('keydown', '.img-produto', function (ev) {
+            if (ev.key === 'Enter' || ev.key === ' ' || ev.keyCode === 13 || ev.keyCode === 32) {
+                ev.preventDefault();
+                $(this).trigger('click');
+            }
+        });
     }
 
 }
@@ -49,6 +66,13 @@ cardapio.metodos = {
 
     // obtener la lista de elementos del menú
     obterItensCardapio: (categoria = 'burgers', vermais = false) => {
+
+        // si el usuario pulsa una categoría, salir del modo búsqueda
+        if (!vermais) {
+            $("#txtBuscarProduto").val('');
+            $("#btnLimparBusca").addClass('hidden');
+            $(".container-menu").removeClass('modo-busqueda');
+        }
 
         var filtro = MENU[categoria] || [];
         var infoCat = CATEGORIAS[categoria] || { nome: '', icone: '' };
@@ -130,11 +154,157 @@ cardapio.metodos = {
     // clique no botão de ver mais
     verMais: () => {
 
-        var ativo = $(".container-menu a.active").attr('id').split('menu-')[1];
+        let $ativo = $(".container-menu a.active");
+        if ($ativo.length === 0) return;
+        var ativo = $ativo.attr('id').split('menu-')[1];
         cardapio.metodos.obterItensCardapio(ativo, true);
 
         $("#btnVerMais").addClass('hidden');
 
+    },
+
+    // ============================================================
+    //  BÚSQUEDA EN TIEMPO REAL (filtra todos los productos)
+    // ============================================================
+
+    // normaliza el texto: minúsculas + sin acentos, para búsqueda tolerante
+    normalizarTexto: (texto) => {
+        if (texto == null) return '';
+        return String(texto)
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+    },
+
+    // encuentra la categoría a la que pertenece un producto
+    buscarCategoriaDoProduto: (id) => {
+        for (var key in MENU) {
+            if (MENU.hasOwnProperty(key)) {
+                if ((MENU[key] || []).some(p => p.id == id)) return key;
+            }
+        }
+        return 'burgers';
+    },
+
+    // ejecuta la búsqueda en tiempo real
+    buscarProdutos: (termo) => {
+
+        let query = cardapio.metodos.normalizarTexto(termo);
+
+        // si no hay texto, salir del modo búsqueda y restaurar categoría activa
+        if (query.length === 0) {
+            $("#btnLimparBusca").addClass('hidden');
+            cardapio.metodos.salirModoBusqueda();
+            return;
+        }
+
+        $("#btnLimparBusca").removeClass('hidden');
+
+        // recolectar coincidencias en todas las categorías
+        let resultados = [];
+        $.each(MENU, (cat, items) => {
+            $.each(items || [], (i, e) => {
+                let nomeNorm = cardapio.metodos.normalizarTexto(e.name);
+                let dscNorm = cardapio.metodos.normalizarTexto(e.dsc);
+                if (nomeNorm.indexOf(query) !== -1 || dscNorm.indexOf(query) !== -1) {
+                    resultados.push({ item: e, categoria: cat });
+                }
+            });
+        });
+
+        // entrar en modo búsqueda
+        $(".container-menu").addClass('modo-busqueda');
+        $(".container-menu a").removeClass('active');
+        $("#btnVerMais").addClass('hidden');
+
+        // renderizar resultados
+        $("#itensCardapio").html('');
+
+        if (resultados.length === 0) {
+            $("#itensCardapio").html(`
+                <div class="col-12 text-center empty-category">
+                    <i class="fas fa-search"></i>
+                    <p>Sin resultados para <b>"${$('<div/>').text(termo).html()}"</b>.</p>
+                    <p class="text-sm">Prueba con otro nombre de medicamento.</p>
+                </div>
+            `);
+            return;
+        }
+
+        $.each(resultados, (i, r) => {
+
+            let e = r.item;
+            let infoCat = CATEGORIAS[r.categoria] || { nome: '', icone: '' };
+
+            let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
+            let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
+
+            let temp = cardapio.templates.item
+                .replace(/\${img}/g, e.img)
+                .replace(/\${nome}/g, e.name)
+                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
+                .replace(/\${id}/g, e.id)
+                .replace(/\${categoriaNome}/g, infoCat.nome)
+                .replace(/\${categoriaIcone}/g, infoCat.icone)
+                .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
+                .replace(/\${inCartBadge}/g, qntdCarrinho > 0
+                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
+                    : '');
+
+            $("#itensCardapio").append(temp);
+        });
+    },
+
+    // limpiar el input de búsqueda y volver a la vista de categorías
+    limparBusca: () => {
+        $("#txtBuscarProduto").val('').focus();
+        $("#btnLimparBusca").addClass('hidden');
+        cardapio.metodos.salirModoBusqueda();
+    },
+
+    // restaura la vista normal: categoría activa (o la primera por defecto)
+    salirModoBusqueda: () => {
+        $(".container-menu").removeClass('modo-busqueda');
+        let ativo = $(".container-menu a.active").attr('id');
+        let categoria = ativo ? ativo.split('menu-')[1] : 'burgers';
+        cardapio.metodos.obterItensCardapio(categoria);
+    },
+
+    // ============================================================
+    //  LIGHTBOX para ampliar imagen del producto
+    // ============================================================
+
+    abrirLightbox: (src, alt) => {
+        $("#lightboxImg").attr('src', src).attr('alt', alt || '');
+        $("#lightboxCaption").text(alt || '');
+        $("#lightboxProducto").removeClass('hidden').removeClass('zoomed');
+        $("#btnLightboxZoom").find('i').attr('class', 'fas fa-search-plus');
+        $("body").addClass('no-scroll');
+    },
+
+    cerrarLightbox: (event, force) => {
+        // si no es forzado y el clic NO fue directamente sobre el overlay, ignorar
+        if (event && !force) {
+            if (event.target !== event.currentTarget) return;
+        }
+        if (event) {
+            event.stopPropagation();
+        }
+        $("#lightboxProducto").addClass('hidden').removeClass('zoomed');
+        $("#lightboxImg").attr('src', '');
+        $("body").removeClass('no-scroll');
+    },
+
+    alternarZoomLightbox: () => {
+        let $lb = $("#lightboxProducto");
+        let $icon = $("#btnLightboxZoom").find('i');
+        $lb.toggleClass('zoomed');
+        if ($lb.hasClass('zoomed')) {
+            $icon.attr('class', 'fas fa-search-minus');
+        } else {
+            $icon.attr('class', 'fas fa-search-plus');
+        }
     },
 
     // diminuir a quantidade do item no cardapio
@@ -163,11 +333,14 @@ cardapio.metodos = {
 
         let qntdAtual = parseInt($("#qntd-" + id).text()) || 1;
 
-        // obter a categoria ativa
-        var categoria = $(".container-menu a.active").attr('id').split('menu-')[1];
+        // obter a categoria ativa (o la del producto si estamos en modo búsqueda)
+        let $ativo = $(".container-menu a.active");
+        var categoria = $ativo.length > 0
+            ? $ativo.attr('id').split('menu-')[1]
+            : cardapio.metodos.buscarCategoriaDoProduto(id);
 
         // obtem a lista de itens
-        let filtro = MENU[categoria];
+        let filtro = MENU[categoria] || [];
 
         // obtem o item
         let item = $.grep(filtro, (e, i) => { return e.id == id });
@@ -698,8 +871,9 @@ cardapio.templates = {
             <div class="card card-item \${inCartClass}" id="\${id}">
                 \${inCartBadge}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
-                <div class="img-produto">
+                <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
                     <img src="\${img}" alt="\${nome}" />
+                    <span class="img-zoom-hint" aria-hidden="true"><i class="fas fa-search-plus"></i></span>
                 </div>
                 <p class="title-produto text-center mt-4">
                     <b>\${nome}</b>
