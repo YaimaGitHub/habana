@@ -12,9 +12,21 @@ var VALOR_ENTREGA = 100;
 
 var CELULAR_EMPRESA = '5355135487';
 
+// Metadata de las categorías: nombre visible, icono y clave interna
+var CATEGORIAS = {
+    "burgers":     { nome: "Antimicrobianos", icone: "fas fa-capsules" },
+    "pizzas":      { nome: "Antiinflamatorios", icone: "fas fa-pills" },
+    "churrasco":   { nome: "Antialérgicos", icone: "fas fa-allergies" },
+    "steaks":      { nome: "Antihipertensivo", icone: "fas fa-heartbeat" },
+    "bebidas":     { nome: "Digestivos", icone: "fas fa-prescription-bottle" },
+    "sobremesas":  { nome: "Dermatológicos", icone: "fas fa-hand-holding-medical" },
+    "outros":      { nome: "Otros", icone: "fas fa-notes-medical" }
+};
+
 cardapio.eventos = {
 
     init: () => {
+        cardapio.metodos.atualizarContadoresCategorias();
         cardapio.metodos.obterItensCardapio();
         cardapio.metodos.carregarBotaoLigar();
         cardapio.metodos.carregarBotaoReserva();
@@ -24,23 +36,49 @@ cardapio.eventos = {
 
 cardapio.metodos = {
 
+    // actualizar el contador (badge) de cada categoría en el menú
+    atualizarContadoresCategorias: () => {
+        $.each(CATEGORIAS, (key, info) => {
+            let total = (MENU[key] || []).length;
+            let $badge = $("#menu-" + key + " .menu-count");
+            if ($badge.length > 0) {
+                $badge.text(total);
+            }
+        });
+    },
+
     // obtener la lista de elementos del menú
     obterItensCardapio: (categoria = 'burgers', vermais = false) => {
 
-        var filtro = MENU[categoria];
-        console.log(filtro);
+        var filtro = MENU[categoria] || [];
+        var infoCat = CATEGORIAS[categoria] || { nome: '', icone: '' };
 
         if (!vermais) {
             $("#itensCardapio").html('');
             $("#btnVerMais").removeClass('hidden');
+            // si la categoría tiene pocos items, ocultar "Ver más"
+            if (filtro.length <= 47) {
+                $("#btnVerMais").addClass('hidden');
+            }
         }
 
         $.each(filtro, (i, e) => {
 
-            let temp = cardapio.templates.item.replace(/\${img}/g, e.img)
-            .replace(/\${nome}/g, e.name)
-            .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-            .replace(/\${id}/g, e.id)
+            // obtener cantidad actual en el carrito (si existe)
+            let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
+            let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
+
+            let temp = cardapio.templates.item
+                .replace(/\${img}/g, e.img)
+                .replace(/\${nome}/g, e.name)
+                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
+                .replace(/\${id}/g, e.id)
+                .replace(/\${categoriaNome}/g, infoCat.nome)
+                .replace(/\${categoriaIcone}/g, infoCat.icone)
+                .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
+                .replace(/\${inCartBadge}/g, qntdCarrinho > 0
+                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
+                    : '');
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -54,12 +92,39 @@ cardapio.metodos = {
 
         })
 
-        // remove o ativo
+        // si no hay productos, mostrar estado vacío
+        if (filtro.length === 0) {
+            $("#itensCardapio").html(`
+                <div class="col-12 text-center empty-category">
+                    <i class="fas fa-box-open"></i>
+                    <p>Próximamente agregaremos productos a esta categoría.</p>
+                </div>
+            `);
+            $("#btnVerMais").addClass('hidden');
+        }
+
+        // quitar el estado activo
         $(".container-menu a").removeClass('active');
 
-        // seta o menu para ativo
-        $("#menu-" + categoria).addClass('active')
+        // marcar el menú actual como activo
+        $("#menu-" + categoria).addClass('active');
 
+        // scroll suave en móvil para centrar la categoría activa
+        cardapio.metodos.centrarCategoriaActiva(categoria);
+
+    },
+
+    // asegura que la categoría activa sea visible en móvil (scroll horizontal)
+    centrarCategoriaActiva: (categoria) => {
+        let $container = $(".container-menu");
+        let $activo = $("#menu-" + categoria);
+        if ($activo.length > 0 && $container.length > 0) {
+            let containerWidth = $container.width();
+            let activoLeft = $activo.position().left;
+            let activoWidth = $activo.outerWidth();
+            let scrollTarget = $container.scrollLeft() + activoLeft - (containerWidth / 2) + (activoWidth / 2);
+            $container.animate({ scrollLeft: scrollTarget }, 300);
+        }
     },
 
     // clique no botão de ver mais
@@ -77,7 +142,7 @@ cardapio.metodos = {
 
         let qntdAtual = parseInt($("#qntd-" + id).text());
 
-        if (qntdAtual > 0) {
+        if (qntdAtual > 1) {
             $("#qntd-" + id).text(qntdAtual - 1)
         }
 
@@ -87,51 +152,87 @@ cardapio.metodos = {
     aumentarQuantidade: (id) => {
 
         let qntdAtual = parseInt($("#qntd-" + id).text());
-        $("#qntd-" + id).text(qntdAtual + 1)
+        if (qntdAtual < 99) {
+            $("#qntd-" + id).text(qntdAtual + 1)
+        }
 
     },
 
     // adicionar ao carrinho o item do cardápio
     adicionarAoCarrinho: (id) => {
 
-        let qntdAtual = parseInt($("#qntd-" + id).text());
+        let qntdAtual = parseInt($("#qntd-" + id).text()) || 1;
 
-        if (qntdAtual > 0) {
+        // obter a categoria ativa
+        var categoria = $(".container-menu a.active").attr('id').split('menu-')[1];
 
-            // obter a categoria ativa
-            var categoria = $(".container-menu a.active").attr('id').split('menu-')[1];
+        // obtem a lista de itens
+        let filtro = MENU[categoria];
 
-            // obtem a lista de itens
-            let filtro = MENU[categoria];
+        // obtem o item
+        let item = $.grep(filtro, (e, i) => { return e.id == id });
 
-            // obtem o item
-            let item = $.grep(filtro, (e, i) => { return e.id == id });
+        if (item.length > 0) {
 
-            if (item.length > 0) {
+            // validar si ya existe ese item en el carrito
+            let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.id == id });
 
-                // validar se já existe esse item no carrinho
-                let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.id == id });
+            let novaQntd;
 
-                // caso já exista o item no carrinho, só altera a quantidade
-                if (existe.length > 0) {
-                    let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
-                    MEU_CARRINHO[objIndex].qntd = MEU_CARRINHO[objIndex].qntd + qntdAtual;
-                }
-                // caso ainda não exista o item no carrinho, adiciona ele 
-                else {
-                    item[0].qntd = qntdAtual;
-                    MEU_CARRINHO.push(item[0])
-                }      
-                
-                cardapio.metodos.mensagem('Artículo agregado al carrito', 'green')
-                $("#qntd-" + id).text(0);
-
-                cardapio.metodos.atualizarBadgeTotal();
-
+            if (existe.length > 0) {
+                let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
+                MEU_CARRINHO[objIndex].qntd = MEU_CARRINHO[objIndex].qntd + qntdAtual;
+                novaQntd = MEU_CARRINHO[objIndex].qntd;
             }
+            else {
+                // clonar para no contaminar el MENU original
+                let nuevoItem = Object.assign({}, item[0]);
+                nuevoItem.qntd = qntdAtual;
+                MEU_CARRINHO.push(nuevoItem);
+                novaQntd = qntdAtual;
+            }
+
+            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name} agregado`, 'green');
+
+            // resetear selector a 1 y actualizar estado visual de la tarjeta
+            $("#qntd-" + id).text(1);
+            cardapio.metodos.marcarTarjetaEnCarrito(id, novaQntd);
+
+            cardapio.metodos.atualizarBadgeTotal();
 
         }
 
+    },
+
+    // escapa un id para poder usarlo en selectores jQuery (compatible con jQuery 1.12)
+    escaparId: (id) => {
+        if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+            return CSS.escape(id);
+        }
+        // fallback: escapar caracteres especiales manualmente
+        return String(id).replace(/([!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
+    },
+
+    // aplica el estado visual "en carrito" a la tarjeta del producto
+    marcarTarjetaEnCarrito: (id, qntd) => {
+        let $card = $("#" + cardapio.metodos.escaparId(id));
+        if ($card.length === 0) return;
+
+        $card.addClass('in-cart');
+
+        // animación de "added"
+        $card.removeClass('just-added');
+        // force reflow para reiniciar la animación
+        void $card[0].offsetWidth;
+        $card.addClass('just-added');
+
+        // actualizar/crear badge "en carrito"
+        let $badge = $card.find('.badge-in-cart');
+        if ($badge.length === 0) {
+            $card.prepend(`<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntd}</span>`);
+        } else {
+            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+        }
     },
 
     // atualiza o badge de totais dos botões "Meu carrinho"
@@ -294,9 +395,20 @@ cardapio.metodos = {
         MEU_CARRINHO = $.grep(MEU_CARRINHO, (e, i) => { return e.id != id });
         cardapio.metodos.carregarCarrinho();
 
+        // refrescar tarjetas del cardápio para quitar badge "en carrito"
+        cardapio.metodos.refrescarEstadoEnCarrito(id);
+
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
         
+    },
+
+    // refresca el estado visual de la tarjeta del producto (quitar badge)
+    refrescarEstadoEnCarrito: (id) => {
+        let $card = $("#" + cardapio.metodos.escaparId(id));
+        if ($card.length === 0) return;
+        $card.removeClass('in-cart just-added');
+        $card.find('.badge-in-cart').remove();
     },
 
     // atualiza o carrinho com a quantidade atual
@@ -307,6 +419,12 @@ cardapio.metodos = {
 
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
+
+        // actualizar badge en la tarjeta del cardápio si visible
+        let $badge = $("#" + cardapio.metodos.escaparId(id)).find('.badge-in-cart');
+        if ($badge.length > 0) {
+            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+        }
 
         // atualiza os valores (R$) totais do carrinho
         cardapio.metodos.carregarValores();
@@ -577,9 +695,11 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item" id="\${id}">
+            <div class="card card-item \${inCartClass}" id="\${id}">
+                \${inCartBadge}
+                <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
                 <div class="img-produto">
-                    <img src="\${img}" />
+                    <img src="\${img}" alt="\${nome}" />
                 </div>
                 <p class="title-produto text-center mt-4">
                     <b>\${nome}</b>
@@ -588,10 +708,15 @@ cardapio.templates = {
                     <b>MN$ \${preco}</b>
                 </p>
                 <div class="add-carrinho">
-                    <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')"><i class="fas fa-minus"></i></span>
-                    <span class="add-numero-itens" id="qntd-\${id}">0</span>
-                    <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')"><i class="fas fa-plus"></i></span>
-                    <span class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')"><i class="fa fa-shopping-cart" title="Añadir a la cesta"></i> Adicionar</span>
+                    <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
+                        <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
+                        <span class="add-numero-itens" id="qntd-\${id}">1</span>
+                        <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
+                    </div>
+                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="btn-add-label">Añadir</span>
+                    </button>
                 </div>
             </div>
         </div>

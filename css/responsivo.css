@@ -93,40 +93,115 @@
         overflow-x: auto;
         overflow-y: hidden;
         display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
         padding-bottom: 15px;
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
     }
 
-    .img-produto {
-        position: absolute;
-        left: 15px
+    .container-menu .menu-categoria {
+        flex-shrink: 0;
+        padding: 10px 16px;
+        font-size: 13px;
     }
 
+    .container-menu .menu-categoria .menu-label {
+        white-space: nowrap;
+    }
+
+    /* Tarjeta horizontal en móvil */
     .card-item {
-        height: 110px;
-        padding-left: 110px;
+        min-height: auto !important;
+        height: auto;
+        padding: 14px 14px 14px 120px !important;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch !important;
         justify-content: center;
-        align-items: start;
+    }
+
+    .card-item .img-produto {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 6px;
+        width: 100px;
+        margin-top: 0;
     }
 
     .card-item .img-produto img {
         width: 80px;
+        max-height: 80px;
     }
 
-    .title-produto {
-        margin-top: 0px!important;
-        height: 30px!important;
+    .card-item .card-badge-categoria {
+        align-self: flex-start;
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    .card-item .badge-in-cart {
+        top: 8px;
+        right: 8px;
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    .card-item .title-produto {
+        margin-top: 8px !important;
+        margin-bottom: 2px !important;
+        height: auto !important;
         width: 100%;
-        text-align: left!important;
+        text-align: left !important;
+        font-size: 14px;
     }
 
-    .price-produto {
-        margin-bottom: 0px!important;
-        margin-top: 0px!important;
-        font-size: 22px!important;
+    .card-item .price-produto {
+        margin-bottom: 10px !important;
+        margin-top: 0px !important;
+        font-size: 20px !important;
+        text-align: left !important;
     }
 
     .card-item .add-carrinho {
-        margin-top: 5px;
+        flex-direction: row !important;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .card-item .quantidade-wrapper {
+        align-self: center;
+        flex-shrink: 0;
+    }
+
+    .card-item .btn-menos,
+    .card-item .btn-mais {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .card-item .add-numero-itens {
+        padding: 4px 10px;
+        min-width: 36px;
+        font-size: 15px;
+    }
+
+    .card-item .btn-add {
+        flex: 1;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .card-item .btn-add .btn-add-label {
+        display: none;
+    }
+
+    .card-item .btn-add i {
+        font-size: 16px;
     }
 
     #itensCardapio .mb-5 {
