@@ -1320,3 +1320,344 @@ body.no-scroll {
     background-color: var(--color-black-heavy);
     transform: scale(1.08);
 }
+
+/* ============================================= */
+/* ======  TIPO DE ENTREGA (domicilio/local) === */
+/* ============================================= */
+
+.form-label-entrega {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: var(--color-black);
+}
+
+.tipo-entrega-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.tipo-entrega-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-separate);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.1s ease, box-shadow 0.18s ease;
+    margin-bottom: 0;
+}
+
+.tipo-entrega-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgba(255, 123, 0, 0.3);
+}
+
+.tipo-entrega-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tipo-entrega-card.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-secondary);
+    box-shadow: 0 10px 20px -8px rgba(255, 123, 0, 0.4);
+}
+
+.tipo-entrega-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: var(--color-background);
+    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.tipo-entrega-card.selected .tipo-entrega-icon {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.tipo-entrega-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.tipo-entrega-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-black);
+    line-height: 1.2;
+}
+
+.tipo-entrega-dsc {
+    font-size: 13px;
+    color: var(--color-text-out);
+    margin-top: 3px;
+}
+
+.tipo-entrega-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-separate);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    background-color: transparent;
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.tipo-entrega-check i {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.tipo-entrega-card.selected .tipo-entrega-check {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.tipo-entrega-card.selected .tipo-entrega-check i {
+    opacity: 1;
+}
+
+.tipo-entrega-badge-free {
+    position: absolute;
+    top: -8px;
+    right: 14px;
+    background-color: var(--color-green);
+    color: var(--color-white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px -3px rgba(46, 204, 113, 0.5);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* mensaje inicial cuando aún no se elige tipo */
+.mensaje-elegir-tipo {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--color-text-out);
+}
+
+.mensaje-elegir-tipo i {
+    font-size: 36px;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.mensaje-elegir-tipo p {
+    font-size: 15px;
+    margin: 0;
+}
+
+/* bloques de entrega (domicilio / local) */
+.bloque-entrega {
+    background-color: var(--color-background);
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.bloque-entrega-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--color-black);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-separate);
+}
+
+.bloque-entrega-header i {
+    color: var(--color-primary);
+    font-size: 16px;
+}
+
+.label-help {
+    font-size: 12px;
+    color: var(--color-text-out);
+    font-weight: 400;
+}
+
+/* ============================================= */
+/* ======  LISTA DE MUNICIPIOS (chips)  ======== */
+/* ============================================= */
+
+.lista-municipios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.municipio-chip {
+    position: relative;
+    display: block;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-separate);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    margin-bottom: 0;
+}
+
+.municipio-chip:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px -6px rgba(255, 123, 0, 0.3);
+}
+
+.municipio-chip input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.municipio-chip.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-secondary);
+    box-shadow: 0 8px 16px -6px rgba(255, 123, 0, 0.4);
+}
+
+.municipio-chip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.municipio-chip-nome {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-black);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.municipio-chip-nome i {
+    color: var(--color-primary);
+    font-size: 11px;
+}
+
+.municipio-chip-preco {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.municipio-chip.selected .municipio-chip-preco {
+    color: var(--color-black);
+}
+
+/* ============================================= */
+/* ======  INFO DEL LOCAL (recogida)  ========== */
+/* ============================================= */
+
+.info-local {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background-color: var(--color-white);
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid var(--color-separate);
+}
+
+.info-local-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.info-local-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-local-title,
+.info-local-addr,
+.info-local-hours,
+.info-local-nota {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-black);
+}
+
+.info-local-title {
+    font-size: 16px;
+}
+
+.info-local-hours {
+    color: var(--color-text-out);
+    font-size: 13px;
+}
+
+.info-local-hours i {
+    color: var(--color-primary);
+    margin-right: 4px;
+}
+
+.info-local-nota {
+    color: var(--color-text-out);
+    font-size: 13px;
+    font-style: italic;
+    margin-bottom: 0;
+    padding-top: 6px;
+    border-top: 1px dashed var(--color-separate);
+    margin-top: 8px;
+}
+
+/* etiqueta "Gratis" en el resumen */
+.tag-gratis {
+    display: inline-block;
+    background-color: var(--color-green);
+    color: var(--color-white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* municipio en fila "Entrega" del footer */
+.lbl-muni-entrega {
+    font-size: 12px;
+    color: var(--color-text-out);
+    font-weight: 400;
+}

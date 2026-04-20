@@ -5,10 +5,35 @@ $(document).ready(function () {
 var cardapio = {};
 
 var MEU_CARRINHO = [];
+
+// Tipo de entrega seleccionado: 'domicilio' | 'local' | null (sin elegir)
+var TIPO_ENTREGA = null;
+
+// Municipio seleccionado para la entrega a domicilio
+var MUNICIPIO_SELECCIONADO = null;
+
+// Municipios reales de La Habana con costo de envío (en MN / CUP)
+var MUNICIPIOS_HABANA = [
+    { id: 'habana-vieja',        nome: 'Habana Vieja',                   costo: 200 },
+    { id: 'centro-habana',       nome: 'Centro Habana',                  costo: 200 },
+    { id: 'plaza',               nome: 'Plaza de la Revolución',         costo: 250 },
+    { id: 'cerro',               nome: 'Cerro',                          costo: 250 },
+    { id: 'diez-de-octubre',     nome: 'Diez de Octubre',                costo: 250 },
+    { id: 'playa',               nome: 'Playa',                          costo: 350 },
+    { id: 'marianao',            nome: 'Marianao',                       costo: 400 },
+    { id: 'la-lisa',             nome: 'La Lisa',                        costo: 450 },
+    { id: 'boyeros',             nome: 'Boyeros',                        costo: 400 },
+    { id: 'arroyo-naranjo',      nome: 'Arroyo Naranjo',                 costo: 400 },
+    { id: 'san-miguel',          nome: 'San Miguel del Padrón',          costo: 350 },
+    { id: 'guanabacoa',          nome: 'Guanabacoa',                     costo: 400 },
+    { id: 'regla',               nome: 'Regla',                          costo: 300 },
+    { id: 'habana-del-este',     nome: 'Habana del Este',                costo: 450 },
+    { id: 'cotorro',             nome: 'Cotorro',                        costo: 500 }
+];
 var MEU_ENDERECO = null;
 
 var VALOR_CARRINHO = 0;
-var VALOR_ENTREGA = 100;
+var VALOR_ENTREGA = 0;
 
 var CELULAR_EMPRESA = '5355135487';
 
@@ -609,21 +634,25 @@ cardapio.metodos = {
 
         VALOR_CARRINHO = 0;
 
-        $("#lblSubTotal").text('MN$ 0,00');
-        $("#lblValorEntrega").text('+ MN$ 0,00');
-        $("#lblValorTotal").text('MN$ 0,00');
-
         $.each(MEU_CARRINHO, (i, e) => {
-
             VALOR_CARRINHO += parseFloat(e.price * e.qntd);
+        });
 
-            if ((i + 1) == MEU_CARRINHO.length) {
-                $("#lblSubTotal").text(`MN$ ${VALOR_CARRINHO.toFixed(2).replace('.', ',')}`);
-                $("#lblValorEntrega").text(`+ MN$ ${VALOR_ENTREGA.toFixed(2).replace('.', ',')}`);
-                $("#lblValorTotal").text(`MN$ ${(VALOR_CARRINHO + VALOR_ENTREGA).toFixed(2).replace('.', ',')}`);
-            }
+        // costo de entrega solo aplica si se eligió "domicilio" CON municipio
+        let costoEntrega = (TIPO_ENTREGA === 'domicilio' && MUNICIPIO_SELECCIONADO)
+            ? VALOR_ENTREGA
+            : 0;
 
-        })
+        $("#lblSubTotal").text(`MN$ ${VALOR_CARRINHO.toFixed(2).replace('.', ',')}`);
+        $("#lblValorEntrega").text(`+ MN$ ${costoEntrega.toFixed(2).replace('.', ',')}`);
+        $("#lblValorTotal").text(`MN$ ${(VALOR_CARRINHO + costoEntrega).toFixed(2).replace('.', ',')}`);
+
+        // mostrar/ocultar la fila "Entrega"
+        if (TIPO_ENTREGA === 'domicilio' && MUNICIPIO_SELECCIONADO) {
+            $("#filaEntrega").removeClass('hidden');
+        } else {
+            $("#filaEntrega").addClass('hidden');
+        }
 
     },
 
@@ -633,114 +662,186 @@ cardapio.metodos = {
         if (MEU_CARRINHO.length <= 0) {
             cardapio.metodos.mensagem('Tu carrito está vacío.')
             return;
-        } 
+        }
 
         cardapio.metodos.carregarEtapa(2);
+        cardapio.metodos.renderMunicipios();
+
+        // si aún no se eligió tipo, mostrar mensaje inicial
+        if (TIPO_ENTREGA === null) {
+            $("#bloqueDomicilio").addClass('hidden');
+            $("#bloqueLocal").addClass('hidden');
+            $("#mensajeElegirTipo").removeClass('hidden');
+        } else {
+            // restaurar selección previa
+            $(`input[name='tipoEntrega'][value='${TIPO_ENTREGA}']`).prop('checked', true);
+            cardapio.metodos.seleccionarTipoEntrega(TIPO_ENTREGA);
+        }
 
     },
 
-    // API ViaCEP
+    // ============================================================
+    //  ENTREGA: domicilio / recoger en local
+    // ============================================================
+
+    // el usuario selecciona un tipo de entrega (domicilio | local)
+    seleccionarTipoEntrega: (tipo) => {
+
+        TIPO_ENTREGA = tipo;
+
+        // actualizar highlight visual de las tarjetas del radio
+        $(".tipo-entrega-card").removeClass('selected');
+        $(`.tipo-entrega-card[data-tipo='${tipo}']`).addClass('selected');
+
+        $("#mensajeElegirTipo").addClass('hidden');
+
+        if (tipo === 'domicilio') {
+            $("#bloqueDomicilio").removeClass('hidden');
+            $("#bloqueLocal").addClass('hidden');
+
+            // si hay municipio previo, reaplicar costo; si no, 0
+            if (MUNICIPIO_SELECCIONADO) {
+                VALOR_ENTREGA = MUNICIPIO_SELECCIONADO.costo;
+            } else {
+                VALOR_ENTREGA = 0;
+            }
+            $("#filaEntrega").removeClass('hidden');
+        }
+        else if (tipo === 'local') {
+            $("#bloqueDomicilio").addClass('hidden');
+            $("#bloqueLocal").removeClass('hidden');
+
+            // gratis
+            VALOR_ENTREGA = 0;
+            MUNICIPIO_SELECCIONADO = null;
+            $("#filaEntrega").addClass('hidden');
+            $("#lblMunicipioEntrega").text('');
+        }
+
+        cardapio.metodos.carregarValores();
+    },
+
+    // pinta la lista de municipios seleccionables
+    renderMunicipios: () => {
+
+        let $cont = $("#listaMunicipios");
+        if ($cont.length === 0 || $cont.children().length > 0) return; // evitar re-render
+
+        let html = '';
+        MUNICIPIOS_HABANA.forEach((m) => {
+            html += `
+                <label class="municipio-chip" data-id="${m.id}">
+                    <input type="radio" name="municipio" value="${m.id}" onchange="cardapio.metodos.seleccionarMunicipio('${m.id}')" />
+                    <div class="municipio-chip-body">
+                        <span class="municipio-chip-nome"><i class="fas fa-map-marker-alt"></i> ${m.nome}</span>
+                        <span class="municipio-chip-preco">MN$ ${m.costo.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                </label>
+            `;
+        });
+
+        $cont.html(html);
+    },
+
+    // elegir un municipio para el domicilio
+    seleccionarMunicipio: (id) => {
+
+        let muni = MUNICIPIOS_HABANA.find(m => m.id === id);
+        if (!muni) return;
+
+        MUNICIPIO_SELECCIONADO = muni;
+        VALOR_ENTREGA = muni.costo;
+
+        $(".municipio-chip").removeClass('selected');
+        $(`.municipio-chip[data-id='${id}']`).addClass('selected');
+
+        $("#lblMunicipioEntrega").text(`(${muni.nome})`);
+        cardapio.metodos.carregarValores();
+    },
+
+    // (legacy) API ViaCEP: no se usa en Cuba, conservado como no-op para compatibilidad
     buscarCep: () => {
-
-        // cria a variavel com o valor do cep
-        var cep = $("#txtCEP").val().trim().replace(/\D/g, '');
-
-        // verifica se o CEP possui valor informado
-        if (cep != "") {
-
-            // Expressão regular para validar o CEP
-            var validacep = /^[0-9]{8}$/;
-
-            if (validacep.test(cep)) {
-
-                $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
-
-                    if (!("erro" in dados)) {
-
-                        // Atualizar os campos com os valores retornados
-                        $("#txtEndereco").val(dados.logradouro);
-                        $("#txtBairro").val(dados.bairro);
-                        $("#txtCidade").val(dados.localidade);
-                        $("#ddlUf").val(dados.uf);
-                        $("#txtNumero").focus();
-
-                    }
-                    else {
-                        cardapio.metodos.mensagem('');
-                        $("#txtEndereco").focus();
-                    }
-
-                })
-
-            }
-            else {
-                cardapio.metodos.mensagem('');
-                $("#txtCEP").focus();
-            }
-
-        }
-        else {
-            cardapio.metodos.mensagem('Informe o CEP, por favor.');
-            $("#txtCEP").focus();
-        }
-
+        $("#txtCEP").focus();
     },
 
     // validação antes de prosseguir para a etapa 3
     resumoPedido: () => {
 
+        // 0. tipo de entrega es obligatorio
+        if (!TIPO_ENTREGA) {
+            cardapio.metodos.mensagem('Selecciona si deseas entrega a domicilio o recoger en el local.');
+            return;
+        }
+
         let cep = $("#txtCEP").val().trim();
-        let endereco = $("#txtEndereco").val().trim();
-        let bairro = $("#txtBairro").val().trim();
-        let cidade = $("#txtCidade").val().trim();
         let uf = $("#ddlUf").val().trim();
-        let numero = $("#txtNumero").val().trim();
         let complemento = $("#txtComplemento").val().trim();
 
+        // campos comunes a los dos tipos
+        if (complemento.length <= 0) {
+            cardapio.metodos.mensagem('Rellene su nombre, por favor.');
+            $("#txtComplemento").focus();
+            return;
+        }
+
         if (cep.length <= 0) {
-            cardapio.metodos.mensagem('Teléfono, por favor.');
+            cardapio.metodos.mensagem('Rellene el teléfono, por favor.');
             $("#txtCEP").focus();
             return;
         }
 
-        if (endereco.length <= 0) {
-            cardapio.metodos.mensagem('Rellene el campo Dirección, por favor.');
-            $("#txtEndereco").focus();
-            return;
-        }
+        if (TIPO_ENTREGA === 'domicilio') {
 
-        if (bairro.length <= 0) {
-            cardapio.metodos.mensagem('Rellene el campo Vecindario o Barrio, por favor.');
-            $("#txtBairro").focus();
-            return;
-        }
+            let endereco = $("#txtEndereco").val().trim();
+            let bairro = $("#txtBairro").val().trim();
+            let cidade = $("#txtCidade").val().trim();
+            let numero = $("#txtNumero").val().trim();
 
-        if (cidade.length <= 0) {
-            cardapio.metodos.mensagem('Rellene el campo Provincia, por favor.');
-            $("#txtCidade").focus();
-            return;
-        }
+            if (endereco.length <= 0) {
+                cardapio.metodos.mensagem('Rellene el campo Dirección, por favor.');
+                $("#txtEndereco").focus();
+                return;
+            }
 
-        if (uf == "-1") {
-            cardapio.metodos.mensagem('Rellene el campo a UF, por favor.');
-            $("#ddlUf").focus();
-            return;
-        }
+            if (bairro.length <= 0) {
+                cardapio.metodos.mensagem('Rellene el campo Reparto o Barrio, por favor.');
+                $("#txtBairro").focus();
+                return;
+            }
 
-        if (numero.length <= 0) {
-            cardapio.metodos.mensagem('Rellene el campo número del hogar donde vive.');
-            $("#txtNumero").focus();
-            return;
-        }
+            if (numero.length <= 0) {
+                cardapio.metodos.mensagem('Rellene el número del hogar, por favor.');
+                $("#txtNumero").focus();
+                return;
+            }
 
-        MEU_ENDERECO = {
-            cep: cep,
-            endereco: endereco,
-            bairro: bairro,
-            cidade: cidade,
-            uf: uf,
-            numero: numero,
-            complemento: complemento
+            if (!MUNICIPIO_SELECCIONADO) {
+                cardapio.metodos.mensagem('Selecciona el municipio de La Habana para calcular el envío.');
+                return;
+            }
+
+            MEU_ENDERECO = {
+                tipo: 'domicilio',
+                cep: cep,
+                endereco: endereco,
+                bairro: bairro,
+                cidade: cidade,
+                uf: uf,
+                numero: numero,
+                complemento: complemento,
+                municipio: MUNICIPIO_SELECCIONADO.nome,
+                costoEntrega: MUNICIPIO_SELECCIONADO.costo
+            };
+        }
+        else {
+            // recoger en local: sin dirección
+            MEU_ENDERECO = {
+                tipo: 'local',
+                cep: cep,
+                uf: uf,
+                complemento: complemento,
+                costoEntrega: 0
+            };
         }
 
         cardapio.metodos.carregarEtapa(3);
@@ -764,8 +865,24 @@ cardapio.metodos = {
 
         });
 
-        $("#resumoEndereco").html(`${MEU_ENDERECO.endereco}, #${MEU_ENDERECO.numero}, ${MEU_ENDERECO.bairro}`);
-        $("#cidadeEndereco").html(`${MEU_ENDERECO.cidade}-${MEU_ENDERECO.uf} / ${MEU_ENDERECO.complemento} / teléf: ${MEU_ENDERECO.cep}`);
+        if (MEU_ENDERECO && MEU_ENDERECO.tipo === 'domicilio') {
+            $("#lblResumoTituloEntrega").text('Dirección de entrega:');
+            $("#iconResumoEntrega").attr('class', 'fas fa-map-marked-alt');
+            $("#resumoEndereco").html(`${MEU_ENDERECO.endereco}, #${MEU_ENDERECO.numero}, ${MEU_ENDERECO.bairro}`);
+            $("#cidadeEndereco").html(
+                `Municipio: <b>${MEU_ENDERECO.municipio}</b> &middot; ${MEU_ENDERECO.cidade} ` +
+                `/ ${MEU_ENDERECO.complemento} / teléf: ${MEU_ENDERECO.cep} ` +
+                `/ Pago: ${MEU_ENDERECO.uf}`
+            );
+        } else if (MEU_ENDERECO && MEU_ENDERECO.tipo === 'local') {
+            $("#lblResumoTituloEntrega").text('Recogida en el local:');
+            $("#iconResumoEntrega").attr('class', 'fas fa-store');
+            $("#resumoEndereco").html(`Farmacia Habana &mdash; Calle 23 #456 entre E y F, Vedado, Plaza de la Revolución.`);
+            $("#cidadeEndereco").html(
+                `Cliente: <b>${MEU_ENDERECO.complemento}</b> / Teléf: ${MEU_ENDERECO.cep} ` +
+                `/ Pago: ${MEU_ENDERECO.uf} <span class="tag-gratis">Entrega gratis</span>`
+            );
+        }
 
         cardapio.metodos.finalizarPedido();
 
@@ -776,12 +893,25 @@ cardapio.metodos = {
 
         if (MEU_CARRINHO.length > 0 && MEU_ENDERECO != null) {
 
+            let costoEntrega = MEU_ENDERECO.costoEntrega || 0;
+
             var texto = '¡Hola! quisiera hacer un pedido:';
             texto += `\n*Ordenar artículos:*\n\n\${itens}`;
-            texto += '\n*Dirección de entrega:*';
-            texto += `\n${MEU_ENDERECO.endereco}, ${MEU_ENDERECO.numero}, ${MEU_ENDERECO.bairro}`;
-            texto += `\n / Provincia: ${MEU_ENDERECO.cidade} / Método de pago: ${MEU_ENDERECO.uf} / Remitente: ${MEU_ENDERECO.complemento} / Teléf:${MEU_ENDERECO.cep}`;
-            texto += `\n\n / *Total (con entrega): MN$ ${(VALOR_CARRINHO + VALOR_ENTREGA).toFixed(2).replace('.', ',')}*`;
+
+            if (MEU_ENDERECO.tipo === 'domicilio') {
+                texto += '\n*Entrega a domicilio:*';
+                texto += `\n${MEU_ENDERECO.endereco}, #${MEU_ENDERECO.numero}, ${MEU_ENDERECO.bairro}`;
+                texto += `\n / Municipio: *${MEU_ENDERECO.municipio}* / Ciudad: ${MEU_ENDERECO.cidade}`;
+                texto += `\n / Remitente: ${MEU_ENDERECO.complemento} / Teléf: ${MEU_ENDERECO.cep} / Pago: ${MEU_ENDERECO.uf}`;
+                texto += `\n\n*Subtotal:* MN$ ${VALOR_CARRINHO.toFixed(2).replace('.', ',')}`;
+                texto += `\n*Envío (${MEU_ENDERECO.municipio}):* MN$ ${costoEntrega.toFixed(2).replace('.', ',')}`;
+                texto += `\n*Total:* MN$ ${(VALOR_CARRINHO + costoEntrega).toFixed(2).replace('.', ',')}`;
+            } else {
+                texto += '\n*Recogida en el local:*';
+                texto += `\nFarmacia Habana - Calle 23 #456 entre E y F, Vedado, Plaza de la Revolución`;
+                texto += `\n / Cliente: ${MEU_ENDERECO.complemento} / Teléf: ${MEU_ENDERECO.cep} / Pago: ${MEU_ENDERECO.uf}`;
+                texto += `\n\n*Total:* MN$ ${VALOR_CARRINHO.toFixed(2).replace('.', ',')} (Entrega gratis)`;
+            }
 
             var itens = '';
 
