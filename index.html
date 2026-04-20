@@ -25,6 +25,20 @@
 
     </div>
 
+    <!-- Lightbox para ampliar imágenes de producto -->
+    <div class="lightbox hidden" id="lightboxProducto" role="dialog" aria-modal="true" aria-label="Vista ampliada del producto" onclick="cardapio.metodos.cerrarLightbox(event)">
+        <button type="button" class="lightbox-close" aria-label="Cerrar" onclick="cardapio.metodos.cerrarLightbox(event, true)">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightboxImg" src="" alt="" class="lightbox-img" />
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+            <button type="button" class="lightbox-zoom" id="btnLightboxZoom" aria-label="Alternar zoom" onclick="cardapio.metodos.alternarZoomLightbox()">
+                <i class="fas fa-search-plus"></i>
+            </button>
+        </div>
+    </div>
+
     <a class="botao-carrinho animated bounceIn hidden" onclick="cardapio.metodos.abrirCarrinho(true)">
         <div class="badge-total-carrinho">0</div>
         <i class="fa fa-shopping-bag"></i>
@@ -217,6 +231,24 @@
                 <h1 class="title">
                     <b>Descubra nuestros medicamentos</b>
                 </h1>
+            </div>
+
+            <div class="col-12 col-one wow fadeInUp">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    <input
+                        type="search"
+                        id="txtBuscarProduto"
+                        class="search-input"
+                        placeholder="Buscar medicamento..."
+                        autocomplete="off"
+                        aria-label="Buscar medicamento"
+                        oninput="cardapio.metodos.buscarProdutos(this.value)"
+                    />
+                    <button type="button" class="search-clear hidden" id="btnLimparBusca" onclick="cardapio.metodos.limparBusca()" aria-label="Limpiar búsqueda">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="col-12 col-one container-menu wow fadeInUp">
