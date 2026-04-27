@@ -104,8 +104,11 @@ var CATEGORIAS = {
 cardapio.eventos = {
 
     init: () => {
+        // renderizar las categorias dinamicamente
+        cardapio.metodos.renderizarCategorias();
+        
         cardapio.metodos.atualizarContadoresCategorias();
-        cardapio.metodos.obterItensCardapio();
+        cardapio.metodos.obterItensCardapio(Object.keys(CATEGORIAS)[0] || 'mercado');
         cardapio.metodos.carregarBotaoLigar();
         cardapio.metodos.carregarBotaoReserva();
 
@@ -137,7 +140,31 @@ cardapio.eventos = {
 
 cardapio.metodos = {
 
-    // actualizar el contador (badge) de cada categoría en el menú
+    // renderizar las categorias dinamicamente desde CATEGORIAS
+    renderizarCategorias: () => {
+        let $container = $("#containerCategorias");
+        if ($container.length === 0) return;
+
+        let html = '';
+        let isFirst = true;
+        
+        $.each(CATEGORIAS, (key, info) => {
+            let total = (MENU[key] || []).length;
+            let activeClass = isFirst ? 'active' : '';
+            
+            html += '<a id="menu-' + key + '" class="btn btn-white btn-sm mr-3 menu-categoria ' + activeClass + '" onclick="cardapio.metodos.obterItensCardapio(\'' + key + '\')">';
+            html += '<i class="' + info.icone + ' menu-icon"></i>';
+            html += '<span class="menu-label">' + info.nome + '</span>';
+            html += '<span class="menu-count">' + total + '</span>';
+            html += '</a>';
+            
+            isFirst = false;
+        });
+
+        $container.html(html);
+    },
+
+    // actualizar el contador (badge) de cada categoria en el menu
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
             let total = (MENU[key] || []).length;
@@ -172,9 +199,21 @@ cardapio.metodos = {
 
         $.each(filtro, (i, e) => {
 
+            // Si el producto esta agotado, no mostrarlo o mostrarlo diferente
+            let estaAgotado = e.agotado || false;
+            
             // obtener cantidad actual en el carrito (si existe)
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
+
+            // Obtener el tipo de pesaje del producto
+            let pesaje = e.pesaje || 'unidad';
+            let pesajeTexto = {
+                'unidad': '',
+                'libras': ' / lb',
+                'kilogramos': ' / kg'
+            }[pesaje] || '';
+            let pesajeBadge = pesajeTexto ? '<small class="pesaje-badge">' + pesajeTexto + '</small>' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -185,15 +224,19 @@ cardapio.metodos = {
                 .replace(/\${categoriaIcone}/g, infoCat.icone)
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
-                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+                    ? '<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ' + qntdCarrinho + '</span>'
+                    : '')
+                .replace(/\${pesajeBadge}/g, pesajeBadge)
+                .replace(/\${agotadoClass}/g, estaAgotado ? 'producto-agotado' : '')
+                .replace(/\${agotadoBadge}/g, estaAgotado ? '<span class="badge-agotado">Agotado</span>' : '')
+                .replace(/\${addCarrinhoHidden}/g, estaAgotado ? 'hidden' : '');
 
-            // botão ver mais foi clicado (12 itens)
+            // botao ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
                 $("#itensCardapio").append(temp)
             }
 
-            // paginação inicial (8 itens)
+            // paginacao inicial (8 itens)
             if (!vermais && i < 47) {
                 $("#itensCardapio").append(temp)
             }
@@ -2155,8 +2198,9 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass}" id="\${id}">
+            <div class="card card-item \${inCartClass} \${agotadoClass}" id="\${id}">
                 \${inCartBadge}
+                \${agotadoBadge}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
                 <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
                     <img src="\${img}" alt="\${nome}" />
@@ -2166,17 +2210,17 @@ cardapio.templates = {
                     <b>\${nome}</b>
                 </p>
                 <p class="price-produto text-center">
-                    <b>MN$ \${preco}</b>
+                    <b>MN$ \${preco}</b>\${pesajeBadge}
                 </p>
-                <div class="add-carrinho">
+                <div class="add-carrinho \${addCarrinhoHidden}">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
                         <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
                         <span class="add-numero-itens" id="qntd-\${id}">1</span>
                         <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
                     </div>
-                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
+                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Anadir al carrito">
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="btn-add-label">Añadir</span>
+                        <span class="btn-add-label">Anadir</span>
                     </button>
                 </div>
             </div>
