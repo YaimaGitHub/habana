@@ -48,24 +48,6 @@ var PAISES_TELEFONO = [
     { code: '+7',   name: 'Rusia',             min: 10, max: 10 }
 ];
 
-// Municipios reales de La Habana con costo de envío (en MN / CUP)
-var MUNICIPIOS_HABANA = [
-    { id: 'habana-vieja',        nome: 'Habana Vieja',                   costo: 200 },
-    { id: 'centro-habana',       nome: 'Centro Habana',                  costo: 200 },
-    { id: 'plaza',               nome: 'Plaza de la Revolución',         costo: 250 },
-    { id: 'cerro',               nome: 'Cerro',                          costo: 250 },
-    { id: 'diez-de-octubre',     nome: 'Diez de Octubre',                costo: 250 },
-    { id: 'playa',               nome: 'Playa',                          costo: 350 },
-    { id: 'marianao',            nome: 'Marianao',                       costo: 400 },
-    { id: 'la-lisa',             nome: 'La Lisa',                        costo: 450 },
-    { id: 'boyeros',             nome: 'Boyeros',                        costo: 400 },
-    { id: 'arroyo-naranjo',      nome: 'Arroyo Naranjo',                 costo: 400 },
-    { id: 'san-miguel',          nome: 'San Miguel del Padrón',          costo: 350 },
-    { id: 'guanabacoa',          nome: 'Guanabacoa',                     costo: 400 },
-    { id: 'regla',               nome: 'Regla',                          costo: 300 },
-    { id: 'habana-del-este',     nome: 'Habana del Este',                costo: 450 },
-    { id: 'cotorro',             nome: 'Cotorro',                        costo: 500 }
-];
 var MEU_ENDERECO = null;
 
 var VALOR_CARRINHO = 0;
@@ -73,33 +55,48 @@ var VALOR_ENTREGA = 0;
 
 var CELULAR_EMPRESA = '5355135487';
 
+// Configuracion global de la tienda (se sincroniza desde el panel de admin)
+var CONFIG_TIENDA = {
+    tiempoEntrega: 4,
+    tiempoCancelacion: 4,
+    recargoAdmin: false,
+    numeroWhatsapp: '5355135487'
+};
+
 // ============================================================
-//  TOP 8 MÁS VENDIDOS DE LA SEMANA (registro curado)
-//  Usamos ids que existen en MENU (dados.js). El número "vendidos"
-//  representa las unidades vendidas esta semana (simulado pero
-//  realista, para el registro semanal descargable en PDF).
+//  TOP 8 MAS VENDIDOS DE LA SEMANA (se actualiza desde dados.js)
 // ============================================================
 var TOP_VENDIDOS_SEMANA = [
-    { id: 'the-gramercy-tavern-burger-4-pack',                      vendidos: 182 },
-    { id: '23699-choose-your-own-thin-crust-pizza-4-pack',          vendidos: 164 },
-    { id: 'hong-kong-boba-tea-kit-for-6',                           vendidos: 151 },
-    { id: 'shake-shack-shackburger-8-pack',                         vendidos: 138 },
-    { id: 'choose-your-own-new-haven-style-pizza-6-pack',           vendidos: 127 },
-    { id: 'california-reserve-filet-mignon-steaks-gift-box',        vendidos: 118 },
-    { id: 'ribs-brisket-and-burnt-ends',                            vendidos: 104 },
-    { id: 'sea-salted-caramel-swirl-cheesecake',                    vendidos: 92  }
+    { id: 'arroz-1kg',      vendidos: 182 },
+    { id: 'pollo-1lb',      vendidos: 164 },
+    { id: 'jamon-1lb',      vendidos: 151 },
+    { id: 'leche-1lt',      vendidos: 138 },
+    { id: 'aceite-1lt',     vendidos: 127 },
+    { id: 'frijoles-negros-1lb', vendidos: 118 },
+    { id: 'azucar-1kg',     vendidos: 104 },
+    { id: 'cerdo-1lb',      vendidos: 92  }
 ];
 
-// Metadata de las categorías: nombre visible, icono y clave interna
-var CATEGORIAS = {
-    "burgers":     { nome: "Antimicrobianos", icone: "fas fa-capsules" },
-    "pizzas":      { nome: "Antiinflamatorios", icone: "fas fa-pills" },
-    "churrasco":   { nome: "Antialérgicos", icone: "fas fa-allergies" },
-    "steaks":      { nome: "Antihipertensivo", icone: "fas fa-heartbeat" },
-    "bebidas":     { nome: "Digestivos", icone: "fas fa-prescription-bottle" },
-    "sobremesas":  { nome: "Dermatológicos", icone: "fas fa-hand-holding-medical" },
-    "outros":      { nome: "Otros", icone: "fas fa-notes-medical" }
-};
+// Cargar datos del localStorage para sincronizar con el panel de admin
+(function() {
+    var STORAGE_KEY = 'cabrerasShopData';
+    var datosGuardados = localStorage.getItem(STORAGE_KEY);
+    if (datosGuardados) {
+        try {
+            var datos = JSON.parse(datosGuardados);
+            if (datos.MENU) MENU = datos.MENU;
+            if (datos.CATEGORIAS) CATEGORIAS = datos.CATEGORIAS;
+            if (datos.MUNICIPIOS_HABANA) MUNICIPIOS_HABANA = datos.MUNICIPIOS_HABANA;
+            if (datos.CONFIG) {
+                CONFIG_TIENDA = datos.CONFIG;
+                CELULAR_EMPRESA = datos.CONFIG.numeroWhatsapp || CELULAR_EMPRESA;
+            }
+            console.log('[v0] Datos cargados desde localStorage');
+        } catch (e) {
+            console.error('[v0] Error cargando datos guardados:', e);
+        }
+    }
+})();
 
 cardapio.eventos = {
 
