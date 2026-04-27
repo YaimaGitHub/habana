@@ -130,6 +130,104 @@
         padding: 14px;
     }
 
+    /* Secciones del formulario en móvil */
+    .form-section {
+        margin-bottom: 18px;
+    }
+
+    .form-section-title {
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+    }
+
+    .form-section-num {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .form-section-label {
+        font-size: 15px;
+    }
+
+    .form-section .form-group label {
+        font-size: 13px;
+    }
+
+    /* Botón "Vaciar carrito" en móvil */
+    .acciones-carrinho-wrap {
+        justify-content: center;
+        padding: 8px 0 16px 0;
+    }
+
+    .btn-vaciar-carrinho {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+        padding: 11px 18px;
+        font-size: 13px;
+    }
+
+    /* Resumen detallado en móvil */
+    .resumo-section-title {
+        font-size: 15px;
+        margin-top: 18px;
+        margin-bottom: 12px;
+    }
+
+    .resumo-section-title i {
+        font-size: 16px;
+    }
+
+    .resumo-datos {
+        padding: 12px 14px;
+    }
+
+    .resumo-dato-row {
+        grid-template-columns: 20px 1fr;
+        grid-template-rows: auto auto;
+        gap: 4px 10px;
+        padding: 10px 0;
+        font-size: 13px;
+    }
+
+    .resumo-dato-row .resumo-dato-icon {
+        grid-row: 1 / span 2;
+        align-self: start;
+        padding-top: 2px;
+    }
+
+    .resumo-dato-label {
+        grid-column: 2;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .resumo-dato-value {
+        grid-column: 2;
+        font-size: 14px;
+    }
+
+    .resumo-totais {
+        padding: 14px 16px;
+    }
+
+    .resumo-total-row {
+        font-size: 14px;
+    }
+
+    .resumo-total-row.resumo-total-final {
+        font-size: 16px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .resumo-total-row.resumo-total-final .resumo-total-value {
+        font-size: 20px;
+    }
+
     .info-local {
         padding: 14px;
         gap: 12px;
@@ -394,6 +492,174 @@
 
     .modal-full .form-control {
         font-size: 16px;
+    }
+
+    /* Método de pago (tarjetas) en móvil - una columna */
+    .metodo-pago-group {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .metodo-pago-card {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .metodo-pago-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .metodo-pago-title {
+        font-size: 14px;
+    }
+
+    .metodo-pago-dsc {
+        font-size: 11px;
+    }
+
+    /* Dirección confirmada - reorganizar en móvil */
+    .direccion-confirmada-body {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .direccion-confirmada-texto {
+        flex: 1 1 calc(100% - 60px);
+    }
+
+    .btn-editar-direccion {
+        flex: 1 1 100%;
+        justify-content: center;
+        margin-top: 4px;
+    }
+
+    /* MODAL dirección en móvil */
+    .modal-direccion-overlay {
+        padding: 10px;
+    }
+
+    .modal-direccion-dialog {
+        max-height: calc(100vh - 20px);
+        border-radius: 14px;
+    }
+
+    .modal-direccion-header {
+        padding: 14px 16px;
+        gap: 10px;
+    }
+
+    .modal-direccion-header-texto {
+        gap: 10px;
+    }
+
+    .modal-direccion-header-texto > i {
+        font-size: 18px;
+    }
+
+    .modal-direccion-header h3 {
+        font-size: 16px;
+    }
+
+    .modal-direccion-header p {
+        font-size: 11px;
+    }
+
+    .modal-direccion-close {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .modal-direccion-body {
+        padding: 16px;
+    }
+
+    .modal-direccion-body .form-control {
+        padding: 11px 16px;
+        font-size: 15px;
+    }
+
+    .modal-direccion-footer {
+        padding: 12px 16px;
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+
+    .btn-modal-cancelar,
+    .btn-modal-confirmar {
+        width: 100%;
+        justify-content: center;
+        padding: 11px 18px;
+    }
+
+    /* Lista municipios scrollable dentro del modal si hay muchas opciones */
+    .modal-direccion-body .lista-municipios {
+        max-height: 280px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    /* Teléfono: selector país + input - apilar en móvil */
+    .telefono-input-wrap {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-control-country {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .telefono-feedback {
+        font-size: 11px;
+    }
+
+    /* Ventajas local - 1 columna en móvil */
+    .ventajas-local {
+        grid-template-columns: 1fr;
+    }
+
+    .info-local-modal {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .info-local-modal .info-local-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .info-local-modal .info-local-title {
+        font-size: 15px;
+    }
+
+    .info-local-modal .info-local-addr,
+    .info-local-modal .info-local-hours,
+    .info-local-modal .info-local-nota {
+        font-size: 13px;
+    }
+
+    /* Hint entrega - móvil */
+    .hint-entrega {
+        font-size: 12px;
+        padding: 9px 11px;
+    }
+
+}
+
+/* ================= TABLETS: 768px - 991px ================= */
+@media (min-width: 768px) and (max-width: 991.98px) {
+
+    .modal-direccion-dialog {
+        max-width: 680px;
+    }
+
+    .metodo-pago-group {
+        grid-template-columns: 1fr 1fr;
     }
 
 }
