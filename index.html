@@ -69,6 +69,9 @@
                         <li class="nav-item">
                             <a href="#depoimentos" class="nav-link"><b>Testimonios</b></a>
                         </li>
+                        <li class="nav-item">
+                            <a href="admin.html" class="nav-link"><b>Panel Admin</b></a>
+                        </li>
                     </ul>
                     <a class="btn btn-white btn-icon wow fadeIn" onclick="cardapio.metodos.abrirCarrinho(true)">
                         Mi carrito <span class="icon">
@@ -119,9 +122,9 @@
         <div class="row">
             <div class="col-12 col-lg-6 col-md-6 col-sm-12 col-one">
                 <div class="d-flex text-banner">
-                    <h1 class="wow fadeInLeft"><b>Elija sus <b class="color-primary">medicamentos.</b></b></h1>
+                    <h1 class="wow fadeInLeft"><b>Elija sus <b class="color-primary">alimentos.</b></b></h1>
                     <p class="wow fadeInLeft delay-02s">
-                        ¡Explora nuestra selección! Selecciona lo que necesitas y recíbelo en tu domicilio de forma rápida y segura.
+                        ¡Explora nuestra seleccion! Selecciona lo que necesitas y recibelo en tu domicilio de forma rapida y segura.
                     </p>
                     <div class="wow fadeIn delay-05s">
                         <a href="#cardapio" class="btn btn-yellow mt-4 mr-3">
@@ -186,7 +189,7 @@
                 <div class="card-text text-center mt-3">
                     <p><b>Fácil de pedir</b></p>
                     <span>
-                        Solo necesita unos pocos pasos para ordenar su medicamento.
+                        Solo necesita unos pocos pasos para ordenar sus alimentos.
                     </span>
                 </div>
             </div>
@@ -237,21 +240,7 @@
                 </h1>
                 <p class="top-sellers-subtitle text-pretty">
                     Los productos preferidos por nuestros clientes esta semana.
-                    Descarga el catálogo completo en PDF para consultarlo cuando lo necesites.
                 </p>
-            </div>
-
-            <div class="col-12 col-one wow fadeInUp">
-                <div class="top-sellers-downloads" role="group" aria-label="Descargar catálogo en PDF">
-                    <button type="button" class="btn-descarga btn-descarga-secondary" onclick="cardapio.metodos.descargarCatalogoPDF(event)" aria-label="Descargar catálogo completo en PDF">
-                        <span class="btn-descarga-icon"><i class="fas fa-book-medical"></i></span>
-                        <span class="btn-descarga-texto">
-                            <span class="btn-descarga-titulo">Catálogo completo</span>
-                            <span class="btn-descarga-dsc">Todos los productos en PDF</span>
-                        </span>
-                        <span class="btn-descarga-arrow"><i class="fas fa-download"></i></span>
-                    </button>
-                </div>
             </div>
 
             <div class="col-12 col-one">
@@ -271,9 +260,9 @@
         <div class="row">
 
             <div class="col-12 col-one text-center mb-5 wow fadeIn">
-                <span class="hint-title"><b>Medicamentos</b></span>
+                <span class="hint-title"><b>Productos</b></span>
                 <h1 class="title">
-                    <b>Descubra nuestros medicamentos</b>
+                    <b>Descubra nuestros productos</b>
                 </h1>
             </div>
 
@@ -284,9 +273,9 @@
                         type="search"
                         id="txtBuscarProduto"
                         class="search-input"
-                        placeholder="Buscar medicamento..."
+                        placeholder="Buscar producto..."
                         autocomplete="off"
-                        aria-label="Buscar medicamento"
+                        aria-label="Buscar producto"
                         oninput="cardapio.metodos.buscarProdutos(this.value)"
                     />
                     <button type="button" class="search-clear hidden" id="btnLimparBusca" onclick="cardapio.metodos.limparBusca()" aria-label="Limpiar búsqueda">
@@ -295,42 +284,8 @@
                 </div>
             </div>
 
-            <div class="col-12 col-one container-menu wow fadeInUp">
-                <a id="menu-burgers" class="btn btn-white btn-sm mr-3 active menu-categoria" onclick="cardapio.metodos.obterItensCardapio('burgers')">
-                    <i class="fas fa-capsules menu-icon"></i>
-                    <span class="menu-label">Antimicrobianos</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-pizzas" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('pizzas')">
-                    <i class="fas fa-pills menu-icon"></i>
-                    <span class="menu-label">Antiinflamatorios</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-churrasco" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('churrasco')">
-                    <i class="fas fa-allergies menu-icon"></i>
-                    <span class="menu-label">Antialérgicos</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-steaks" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('steaks')">
-                    <i class="fas fa-heartbeat menu-icon"></i>
-                    <span class="menu-label">Antihipertensivo</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-bebidas" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('bebidas')">
-                    <i class="fas fa-prescription-bottle menu-icon"></i>
-                    <span class="menu-label">Digestivos</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-sobremesas" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('sobremesas')">
-                    <i class="fas fa-hand-holding-medical menu-icon"></i>
-                    <span class="menu-label">Dermatológicos</span>
-                    <span class="menu-count">0</span>
-                </a>
-                <a id="menu-outros" class="btn btn-white btn-sm mr-3 menu-categoria" onclick="cardapio.metodos.obterItensCardapio('outros')">
-                    <i class="fas fa-notes-medical menu-icon"></i>
-                    <span class="menu-label">Otros</span>
-                    <span class="menu-count">0</span>
-                </a>
+            <div class="col-12 col-one container-menu wow fadeInUp" id="containerCategorias">
+                <!-- Las categorias se cargan dinamicamente desde dados.js -->
             </div>
 
 
@@ -464,9 +419,9 @@
                     <div class="row">
 
                         <div class="col-12 col-lg-7 col-md-7 col-sm-12">
-                            <span class="hint-title"><b>Contáctenos</b></span>
+                            <span class="hint-title"><b>Contactenos</b></span>
                             <h1 class="title">
-                                <b>¿No encontró el medicamento que buscaba?</b>
+                                <b>¿No encontro el producto que buscaba?</b>
                             </h1>
                             <p class="pr-5">
                                 Envía un mensaje haciendo clic en el botón de abajo
@@ -913,18 +868,17 @@
                                 <i class="fas fa-exclamation-circle"></i>
                                 <b>Importante:</b> Política de Cancelación
                             </p>
-                            <p class="aviso-revisar-texto">
-                                Al confirmar este pedido, aceptas que la cancelación del mismo después de
-                                <b>24 horas</b> o una vez <b>gestionado el envío</b>, incurrirá en un
-                                <b>recargo administrativo del 10%</b> sobre el total de la compra para cubrir
-                                costos de <b>gestión y logística</b>. Los <b>pedidos personalizados</b> no admiten
-                                cancelación una vez <b>iniciada la producción</b>.
-                            </p>
-                            <div class="aviso-revisar-chips">
-                                <span class="aviso-chip aviso-chip-ok"><i class="fas fa-clock"></i> Cancelación gratuita dentro de 24 h</span>
-                                <span class="aviso-chip aviso-chip-warn"><i class="fas fa-percentage"></i> Recargo del 10% tras 24 h o envío gestionado</span>
-                                <span class="aviso-chip aviso-chip-warn"><i class="fas fa-ban"></i> Pedidos personalizados: no cancelables en producción</span>
-                            </div>
+<p class="aviso-revisar-texto">
+  Al confirmar este pedido, aceptas que puedes cancelarlo de forma <b>gratuita</b> dentro de las
+  <b>4 horas</b> siguientes. Despues de este tiempo o una vez <b>gestionado el envio</b>,
+  no se admiten cancelaciones. Los <b>pedidos personalizados</b> no admiten
+  cancelacion una vez <b>iniciada la produccion</b>.
+  </p>
+  <div class="aviso-revisar-chips">
+  <span class="aviso-chip aviso-chip-ok"><i class="fas fa-clock"></i> Cancelacion gratuita dentro de 4 h</span>
+  <span class="aviso-chip aviso-chip-warn"><i class="fas fa-ban"></i> No cancelable tras 4 h o envio gestionado</span>
+  <span class="aviso-chip aviso-chip-warn"><i class="fas fa-ban"></i> Pedidos personalizados: no cancelables en produccion</span>
+  </div>
 
                             <!-- Check-out: aceptación obligatoria para poder enviar el pedido -->
                             <label class="aviso-checkbox" for="chkAceptaPolitica">
