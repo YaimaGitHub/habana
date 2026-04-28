@@ -1375,3 +1375,341 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* =====================================================
+   LOGIN SCREEN (gate del panel de control)
+   ===================================================== */
+
+body.no-autenticado {
+    overflow: hidden;
+    background: #f4f6fb;
+}
+
+.login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(255, 123, 0, 0.18), transparent 60%),
+        radial-gradient(900px 500px at 90% 90%, rgba(52, 152, 219, 0.16), transparent 60%),
+        linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+    padding: 36px 32px 28px;
+    animation: loginPop .35s ease-out;
+}
+
+@keyframes loginPop {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.login-brand {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.login-brand h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px;
+}
+
+.login-brand p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.login-field {
+    margin-bottom: 14px;
+}
+
+.login-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.login-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.login-input > i {
+    position: absolute;
+    left: 14px;
+    color: #9ca3af;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.login-input input {
+    width: 100%;
+    padding: 12px 44px 12px 40px;
+    font-size: 14px;
+    color: #111827;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.login-input input:focus {
+    border-color: #ff7b00;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.12);
+}
+
+.login-eye {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.login-eye:hover {
+    color: #374151;
+    background: #f3f4f6;
+}
+
+.login-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4b5563;
+    margin: 4px 0 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.login-remember input {
+    width: 16px;
+    height: 16px;
+    accent-color: #ff7b00;
+    cursor: pointer;
+}
+
+.login-error {
+    display: none;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.login-submit {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #ff7b00;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.login-submit:hover { background: #e36e00; }
+.login-submit:active { transform: translateY(1px); }
+.login-submit.cargando {
+    opacity: .7;
+    cursor: progress;
+}
+.login-submit:disabled { cursor: not-allowed; }
+
+.login-foot {
+    text-align: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.login-foot a {
+    color: #6b7280;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.login-foot a:hover {
+    color: #ff7b00;
+}
+
+/* =====================================================
+   BOTON LOGOUT EN LA SIDEBAR
+   ===================================================== */
+
+.btn-cerrar-sesion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.sidebar.collapsed .btn-cerrar-sesion span { display: none; }
+.sidebar.collapsed .btn-cerrar-sesion { justify-content: center; }
+
+/* =====================================================
+   AREA DE CARGA DE IMAGEN (mejorada)
+   ===================================================== */
+
+.image-upload-area {
+    position: relative;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.image-upload-area.drag-over {
+    border-color: #ff7b00 !important;
+    background: rgba(255, 123, 0, 0.06) !important;
+}
+
+.upload-placeholder small {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.btn-quitar-imagen {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 2;
+    transition: background .15s ease;
+}
+
+.btn-quitar-imagen:hover { background: rgba(0, 0, 0, 0.85); }
+
+.image-upload-area:has(.image-preview:not(.hidden)) .btn-quitar-imagen {
+    display: flex;
+}
+
+/* =====================================================
+   TARJETA DE EXPORTACION (en Configuracion)
+   ===================================================== */
+
+.config-card-wide {
+    grid-column: 1 / -1;
+}
+
+.config-help {
+    margin: 4px 0 14px;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.config-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.config-actions .btn-primary,
+.config-actions .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0;
+    transition: background .15s ease, transform .15s ease, color .15s ease;
+}
+
+.config-actions .btn-secondary {
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.config-actions .btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.config-actions .btn-secondary.danger {
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.config-actions .btn-secondary.danger:hover {
+    background: #fee2e2;
+}
+
+.config-actions .btn-import {
+    cursor: pointer;
+    margin: 0;
+}

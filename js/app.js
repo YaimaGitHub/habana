@@ -90,6 +90,9 @@ var TOP_VENDIDOS_SEMANA = [
 cardapio.eventos = {
 
     init: () => {
+        // aplicar configuracion global (textos, recargos, etc.)
+        cardapio.metodos.aplicarConfiguracionTienda();
+
         // renderizar las categorias dinamicamente
         cardapio.metodos.renderizarCategorias();
         
@@ -833,8 +836,16 @@ cardapio.metodos = {
             ? VALOR_ENTREGA
             : 0;
 
+        // Recargo administrativo configurable desde el panel de control (10% sobre productos)
+        let recargoAdmin = 0;
+        if (!carritoVacio
+            && typeof CONFIG_TIENDA !== 'undefined'
+            && CONFIG_TIENDA && CONFIG_TIENDA.recargoAdmin) {
+            recargoAdmin = VALOR_CARRINHO * 0.10;
+        }
+
         let subtotalMostrar = carritoVacio ? 0 : VALOR_CARRINHO;
-        let totalMostrar = carritoVacio ? 0 : (VALOR_CARRINHO + costoEntrega);
+        let totalMostrar = carritoVacio ? 0 : (VALOR_CARRINHO + costoEntrega + recargoAdmin);
 
         $("#lblSubTotal").text(`MN$ ${subtotalMostrar.toFixed(2).replace('.', ',')}`);
         $("#lblValorEntrega").text(`+ MN$ ${costoEntrega.toFixed(2).replace('.', ',')}`);
@@ -847,6 +858,40 @@ cardapio.metodos = {
             $("#filaEntrega").addClass('hidden');
         }
 
+        // mostrar la fila "Recargo administrativo" cuando esta activo
+        let $filaRecargo = $("#filaRecargoAdmin");
+        if (recargoAdmin > 0) {
+            if ($filaRecargo.length === 0) {
+                $("#filaEntrega").after(
+                    '<div id="filaRecargoAdmin" class="resumo-row">' +
+                        '<span class="resumo-label"><i class="fas fa-percent"></i> Recargo administrativo (10%)</span>' +
+                        '<span id="lblRecargoAdmin" class="resumo-value">+ MN$ 0,00</span>' +
+                    '</div>'
+                );
+                $filaRecargo = $("#filaRecargoAdmin");
+            }
+            $filaRecargo.removeClass('hidden');
+            $("#lblRecargoAdmin").text(`+ MN$ ${recargoAdmin.toFixed(2).replace('.', ',')}`);
+        } else if ($filaRecargo.length > 0) {
+            $filaRecargo.addClass('hidden');
+        }
+
+    },
+
+    // Aplica los textos / configuraciones globales del panel de control
+    // a la UI de la tienda (numero de WhatsApp, tiempo de cancelacion, etc.)
+    aplicarConfiguracionTienda: () => {
+        try {
+            // Tiempo de cancelacion: actualizar todos los textos visibles
+            let h = (typeof CONFIG_TIENDA !== 'undefined' && CONFIG_TIENDA &&
+                     parseInt(CONFIG_TIENDA.tiempoCancelacion, 10)) || 4;
+            let texto = (h === 1) ? '1 hora' : (h + ' horas');
+            $("#lblTiempoCancelacionTexto").text(texto);
+            $("#lblTiempoCancelacionChip1").text(h + ' h');
+            $("#lblTiempoCancelacionChip2").text(h + ' h');
+        } catch (e) {
+            console.error('[v0] aplicarConfiguracionTienda:', e);
+        }
     },
 
     // carregar a etapa enderecos
@@ -1543,7 +1588,13 @@ cardapio.metodos = {
         // --- TOTALES ---
         let costoEntrega = (MEU_ENDERECO && MEU_ENDERECO.costoEntrega) || 0;
         let esDomicilio = MEU_ENDERECO && MEU_ENDERECO.tipo === 'domicilio';
-        let totalFinal = VALOR_CARRINHO + costoEntrega + recargoTransferencia;
+
+        // Recargo administrativo configurable desde el panel de control (10%)
+        let recargoAdmin = 0;
+        if (typeof CONFIG_TIENDA !== 'undefined' && CONFIG_TIENDA && CONFIG_TIENDA.recargoAdmin) {
+            recargoAdmin = VALOR_CARRINHO * 0.10;
+        }
+        let totalFinal = VALOR_CARRINHO + costoEntrega + recargoTransferencia + recargoAdmin;
 
         let totaisHTML = '';
         totaisHTML += `
@@ -1564,6 +1615,14 @@ cardapio.metodos = {
                 <div class="resumo-total-row">
                     <span class="resumo-total-label"><i class="fas fa-store"></i> Envío (recogida en local)</span>
                     <span class="resumo-total-value"><span class="tag-gratis">Gratis</span></span>
+                </div>
+            `;
+        }
+        if (recargoAdmin > 0) {
+            totaisHTML += `
+                <div class="resumo-total-row">
+                    <span class="resumo-total-label"><i class="fas fa-percent"></i> Recargo administrativo (10%)</span>
+                    <span class="resumo-total-value">+ MN$ ${recargoAdmin.toFixed(2).replace('.', ',')}</span>
                 </div>
             `;
         }
@@ -1589,7 +1648,12 @@ cardapio.metodos = {
         let esTransferencia = MEU_ENDERECO.uf === 'Pago por transferencia';
         // Transferencia NO aplica ningún recargo adicional sobre los productos.
         let recargoTransferencia = 0;
-        let total = VALOR_CARRINHO + costoEntrega;
+        // Recargo administrativo (10%) configurable desde el panel de control
+        let recargoAdmin = 0;
+        if (typeof CONFIG_TIENDA !== 'undefined' && CONFIG_TIENDA && CONFIG_TIENDA.recargoAdmin) {
+            recargoAdmin = VALOR_CARRINHO * 0.10;
+        }
+        let total = VALOR_CARRINHO + costoEntrega + recargoAdmin;
 
         let fmt = (n) => n.toFixed(2).replace('.', ',');
         let separador = '━━━━━━━━━━━━━━━━━━';
@@ -1664,6 +1728,9 @@ cardapio.metodos = {
             texto += `• Envío (${MEU_ENDERECO.municipio}): +MN$ ${fmt(costoEntrega)}\n`;
         } else {
             texto += `• Envío (recogida en local): Gratis\n`;
+        }
+        if (recargoAdmin > 0) {
+            texto += `• Recargo administrativo (10%): +MN$ ${fmt(recargoAdmin)}\n`;
         }
         texto += `\n*TOTAL A PAGAR: MN$ ${fmt(total)}*\n`;
 
@@ -2346,6 +2413,12 @@ cardapio.templates = {
             // 5. botones de contacto (WhatsApp / teléfono) - usan número actualizado
             cardapio.metodos.carregarBotaoLigar();
             cardapio.metodos.carregarBotaoReserva();
+
+            // 5b. textos / recargos configurables (cancelacion, recargo admin, etc.)
+            cardapio.metodos.aplicarConfiguracionTienda();
+            // Recalcular totales del carrito para que el recargo administrativo
+            // (10%) se reflicte de inmediato al activarse / desactivarse.
+            cardapio.metodos.carregarValores();
 
             // 6. carrito: eliminar items cuyos productos ya no existen o están agotados
             limpiarCarrinhoSegunCatalogo();

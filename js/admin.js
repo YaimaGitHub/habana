@@ -306,10 +306,13 @@ var adminPanel = {
         document.getElementById('productoEstado').value = 'disponible';
         document.getElementById('productoDescripcion').value = '';
         document.getElementById('productoImagenUrl').value = '';
+        var inp = document.getElementById('productoImagen');
+        if (inp) inp.value = '';
         document.getElementById('imagenPreview').classList.add('hidden');
         document.getElementById('uploadPlaceholder').classList.remove('hidden');
-        
+
         this.llenarSelectCategorias();
+        this.inicializarDragDropImagen();
         document.getElementById('modalProducto').classList.add('active');
     },
 
@@ -339,23 +342,140 @@ var adminPanel = {
             document.getElementById('imagenPreview').src = producto.img;
             document.getElementById('imagenPreview').classList.remove('hidden');
             document.getElementById('uploadPlaceholder').classList.add('hidden');
+        } else {
+            document.getElementById('imagenPreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
         }
 
+        var inp = document.getElementById('productoImagen');
+        if (inp) inp.value = '';
+
+        this.inicializarDragDropImagen();
         document.getElementById('modalProducto').classList.add('active');
     },
 
+    // ---------------------------------------------------------------
+    //  IMAGEN DEL PRODUCTO
+    //  Acepta archivo desde input, click en el area, o drag & drop.
+    //  Comprime la imagen en el navegador (canvas) antes de almacenarla
+    //  como data URL para no superar el limite de localStorage.
+    // ---------------------------------------------------------------
     previsualizarImagen: function(event) {
-        var file = event.target.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imagenPreview').src = e.target.result;
-                document.getElementById('imagenPreview').classList.remove('hidden');
-                document.getElementById('uploadPlaceholder').classList.add('hidden');
-                document.getElementById('productoImagenUrl').value = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        var file = event && event.target && event.target.files
+            ? event.target.files[0]
+            : (event && event.dataTransfer && event.dataTransfer.files
+                ? event.dataTransfer.files[0]
+                : null);
+        if (!file) return;
+        if (!/^image\//.test(file.type)) {
+            this.mostrarToast('El archivo no es una imagen valida', 'error');
+            return;
         }
+        // Limite duro: 8 MB de origen
+        if (file.size > 8 * 1024 * 1024) {
+            this.mostrarToast('La imagen es muy grande (max 8 MB)', 'error');
+            return;
+        }
+        var self = this;
+        this.comprimirImagen(file, 1024, 0.85).then(function (dataUrl) {
+            var img = document.getElementById('imagenPreview');
+            var ph  = document.getElementById('uploadPlaceholder');
+            var url = document.getElementById('productoImagenUrl');
+            if (img) {
+                img.src = dataUrl;
+                img.classList.remove('hidden');
+            }
+            if (ph)  ph.classList.add('hidden');
+            if (url) url.value = dataUrl;
+            self.mostrarToast('Imagen cargada correctamente', 'success');
+        }).catch(function (err) {
+            console.error('[v0] Error al cargar la imagen:', err);
+            self.mostrarToast('No se pudo procesar la imagen', 'error');
+        });
+    },
+
+    // Devuelve una Promise<dataUrl> con la imagen comprimida.
+    comprimirImagen: function(file, maxLado, calidad) {
+        maxLado = maxLado || 1024;
+        calidad = calidad || 0.85;
+        return new Promise(function (resolve, reject) {
+            var lector = new FileReader();
+            lector.onerror = function () { reject(new Error('No se pudo leer el archivo')); };
+            lector.onload = function (e) {
+                var img = new Image();
+                img.onerror = function () { reject(new Error('Imagen invalida')); };
+                img.onload = function () {
+                    try {
+                        var w = img.naturalWidth  || img.width;
+                        var h = img.naturalHeight || img.height;
+                        // Redimensionar respetando proporcion
+                        if (w > maxLado || h > maxLado) {
+                            if (w >= h) {
+                                h = Math.round(h * (maxLado / w));
+                                w = maxLado;
+                            } else {
+                                w = Math.round(w * (maxLado / h));
+                                h = maxLado;
+                            }
+                        }
+                        var canvas = document.createElement('canvas');
+                        canvas.width  = w;
+                        canvas.height = h;
+                        var ctx = canvas.getContext('2d');
+                        // Fondo blanco para imagenes con transparencia (JPEG no soporta alpha)
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        // Si es PNG con transparencia conservamos PNG, si no usamos JPEG
+                        var tipo = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                        var dataUrl = canvas.toDataURL(tipo, calidad);
+                        resolve(dataUrl);
+                    } catch (err) { reject(err); }
+                };
+                img.src = e.target.result;
+            };
+            lector.readAsDataURL(file);
+        });
+    },
+
+    // Manejadores de drag & drop sobre el area de carga
+    inicializarDragDropImagen: function() {
+        var area = document.getElementById('imageUploadArea');
+        if (!area || area.dataset.ddInit === '1') return;
+        area.dataset.ddInit = '1';
+        var self = this;
+
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            area.addEventListener(ev, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                area.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'dragend', 'drop'].forEach(function (ev) {
+            area.addEventListener(ev, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                area.classList.remove('drag-over');
+            });
+        });
+        area.addEventListener('drop', function (e) {
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                self.previsualizarImagen({ target: { files: e.dataTransfer.files } });
+            }
+        });
+    },
+
+    // Quita la imagen previa al editar un producto
+    quitarImagenProducto: function() {
+        var img = document.getElementById('imagenPreview');
+        var ph  = document.getElementById('uploadPlaceholder');
+        var url = document.getElementById('productoImagenUrl');
+        var inp = document.getElementById('productoImagen');
+        if (img) { img.src = ''; img.classList.add('hidden'); }
+        if (ph)  ph.classList.remove('hidden');
+        if (url) url.value = '';
+        if (inp) inp.value = '';
     },
 
     guardarProducto: function() {
@@ -781,6 +901,145 @@ var adminPanel = {
         CONFIG.recargoAdmin = document.getElementById('recargoAdmin').checked;
         this.guardarDatos();
         this.mostrarToast(CONFIG.recargoAdmin ? 'Recargo administrativo activado' : 'Recargo administrativo desactivado', 'success');
+    },
+
+    // =====================================================
+    //  EXPORTAR / IMPORTAR / RESTABLECER
+    // -----------------------------------------------------
+    //  Genera ficheros con TODOS los cambios aplicados desde
+    //  el panel de control para que la tienda los use como
+    //  nueva fuente de datos en produccion.
+    // =====================================================
+
+    _descargarBlob: function(contenido, nombre, mime) {
+        var blob = new Blob([contenido], { type: mime || 'text/plain;charset=utf-8' });
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href = url;
+        a.download = nombre;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            URL.revokeObjectURL(url);
+            if (a.parentNode) a.parentNode.removeChild(a);
+        }, 200);
+    },
+
+    // Genera un dados.js auto-contenido con el estado actual hardcodeado
+    // como valores por defecto. La tienda puede usarlo directamente.
+    exportarDadosJs: function() {
+        var fecha = new Date().toISOString();
+        var indent = function (obj) { return JSON.stringify(obj, null, 4); };
+
+        var contenido =
+            '// =====================================================\n' +
+            '// DATOS DE LA TIENDA - Cabrera\'s Shop\n' +
+            '// Generado automaticamente desde el panel de control\n' +
+            '// Fecha de exportacion: ' + fecha + '\n' +
+            '// =====================================================\n\n' +
+            'var MENU = ' + indent(MENU) + ';\n\n' +
+            'var CATEGORIAS = ' + indent(CATEGORIAS) + ';\n\n' +
+            'var MUNICIPIOS_HABANA = ' + indent(MUNICIPIOS_HABANA) + ';\n\n' +
+            'var CONFIG_TIENDA = ' + indent(CONFIG) + ';\n\n' +
+            '// Cargar configuracion guardada si existe (override desde panel)\n' +
+            '(function() {\n' +
+            '    var datosGuardados = localStorage.getItem(\'cabrerasShopData\');\n' +
+            '    if (datosGuardados) {\n' +
+            '        try {\n' +
+            '            var datos = JSON.parse(datosGuardados);\n' +
+            '            if (datos.MENU) MENU = datos.MENU;\n' +
+            '            if (datos.CATEGORIAS) CATEGORIAS = datos.CATEGORIAS;\n' +
+            '            if (datos.MUNICIPIOS_HABANA) MUNICIPIOS_HABANA = datos.MUNICIPIOS_HABANA;\n' +
+            '            if (datos.CONFIG) CONFIG_TIENDA = datos.CONFIG;\n' +
+            '        } catch (e) {\n' +
+            '            console.error(\'Error cargando datos guardados:\', e);\n' +
+            '        }\n' +
+            '    }\n' +
+            '})();\n';
+
+        this._descargarBlob(contenido, 'dados.js', 'application/javascript;charset=utf-8');
+        this.mostrarToast('dados.js exportado. Reemplaza /js/dados.js en el servidor.', 'success');
+    },
+
+    // Backup completo en formato JSON (re-importable).
+    exportarJson: function() {
+        var paquete = {
+            generadoEn: new Date().toISOString(),
+            version: 1,
+            MENU: MENU,
+            CATEGORIAS: CATEGORIAS,
+            MUNICIPIOS_HABANA: MUNICIPIOS_HABANA,
+            CONFIG: CONFIG
+        };
+        var stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        this._descargarBlob(
+            JSON.stringify(paquete, null, 2),
+            'cabreras-shop-backup-' + stamp + '.json',
+            'application/json;charset=utf-8'
+        );
+        this.mostrarToast('Copia de seguridad exportada', 'success');
+    },
+
+    // Restaura desde un fichero .json generado por exportarJson()
+    importarJson: function(event) {
+        var self = this;
+        var file = event && event.target && event.target.files && event.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onerror = function () {
+            self.mostrarToast('No se pudo leer el archivo', 'error');
+        };
+        reader.onload = function (e) {
+            try {
+                var datos = JSON.parse(e.target.result);
+                if (!datos || typeof datos !== 'object') {
+                    throw new Error('Estructura invalida');
+                }
+                if (!confirm('Esta accion sustituira TODOS los datos actuales del panel de control. Continuar?')) {
+                    return;
+                }
+                if (datos.MENU)              MENU              = datos.MENU;
+                if (datos.CATEGORIAS)        CATEGORIAS        = datos.CATEGORIAS;
+                if (datos.MUNICIPIOS_HABANA) MUNICIPIOS_HABANA = datos.MUNICIPIOS_HABANA;
+                if (datos.CONFIG)            CONFIG            = datos.CONFIG;
+
+                self.guardarDatos();
+                self.actualizarDashboard();
+                self.renderizarProductos();
+                self.renderizarCategorias();
+                self.renderizarMunicipios();
+                self.llenarSelectCategorias();
+                self.cargarConfiguracion();
+                self.mostrarToast('Datos importados correctamente', 'success');
+            } catch (err) {
+                console.error('[v0] Error importando JSON:', err);
+                self.mostrarToast('Archivo JSON invalido', 'error');
+            } finally {
+                // limpiar input para permitir reimportar el mismo archivo
+                event.target.value = '';
+            }
+        };
+        reader.readAsText(file);
+    },
+
+    // Borra los datos guardados y recarga para volver a los valores
+    // originales definidos en /js/dados.js (los que se desplego por SSH).
+    restablecerDatos: function() {
+        if (!confirm('Restablecer TODOS los datos a los valores de fabrica? Esta accion no se puede deshacer.')) {
+            return;
+        }
+        try { localStorage.removeItem('cabrerasShopData'); } catch (e) {}
+        // Notificar a la tienda que algo cambio
+        try {
+            if (typeof BroadcastChannel !== 'undefined') {
+                var bc = new BroadcastChannel('cabreras-shop');
+                bc.postMessage({ tipo: 'datos-actualizados', ts: Date.now() });
+                bc.close();
+            }
+        } catch (e) {}
+        this.mostrarToast('Datos restablecidos. Recargando...', 'success');
+        setTimeout(function () { location.reload(); }, 800);
     },
 
     // =====================================================

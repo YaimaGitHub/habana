@@ -9,7 +9,56 @@
     <link rel="stylesheet" href="css/fontawesome.css">
     <link rel="stylesheet" href="css/admin.css">
 </head>
-<body>
+<body class="no-autenticado">
+
+    <!-- ========================================================
+         PANTALLA DE LOGIN (visible hasta que el usuario se valide)
+    ============================================================ -->
+    <div class="login-screen" id="loginScreen" role="dialog" aria-labelledby="loginTitulo" aria-modal="true">
+        <div class="login-card">
+            <div class="login-brand">
+                <img src="./img/logo.png" alt="Cabrera's Shop" class="login-logo" />
+                <h1 id="loginTitulo">Panel de Control</h1>
+                <p>Acceso restringido. Ingresa tus credenciales.</p>
+            </div>
+            <form id="loginForm" autocomplete="off" novalidate>
+                <div class="login-field">
+                    <label for="loginUsuario">Usuario</label>
+                    <div class="login-input">
+                        <i class="fas fa-user"></i>
+                        <input id="loginUsuario" type="text" autocomplete="username" spellcheck="false" required />
+                    </div>
+                </div>
+                <div class="login-field">
+                    <label for="loginClave">Contrasena</label>
+                    <div class="login-input">
+                        <i class="fas fa-lock"></i>
+                        <input id="loginClave" type="password" autocomplete="current-password" required />
+                        <button type="button" id="btnVerClave" class="login-eye" aria-label="Mostrar / ocultar contrasena">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <label class="login-remember">
+                    <input id="loginRecordar" type="checkbox" />
+                    <span>Recordar este dispositivo</span>
+                </label>
+                <div class="login-error" id="loginError" role="alert"></div>
+                <button type="submit" id="btnLogin" class="login-submit">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Entrar</span>
+                </button>
+            </form>
+            <div class="login-foot">
+                <a href="index.html"><i class="fas fa-store"></i> Volver a la tienda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         APLICACION ADMIN (oculta hasta autenticarse)
+    ============================================================ -->
+    <div id="adminApp" style="display:none;">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -45,6 +94,10 @@
                 <i class="fas fa-store"></i>
                 <span>Ver Tienda</span>
             </a>
+            <button id="btnLogout" class="btn-cerrar-sesion" type="button" aria-label="Cerrar sesion">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar sesion</span>
+            </button>
         </div>
     </aside>
 
@@ -113,11 +166,11 @@
             <div class="quick-actions">
                 <h3>Acciones Rapidas</h3>
                 <div class="actions-grid">
-                    <button class="action-btn" onclick="adminPanel.mostrarSeccion('productos')">
+                    <button class="action-btn" onclick="adminPanel.mostrarSeccion('productos'); adminPanel.abrirModalProducto();">
                         <i class="fas fa-plus"></i>
                         Agregar Producto
                     </button>
-                    <button class="action-btn" onclick="adminPanel.mostrarSeccion('categorias')">
+                    <button class="action-btn" onclick="adminPanel.mostrarSeccion('categorias'); adminPanel.abrirModalCategoria();">
                         <i class="fas fa-folder-plus"></i>
                         Nueva Categoria
                     </button>
@@ -315,9 +368,40 @@
                         <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>
+
+                <div class="config-card config-card-wide">
+                    <h3><i class="fas fa-file-export"></i> Exportar / Importar</h3>
+                    <p class="config-help">
+                        Genera ficheros con todos los cambios aplicados desde el panel de control
+                        (productos, categorias, municipios, configuracion). La tienda los usara como
+                        nueva fuente de datos al ser desplegados en el servidor.
+                    </p>
+                    <div class="config-actions">
+                        <button class="btn-primary" onclick="adminPanel.exportarDadosJs()">
+                            <i class="fas fa-file-code"></i>
+                            Exportar dados.js (codigo fuente)
+                        </button>
+                        <button class="btn-secondary" onclick="adminPanel.exportarJson()">
+                            <i class="fas fa-file-download"></i>
+                            Exportar copia (.json)
+                        </button>
+                        <label class="btn-secondary btn-import">
+                            <i class="fas fa-file-upload"></i>
+                            Importar copia (.json)
+                            <input type="file" accept="application/json,.json"
+                                   id="inputImportarJson"
+                                   onchange="adminPanel.importarJson(event)" hidden>
+                        </label>
+                        <button class="btn-secondary danger" onclick="adminPanel.restablecerDatos()">
+                            <i class="fas fa-undo"></i>
+                            Restablecer a valores de fabrica
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
+    </div><!-- /#adminApp -->
 
     <!-- Modal Producto -->
     <div class="modal-overlay" id="modalProducto">
@@ -375,13 +459,21 @@
 
                 <div class="form-group">
                     <label>Imagen del Producto</label>
-                    <div class="image-upload-area" id="imageUploadArea">
-                        <input type="file" id="productoImagen" accept="image/*" onchange="adminPanel.previsualizarImagen(event)">
+                    <div class="image-upload-area" id="imageUploadArea"
+                         onclick="if(event.target.id!=='btnQuitarImagen' &amp;&amp; event.target.tagName!=='IMG'){document.getElementById('productoImagen').click();}">
+                        <input type="file" id="productoImagen" accept="image/*"
+                               onchange="adminPanel.previsualizarImagen(event)" hidden>
                         <div class="upload-placeholder" id="uploadPlaceholder">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>Arrastra una imagen o haz clic para seleccionar</span>
+                            <small>JPG, PNG, WEBP. Se comprime automaticamente.</small>
                         </div>
-                        <img id="imagenPreview" class="image-preview hidden" alt="Preview">
+                        <img id="imagenPreview" class="image-preview hidden" alt="Vista previa">
+                        <button type="button" id="btnQuitarImagen" class="btn-quitar-imagen"
+                                onclick="event.stopPropagation(); adminPanel.quitarImagenProducto();"
+                                title="Quitar imagen">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                     <div class="form-group" style="margin-top: 10px;">
                         <label>O ingresa URL de imagen:</label>
@@ -487,6 +579,7 @@
     <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <script src="js/admin-auth.js"></script>
     <script src="js/dados.js"></script>
     <script src="js/admin.js"></script>
 </body>
