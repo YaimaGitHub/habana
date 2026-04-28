@@ -55,15 +55,40 @@ var adminPanel = {
         }
     },
 
-    // Guardar datos en localStorage
+    // Guardar datos en localStorage y notificar a la tienda en tiempo real
     guardarDatos: function() {
         var datos = {
             MENU: MENU,
             CATEGORIAS: CATEGORIAS,
             MUNICIPIOS_HABANA: MUNICIPIOS_HABANA,
-            CONFIG: CONFIG
+            CONFIG: CONFIG,
+            // marca de tiempo para forzar el evento 'storage' incluso si el
+            // resto del JSON serializado coincidiera por casualidad
+            _ts: Date.now()
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+        } catch (e) {
+            console.error('[v0] Error guardando datos:', e);
+        }
+
+        // 1) Disparar evento custom para la MISMA pestaña (cuando admin y
+        //    tienda están abiertos a la vez en una sola pestaña, ej: iframe).
+        try {
+            window.dispatchEvent(new CustomEvent('cabreras:datos-actualizados', {
+                detail: { ts: datos._ts }
+            }));
+        } catch (e) { /* navegadores antiguos */ }
+
+        // 2) BroadcastChannel: notifica a TODAS las pestañas/ventanas del
+        //    mismo origen (mecanismo más rápido que 'storage' y útil cuando
+        //    la tienda está en otra pestaña). El listener vive en app.js.
+        try {
+            if (typeof BroadcastChannel !== 'undefined') {
+                if (!this._bc) this._bc = new BroadcastChannel('cabreras-shop');
+                this._bc.postMessage({ tipo: 'datos-actualizados', ts: datos._ts });
+            }
+        } catch (e) { /* ignorar */ }
     },
 
     // =====================================================

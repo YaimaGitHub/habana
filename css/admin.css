@@ -256,6 +256,69 @@ body {
     color: var(--color-black);
 }
 
+/* Barra de navegación: "Volver al Dashboard" / "Salir a la Tienda".
+   Aparece en la cabecera de cada sección del panel de control. */
+.section-back-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.btn-volver:hover {
+    background: #e5e7eb;
+    color: #111827;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.btn-volver i {
+    font-size: 12px;
+}
+
+.btn-volver.primary {
+    background: #ff7b00;
+    color: #ffffff;
+    border-color: #ff7b00;
+}
+
+.btn-volver.primary:hover {
+    background: #e36e00;
+    border-color: #e36e00;
+    color: #ffffff;
+}
+
+@media (max-width: 480px) {
+    .section-back-bar {
+        gap: 8px;
+    }
+    .btn-volver {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 10px 12px;
+    }
+}
+
 /* =====================================================
    DASHBOARD
    ===================================================== */

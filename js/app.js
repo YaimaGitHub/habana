@@ -48,30 +48,24 @@ var PAISES_TELEFONO = [
     { code: '+7',   name: 'Rusia',             min: 10, max: 10 }
 ];
 
-// Municipios reales de La Habana con costo de envío (en MN / CUP)
-var MUNICIPIOS_HABANA = [
-    { id: 'habana-vieja',        nome: 'Habana Vieja',                   costo: 200 },
-    { id: 'centro-habana',       nome: 'Centro Habana',                  costo: 200 },
-    { id: 'plaza',               nome: 'Plaza de la Revolución',         costo: 250 },
-    { id: 'cerro',               nome: 'Cerro',                          costo: 250 },
-    { id: 'diez-de-octubre',     nome: 'Diez de Octubre',                costo: 250 },
-    { id: 'playa',               nome: 'Playa',                          costo: 350 },
-    { id: 'marianao',            nome: 'Marianao',                       costo: 400 },
-    { id: 'la-lisa',             nome: 'La Lisa',                        costo: 450 },
-    { id: 'boyeros',             nome: 'Boyeros',                        costo: 400 },
-    { id: 'arroyo-naranjo',      nome: 'Arroyo Naranjo',                 costo: 400 },
-    { id: 'san-miguel',          nome: 'San Miguel del Padrón',          costo: 350 },
-    { id: 'guanabacoa',          nome: 'Guanabacoa',                     costo: 400 },
-    { id: 'regla',               nome: 'Regla',                          costo: 300 },
-    { id: 'habana-del-este',     nome: 'Habana del Este',                costo: 450 },
-    { id: 'cotorro',             nome: 'Cotorro',                        costo: 500 }
-];
+// MUNICIPIOS_HABANA y CATEGORIAS se cargan desde dados.js (compartido con
+// el panel de control). NO se redeclaran aquí para que cualquier cambio
+// hecho en el panel /admin.html (guardado en localStorage 'cabrerasShopData')
+// se refleje automáticamente en la tienda.
+
 var MEU_ENDERECO = null;
 
 var VALOR_CARRINHO = 0;
 var VALOR_ENTREGA = 0;
 
-var CELULAR_EMPRESA = '5355135487';
+// El número de contacto se toma dinámicamente de CONFIG_TIENDA (dados.js)
+// para que pueda ser actualizado desde el panel de control en tiempo real.
+function getCelularEmpresa() {
+    if (typeof CONFIG_TIENDA !== 'undefined' && CONFIG_TIENDA && CONFIG_TIENDA.numeroWhatsapp) {
+        return String(CONFIG_TIENDA.numeroWhatsapp).replace(/\D/g, '');
+    }
+    return '5355135487';
+}
 
 // ============================================================
 //  TOP 8 MÁS VENDIDOS DE LA SEMANA (registro curado)
@@ -90,16 +84,8 @@ var TOP_VENDIDOS_SEMANA = [
     { id: 'sea-salted-caramel-swirl-cheesecake',                    vendidos: 92  }
 ];
 
-// Metadata de las categorías: nombre visible, icono y clave interna
-var CATEGORIAS = {
-    "burgers":     { nome: "Antimicrobianos", icone: "fas fa-capsules" },
-    "pizzas":      { nome: "Antiinflamatorios", icone: "fas fa-pills" },
-    "churrasco":   { nome: "Antialérgicos", icone: "fas fa-allergies" },
-    "steaks":      { nome: "Antihipertensivo", icone: "fas fa-heartbeat" },
-    "bebidas":     { nome: "Digestivos", icone: "fas fa-prescription-bottle" },
-    "sobremesas":  { nome: "Dermatológicos", icone: "fas fa-hand-holding-medical" },
-    "outros":      { nome: "Otros", icone: "fas fa-notes-medical" }
-};
+// CATEGORIAS se cargan desde dados.js (compartidas con el panel de control)
+// y reaccionan a cambios guardados en localStorage por admin.js.
 
 cardapio.eventos = {
 
@@ -176,7 +162,13 @@ cardapio.metodos = {
     },
 
     // obtener la lista de elementos del menú
-    obterItensCardapio: (categoria = 'burgers', vermais = false) => {
+    obterItensCardapio: (categoria, vermais = false) => {
+
+        // si no se pasa categoría, usar la primera disponible
+        if (!categoria) {
+            categoria = Object.keys(CATEGORIAS || {})[0] || Object.keys(MENU || {})[0] || '';
+        }
+
 
         // si el usuario pulsa una categoría, salir del modo búsqueda
         if (!vermais) {
@@ -311,7 +303,7 @@ cardapio.metodos = {
                 if ((MENU[key] || []).some(p => p.id == id)) return key;
             }
         }
-        return 'burgers';
+        return Object.keys(CATEGORIAS || {})[0] || Object.keys(MENU || {})[0] || '';
     },
 
     // ejecuta la búsqueda en tiempo real
@@ -394,7 +386,9 @@ cardapio.metodos = {
     salirModoBusqueda: () => {
         $(".container-menu").removeClass('modo-busqueda');
         let ativo = $(".container-menu a.active").attr('id');
-        let categoria = ativo ? ativo.split('menu-')[1] : 'burgers';
+        let categoria = ativo
+            ? ativo.split('menu-')[1]
+            : (Object.keys(CATEGORIAS || {})[0] || Object.keys(MENU || {})[0] || '');
         cardapio.metodos.obterItensCardapio(categoria);
     },
 
@@ -1675,7 +1669,7 @@ cardapio.metodos = {
 
         // converte a URL
         let encode = encodeURIComponent(texto);
-        let URL = `https://wa.me/${CELULAR_EMPRESA}?text=${encode}`;
+        let URL = `https://wa.me/${getCelularEmpresa()}?text=${encode}`;
 
         $("#btnEtapaResumo").attr('href', URL);
 
@@ -1687,7 +1681,7 @@ cardapio.metodos = {
         var texto = '¡Hola! Me gustaría hablar con un *asistente*';
 
         let encode = encodeURI(texto);
-        let URL = `https://wa.me/${CELULAR_EMPRESA}?text=${encode}`;
+        let URL = `https://wa.me/${getCelularEmpresa()}?text=${encode}`;
 
         $("#btnReserva").attr('href', URL);
 
@@ -1696,7 +1690,7 @@ cardapio.metodos = {
     // carrega o botão de ligar
     carregarBotaoLigar: () => {
 
-        $("#btnLigar").attr('href', `tel:${CELULAR_EMPRESA}`);
+        $("#btnLigar").attr('href', `tel:${getCelularEmpresa()}`);
 
     },
 
@@ -1739,6 +1733,31 @@ cardapio.metodos = {
                 }
             }
         });
+
+        // Fallback: si TOP_VENDIDOS_SEMANA no coincide con productos reales
+        // (porque el catálogo cambió desde el panel de control), generamos un
+        // top dinámico con los primeros productos disponibles del MENU actual.
+        if (lista.length === 0) {
+            let posicion = 1;
+            let vendidosBase = 200;
+            outer: for (let cat in MENU) {
+                if (!MENU.hasOwnProperty(cat)) continue;
+                for (let i = 0; i < (MENU[cat] || []).length; i++) {
+                    let p = MENU[cat][i];
+                    if (p.agotado) continue;
+                    lista.push({
+                        item: p,
+                        categoria: cat,
+                        categoriaNome: (CATEGORIAS[cat] || {}).nome || 'Otros',
+                        vendidos: Math.max(40, vendidosBase - (posicion - 1) * 18),
+                        posicion: posicion
+                    });
+                    posicion++;
+                    if (posicion > 8) break outer;
+                }
+            }
+        }
+
         return lista;
     },
 
@@ -1947,8 +1966,13 @@ cardapio.metodos = {
             let margen = 12;
             let hoy = new Date().toLocaleDateString('es-ES');
 
-            // Agrupar por categoría en el orden definido
-            let ordenCat = ['burgers', 'pizzas', 'churrasco', 'steaks', 'bebidas', 'sobremesas', 'outros'];
+            // Agrupar por categoría en el orden actual de CATEGORIAS (dados.js)
+            let ordenCat = Object.keys(CATEGORIAS || {});
+            // Asegurar que también incluimos categorías presentes en MENU pero
+            // no listadas en CATEGORIAS (por seguridad).
+            Object.keys(MENU || {}).forEach((c) => {
+                if (ordenCat.indexOf(c) === -1) ordenCat.push(c);
+            });
             let grupos = ordenCat
                 .filter((c) => Array.isArray(MENU[c]) && MENU[c].length > 0)
                 .map((c) => ({
@@ -2265,3 +2289,152 @@ cardapio.templates = {
     `
 
 }
+
+// ============================================================
+//  SINCRONIZACIÓN EN TIEMPO REAL CON EL PANEL DE CONTROL
+// ------------------------------------------------------------
+//  Cuando el panel /admin.html guarda cambios en localStorage
+//  ('cabrerasShopData'), el evento 'storage' se dispara en las
+//  demás pestañas del mismo origen. Aquí lo capturamos y volvemos
+//  a renderizar la tienda con los datos actualizados.
+//
+//  Esto cubre: agregar/editar/eliminar productos, nuevas
+//  categorías, marcar todos disponibles/agotados, cambios de
+//  pesaje, costos de envío por municipio y configuración general
+//  (número de WhatsApp, recargo administrativo, etc.).
+// ============================================================
+(function () {
+
+    // Releer los datos compartidos (MENU, CATEGORIAS, MUNICIPIOS_HABANA,
+    // CONFIG_TIENDA) directamente desde localStorage.
+    function recargarDatosTienda() {
+        try {
+            var raw = localStorage.getItem('cabrerasShopData');
+            if (!raw) return false;
+            var datos = JSON.parse(raw);
+            if (datos.MENU)               MENU = datos.MENU;
+            if (datos.CATEGORIAS)         CATEGORIAS = datos.CATEGORIAS;
+            if (datos.MUNICIPIOS_HABANA)  MUNICIPIOS_HABANA = datos.MUNICIPIOS_HABANA;
+            if (datos.CONFIG)             CONFIG_TIENDA = datos.CONFIG;
+            return true;
+        } catch (e) {
+            console.error('[v0] Error releyendo datos de la tienda:', e);
+            return false;
+        }
+    }
+
+    // Refrescar absolutamente toda la UI de la tienda con los datos
+    // actuales del MENU / CATEGORIAS / CONFIG_TIENDA.
+    function refrescarTiendaCompleta() {
+        try {
+            // 1. menú de categorías
+            cardapio.metodos.renderizarCategorias();
+
+            // 2. items de la categoría activa (o la primera disponible)
+            var activa = $(".container-menu a.active").attr('id');
+            var categoria = activa
+                ? activa.split('menu-')[1]
+                : (Object.keys(CATEGORIAS || {})[0] || Object.keys(MENU || {})[0] || '');
+            cardapio.metodos.obterItensCardapio(categoria);
+
+            // 3. badges (contadores)
+            cardapio.metodos.atualizarContadoresCategorias();
+
+            // 4. más vendidos (algunos productos pueden haber sido agotados/eliminados)
+            cardapio.metodos.renderTopSellers();
+
+            // 5. botones de contacto (WhatsApp / teléfono) - usan número actualizado
+            cardapio.metodos.carregarBotaoLigar();
+            cardapio.metodos.carregarBotaoReserva();
+
+            // 6. carrito: eliminar items cuyos productos ya no existen o están agotados
+            limpiarCarrinhoSegunCatalogo();
+
+            // 7. si la modal del carrito está abierta, refrescar
+            if (!$("#modalCarrinho").hasClass('hidden')) {
+                cardapio.metodos.carregarCarrinho();
+            }
+        } catch (e) {
+            console.error('[v0] Error refrescando la tienda:', e);
+        }
+    }
+
+    // Si el admin elimina o agota un producto que el cliente tenía en el
+    // carrito, lo retiramos automáticamente para evitar inconsistencias.
+    function limpiarCarrinhoSegunCatalogo() {
+        if (!Array.isArray(MEU_CARRINHO) || MEU_CARRINHO.length === 0) return;
+        var antes = MEU_CARRINHO.length;
+        MEU_CARRINHO = MEU_CARRINHO.filter(function (it) {
+            for (var cat in MENU) {
+                if (!MENU.hasOwnProperty(cat)) continue;
+                var p = (MENU[cat] || []).find(function (x) { return x.id == it.id; });
+                if (p && !p.agotado) {
+                    // Sincronizar nombre/precio/imagen por si fueron editados
+                    it.name  = p.name;
+                    it.price = p.price;
+                    it.img   = p.img;
+                    return true;
+                }
+            }
+            return false;
+        });
+        if (MEU_CARRINHO.length !== antes) {
+            cardapio.metodos.atualizarBadgeTotal();
+        }
+    }
+
+    // Listener cross-tab: el navegador dispara 'storage' en TODAS las
+    // pestañas del mismo origen excepto la que escribió.
+    window.addEventListener('storage', function (ev) {
+        if (ev.key !== 'cabrerasShopData') return;
+        if (recargarDatosTienda()) {
+            refrescarTiendaCompleta();
+        }
+    });
+
+    // Listener BroadcastChannel: medio principal de comunicación con
+    // admin.js. Reacciona instantáneamente a guardados del panel de control.
+    try {
+        if (typeof BroadcastChannel !== 'undefined') {
+            var bc = new BroadcastChannel('cabreras-shop');
+            bc.addEventListener('message', function (ev) {
+                if (!ev || !ev.data) return;
+                if (ev.data.tipo === 'datos-actualizados') {
+                    if (recargarDatosTienda()) {
+                        refrescarTiendaCompleta();
+                    }
+                }
+            });
+        }
+    } catch (e) { /* ignorar */ }
+
+    // Listener mismo-tab: si el panel de control y la tienda viven en
+    // la misma pestaña (por ej. en pruebas locales), respondemos a un
+    // evento custom 'cabreras:datos-actualizados'.
+    window.addEventListener('cabreras:datos-actualizados', function () {
+        if (recargarDatosTienda()) {
+            refrescarTiendaCompleta();
+        }
+    });
+
+    // Polling muy ligero (cada 3s) como red de seguridad: en algunos
+    // navegadores, el evento 'storage' no se dispara si el cambio se
+    // produjo justo antes de abrir la pestaña. Comparamos un hash
+    // pequeño y solo refrescamos cuando realmente cambió algo.
+    var ultimoHash = (function () {
+        try { return localStorage.getItem('cabrerasShopData') || ''; }
+        catch (e) { return ''; }
+    })();
+    setInterval(function () {
+        try {
+            var actual = localStorage.getItem('cabrerasShopData') || '';
+            if (actual && actual !== ultimoHash) {
+                ultimoHash = actual;
+                if (recargarDatosTienda()) {
+                    refrescarTiendaCompleta();
+                }
+            }
+        } catch (e) { /* ignorar */ }
+    }, 3000);
+
+})();
