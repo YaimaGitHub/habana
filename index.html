@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="shortcut icon" href="./src/assets/icons/carrito.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cabrera's Shop - Bienvenido!</title>
+    <title>Cabrera's Market - Tienda de Alimentos</title>
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/fontawesome.css">
@@ -69,9 +69,6 @@
                         <li class="nav-item">
                             <a href="#depoimentos" class="nav-link"><b>Testimonios</b></a>
                         </li>
-                        <li class="nav-item">
-                            <a href="admin.html" class="nav-link"><b>Panel Admin</b></a>
-                        </li>
                     </ul>
                     <a class="btn btn-white btn-icon wow fadeIn" onclick="cardapio.metodos.abrirCarrinho(true)">
                         Mi carrito <span class="icon">
@@ -124,7 +121,7 @@
                 <div class="d-flex text-banner">
                     <h1 class="wow fadeInLeft"><b>Elija sus <b class="color-primary">alimentos.</b></b></h1>
                     <p class="wow fadeInLeft delay-02s">
-                        ¡Explora nuestra seleccion! Selecciona lo que necesitas y recibelo en tu domicilio de forma rapida y segura.
+                        ¡Explora nuestra selección de productos frescos! Selecciona lo que necesitas y recíbelo en tu domicilio de forma rápida y segura.
                     </p>
                     <div class="wow fadeIn delay-05s">
                         <a href="#cardapio" class="btn btn-yellow mt-4 mr-3">
@@ -156,8 +153,8 @@
                 </div>
                 <div class="card card-case wow fadeInRight delay-07s">
                     "Entrega eficiente con personal amable.
-                    <br>Los medicamentos llegaron en excelentes condiciones y
-                    ¡alta calidad!"<br>
+                    <br>Los productos llegaron frescos y en excelentes condiciones.
+                    ¡Alta calidad!"<br>
                     <span class="card-case-name">
                         <b>Edel</b>
                     </span>
@@ -189,7 +186,7 @@
                 <div class="card-text text-center mt-3">
                     <p><b>Fácil de pedir</b></p>
                     <span>
-                        Solo necesita unos pocos pasos para ordenar sus alimentos.
+                        Solo necesita unos pocos pasos para ordenar sus productos favoritos.
                     </span>
                 </div>
             </div>
@@ -218,36 +215,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-</section>
-
-<!-- ============= MÁS VENDIDOS DE LA SEMANA ============= -->
-<section class="top-sellers" id="topSellers">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-one text-center wow fadeIn">
-                <span class="hint-title hint-title-top top-semanal-badge" aria-label="Sección Top semanal">
-                    <span class="top-semanal-shine" aria-hidden="true"></span>
-                    <i class="fas fa-fire top-semanal-icon" aria-hidden="true"></i>
-                    <b class="top-semanal-text">Top semanal</b>
-                    <span class="top-semanal-sparkle" aria-hidden="true">
-                        <i class="fas fa-star"></i>
-                    </span>
-                </span>
-                <h1 class="title">
-                    <b>Más vendidos de la semana</b>
-                </h1>
-                <p class="top-sellers-subtitle text-pretty">
-                    Los productos preferidos por nuestros clientes esta semana.
-                </p>
-            </div>
-
-            <div class="col-12 col-one">
-                <div class="row" id="listaTopSellers">
-                    <!-- Se llena por JS -->
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -284,8 +251,58 @@
                 </div>
             </div>
 
-            <div class="col-12 col-one container-menu wow fadeInUp" id="containerCategorias">
-                <!-- Las categorias se cargan dinamicamente desde dados.js -->
+            <div class="col-12 col-one categorias-grid-wrapper wow fadeInUp">
+                <div class="categorias-grid" id="categoriasGrid">
+                    <a id="menu-burgers" class="categoria-card active" onclick="cardapio.metodos.obterItensCardapio('burgers')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <span class="categoria-nombre">Mercado</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-pizzas" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('pizzas')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-bacon"></i>
+                        </div>
+                        <span class="categoria-nombre">Embutido</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-churrasco" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('churrasco')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-drumstick-bite"></i>
+                        </div>
+                        <span class="categoria-nombre">Carnico</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-steaks" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('steaks')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-bread-slice"></i>
+                        </div>
+                        <span class="categoria-nombre">Harinas</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-bebidas" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('bebidas')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <span class="categoria-nombre">Liquidos</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-sobremesas" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('sobremesas')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-soap"></i>
+                        </div>
+                        <span class="categoria-nombre">Aseo</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                    <a id="menu-outros" class="categoria-card" onclick="cardapio.metodos.obterItensCardapio('outros')">
+                        <div class="categoria-icon-wrap">
+                            <i class="fas fa-candy-cane"></i>
+                        </div>
+                        <span class="categoria-nombre">Confituras</span>
+                        <span class="categoria-count">0</span>
+                    </a>
+                </div>
             </div>
 
 
@@ -419,9 +436,9 @@
                     <div class="row">
 
                         <div class="col-12 col-lg-7 col-md-7 col-sm-12">
-                            <span class="hint-title"><b>Contactenos</b></span>
+                            <span class="hint-title"><b>Contáctenos</b></span>
                             <h1 class="title">
-                                <b>¿No encontro el producto que buscaba?</b>
+                                <b>¿No encontró el producto que buscaba?</b>
                             </h1>
                             <p class="pr-5">
                                 Envía un mensaje haciendo clic en el botón de abajo
@@ -690,36 +707,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Sección: ¿Quién recoge el pedido? -->
-                            <div class="form-subsection-divider">
-                                <span class="form-subsection-label"><i class="fas fa-user-friends"></i> ¿Quién recoge el pedido?</span>
-                            </div>
-                            <p class="hint-entrega mt-0">
-                                <i class="fas fa-info-circle"></i>
-                                Completa estos datos si otra persona recogerá el pedido en tu nombre. Si eres tú mismo, puedes dejarlo en blanco.
-                            </p>
-                            <div class="row">
-                                <div class="col-12 col-lg-6 col-md-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label><i class="fas fa-user-check"></i> Nombre de quien recoge</label>
-                                        <input id="txtNombreRecoge" type="text" class="form-control" placeholder="Nombre de la persona que recoge" />
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-lg-6 col-md-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label><i class="fas fa-mobile-alt"></i> Teléfono de quien recoge</label>
-                                        <div class="telefono-input-wrap">
-                                            <select id="ddlCountryCodeRecoge" class="form-control-country" aria-label="Código de país de quien recoge">
-                                                <!-- Se llena por JS -->
-                                            </select>
-                                            <input id="txtTelefonoRecoge" type="tel" inputmode="numeric" class="form-control form-control-telefono" placeholder="Teléfono de contacto" oninput="cardapio.metodos.validarTelefonoRecogeEnVivo()" />
-                                        </div>
-                                        <p class="telefono-feedback" id="telefonoRecogeFeedback"></p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- 2) Contenido para ENTREGA A DOMICILIO -->
@@ -855,46 +842,6 @@
                     </div>
                 </div>
 
-                <!-- RESUMEN: Aviso importante (política de cancelación) -->
-                <div class="col-12">
-                    <div class="aviso-revisar" role="alert" aria-live="polite">
-                        <div class="aviso-revisar-glow" aria-hidden="true"></div>
-                        <div class="aviso-revisar-icon" aria-hidden="true">
-                            <i class="fas fa-shield-alt"></i>
-                            <span class="aviso-revisar-pulse"></span>
-                        </div>
-                        <div class="aviso-revisar-body">
-                            <p class="aviso-revisar-titulo">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <b>Importante:</b> Política de Cancelación
-                            </p>
-<p class="aviso-revisar-texto">
-  Al confirmar este pedido, aceptas que puedes cancelarlo de forma <b>gratuita</b> dentro de las
-  <b>4 horas</b> siguientes. Despues de este tiempo o una vez <b>gestionado el envio</b>,
-  no se admiten cancelaciones. Los <b>pedidos personalizados</b> no admiten
-  cancelacion una vez <b>iniciada la produccion</b>.
-  </p>
-  <div class="aviso-revisar-chips">
-  <span class="aviso-chip aviso-chip-ok"><i class="fas fa-clock"></i> Cancelacion gratuita dentro de 4 h</span>
-  <span class="aviso-chip aviso-chip-warn"><i class="fas fa-ban"></i> No cancelable tras 4 h o envio gestionado</span>
-  <span class="aviso-chip aviso-chip-warn"><i class="fas fa-ban"></i> Pedidos personalizados: no cancelables en produccion</span>
-  </div>
-
-                            <!-- Check-out: aceptación obligatoria para poder enviar el pedido -->
-                            <label class="aviso-checkbox" for="chkAceptaPolitica">
-                                <input type="checkbox" id="chkAceptaPolitica" onchange="cardapio.metodos.toggleAceptaPolitica(this)" />
-                                <span class="aviso-checkbox-box" aria-hidden="true">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                                <span class="aviso-checkbox-texto">
-                                    He leído y <b>acepto la Política de Cancelación</b>.
-                                    Confirmo que revisé los productos, cantidades y datos antes de enviar el pedido.
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- RESUMEN: Productos -->
                 <div class="col-12">
                     <p class="resumo-section-title">
@@ -962,25 +909,19 @@
                 </p>
             </div>
 
-            <div class="m-footer-acciones">
-                <a onclick="cardapio.metodos.voltarEtapa()" class="btn btn-white btn-etapa btn-volver hidden" id="btnVoltar">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver</span>
-                </a>
+            <a onclick="cardapio.metodos.carregarEndereco()" class="btn btn-yellow float-right" id="btnEtapaPedido">
+                Continuar
+            </a>
+            <a onclick="cardapio.metodos.resumoPedido()" class="btn btn-yellow float-right hidden btn-disabled" id="btnEtapaEndereco" aria-disabled="true">
+                Revisar pedido
+            </a>
+            <a href="#" class="btn btn-yellow float-right hidden" id="btnEtapaResumo" target="_blank">
+                Enviar pedido
+            </a>
 
-                <a onclick="cardapio.metodos.carregarEndereco()" class="btn btn-yellow btn-etapa" id="btnEtapaPedido">
-                    <span>Continuar</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <a onclick="cardapio.metodos.resumoPedido()" class="btn btn-yellow btn-etapa hidden btn-disabled" id="btnEtapaEndereco" aria-disabled="true">
-                    <i class="fas fa-clipboard-check"></i>
-                    <span>Revisar pedido</span>
-                </a>
-                <a href="#" class="btn btn-yellow btn-etapa hidden btn-disabled" id="btnEtapaResumo" target="_blank" aria-disabled="true" onclick="return cardapio.metodos.antesDeEnviarPedido(event)">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>Enviar pedido</span>
-                </a>
-            </div>
+            <a onclick="cardapio.metodos.voltarEtapa()" class="btn btn-white float-right mr-3 hidden" id="btnVoltar">
+                Volver
+            </a>
 
         </div>
     </div>
@@ -994,8 +935,6 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/popper.min.js"></script>
     <script type="text/javascript" src="js/wow.min.js"></script>
-    <!-- jsPDF (generación de PDF en el navegador) -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="text/javascript" src="js/dados.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/script.js"></script>

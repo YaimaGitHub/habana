@@ -73,47 +73,24 @@ var VALOR_ENTREGA = 0;
 
 var CELULAR_EMPRESA = '5355135487';
 
-// ============================================================
-//  TOP 8 MÁS VENDIDOS DE LA SEMANA (registro curado)
-//  Usamos ids que existen en MENU (dados.js). El número "vendidos"
-//  representa las unidades vendidas esta semana (simulado pero
-//  realista, para el registro semanal descargable en PDF).
-// ============================================================
-var TOP_VENDIDOS_SEMANA = [
-    { id: 'the-gramercy-tavern-burger-4-pack',                      vendidos: 182 },
-    { id: '23699-choose-your-own-thin-crust-pizza-4-pack',          vendidos: 164 },
-    { id: 'hong-kong-boba-tea-kit-for-6',                           vendidos: 151 },
-    { id: 'shake-shack-shackburger-8-pack',                         vendidos: 138 },
-    { id: 'choose-your-own-new-haven-style-pizza-6-pack',           vendidos: 127 },
-    { id: 'california-reserve-filet-mignon-steaks-gift-box',        vendidos: 118 },
-    { id: 'ribs-brisket-and-burnt-ends',                            vendidos: 104 },
-    { id: 'sea-salted-caramel-swirl-cheesecake',                    vendidos: 92  }
-];
-
 // Metadata de las categorías: nombre visible, icono y clave interna
 var CATEGORIAS = {
-    "burgers":     { nome: "Antimicrobianos", icone: "fas fa-capsules" },
-    "pizzas":      { nome: "Antiinflamatorios", icone: "fas fa-pills" },
-    "churrasco":   { nome: "Antialérgicos", icone: "fas fa-allergies" },
-    "steaks":      { nome: "Antihipertensivo", icone: "fas fa-heartbeat" },
-    "bebidas":     { nome: "Digestivos", icone: "fas fa-prescription-bottle" },
-    "sobremesas":  { nome: "Dermatológicos", icone: "fas fa-hand-holding-medical" },
-    "outros":      { nome: "Otros", icone: "fas fa-notes-medical" }
+    "burgers":     { nome: "Mercado", icone: "fas fa-store" },
+    "pizzas":      { nome: "Embutido", icone: "fas fa-bacon" },
+    "churrasco":   { nome: "Carnico", icone: "fas fa-drumstick-bite" },
+    "steaks":      { nome: "Harinas", icone: "fas fa-bread-slice" },
+    "bebidas":     { nome: "Liquidos", icone: "fas fa-tint" },
+    "sobremesas":  { nome: "Aseo", icone: "fas fa-soap" },
+    "outros":      { nome: "Confituras", icone: "fas fa-candy-cane" }
 };
 
 cardapio.eventos = {
 
     init: () => {
-        // renderizar las categorias dinamicamente
-        cardapio.metodos.renderizarCategorias();
-        
         cardapio.metodos.atualizarContadoresCategorias();
-        cardapio.metodos.obterItensCardapio(Object.keys(CATEGORIAS)[0] || 'mercado');
+        cardapio.metodos.obterItensCardapio();
         cardapio.metodos.carregarBotaoLigar();
         cardapio.metodos.carregarBotaoReserva();
-
-        // renderizar la sección de más vendidos de la semana
-        cardapio.metodos.renderTopSellers();
 
         // poblar el selector de código de país (teléfono)
         cardapio.metodos.renderCodigosPais();
@@ -140,35 +117,11 @@ cardapio.eventos = {
 
 cardapio.metodos = {
 
-    // renderizar las categorias dinamicamente desde CATEGORIAS
-    renderizarCategorias: () => {
-        let $container = $("#containerCategorias");
-        if ($container.length === 0) return;
-
-        let html = '';
-        let isFirst = true;
-        
-        $.each(CATEGORIAS, (key, info) => {
-            let total = (MENU[key] || []).length;
-            let activeClass = isFirst ? 'active' : '';
-            
-            html += '<a id="menu-' + key + '" class="btn btn-white btn-sm mr-3 menu-categoria ' + activeClass + '" onclick="cardapio.metodos.obterItensCardapio(\'' + key + '\')">';
-            html += '<i class="' + info.icone + ' menu-icon"></i>';
-            html += '<span class="menu-label">' + info.nome + '</span>';
-            html += '<span class="menu-count">' + total + '</span>';
-            html += '</a>';
-            
-            isFirst = false;
-        });
-
-        $container.html(html);
-    },
-
-    // actualizar el contador (badge) de cada categoria en el menu
+    // actualizar el contador (badge) de cada categoría en el menú
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
             let total = (MENU[key] || []).length;
-            let $badge = $("#menu-" + key + " .menu-count");
+            let $badge = $("#menu-" + key + " .categoria-count");
             if ($badge.length > 0) {
                 $badge.text(total);
             }
@@ -182,7 +135,7 @@ cardapio.metodos = {
         if (!vermais) {
             $("#txtBuscarProduto").val('');
             $("#btnLimparBusca").addClass('hidden');
-            $(".container-menu").removeClass('modo-busqueda');
+            $(".categorias-grid").removeClass('modo-busqueda');
         }
 
         var filtro = MENU[categoria] || [];
@@ -199,21 +152,9 @@ cardapio.metodos = {
 
         $.each(filtro, (i, e) => {
 
-            // Si el producto esta agotado, no mostrarlo o mostrarlo diferente
-            let estaAgotado = e.agotado || false;
-            
             // obtener cantidad actual en el carrito (si existe)
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
-
-            // Obtener el tipo de pesaje del producto
-            let pesaje = e.pesaje || 'unidad';
-            let pesajeTexto = {
-                'unidad': '',
-                'libras': ' / lb',
-                'kilogramos': ' / kg'
-            }[pesaje] || '';
-            let pesajeBadge = pesajeTexto ? '<small class="pesaje-badge">' + pesajeTexto + '</small>' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -224,19 +165,15 @@ cardapio.metodos = {
                 .replace(/\${categoriaIcone}/g, infoCat.icone)
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
-                    ? '<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ' + qntdCarrinho + '</span>'
-                    : '')
-                .replace(/\${pesajeBadge}/g, pesajeBadge)
-                .replace(/\${agotadoClass}/g, estaAgotado ? 'producto-agotado' : '')
-                .replace(/\${agotadoBadge}/g, estaAgotado ? '<span class="badge-agotado">Agotado</span>' : '')
-                .replace(/\${addCarrinhoHidden}/g, estaAgotado ? 'hidden' : '');
+                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
+                    : '');
 
-            // botao ver mais foi clicado (12 itens)
+            // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
                 $("#itensCardapio").append(temp)
             }
 
-            // paginacao inicial (8 itens)
+            // paginação inicial (8 itens)
             if (!vermais && i < 47) {
                 $("#itensCardapio").append(temp)
             }
@@ -255,7 +192,7 @@ cardapio.metodos = {
         }
 
         // quitar el estado activo
-        $(".container-menu a").removeClass('active');
+        $(".categorias-grid .categoria-card").removeClass('active');
 
         // marcar el menú actual como activo
         $("#menu-" + categoria).addClass('active');
@@ -267,7 +204,7 @@ cardapio.metodos = {
 
     // asegura que la categoría activa sea visible en móvil (scroll horizontal)
     centrarCategoriaActiva: (categoria) => {
-        let $container = $(".container-menu");
+        let $container = $(".categorias-grid");
         let $activo = $("#menu-" + categoria);
         if ($activo.length > 0 && $container.length > 0) {
             let containerWidth = $container.width();
@@ -341,8 +278,8 @@ cardapio.metodos = {
         });
 
         // entrar en modo búsqueda
-        $(".container-menu").addClass('modo-busqueda');
-        $(".container-menu a").removeClass('active');
+        $(".categorias-grid").addClass('modo-busqueda');
+        $(".categorias-grid .categoria-card").removeClass('active');
         $("#btnVerMais").addClass('hidden');
 
         // renderizar resultados
@@ -353,7 +290,7 @@ cardapio.metodos = {
                 <div class="col-12 text-center empty-category">
                     <i class="fas fa-search"></i>
                     <p>Sin resultados para <b>"${$('<div/>').text(termo).html()}"</b>.</p>
-                    <p class="text-sm">Prueba con otro nombre de medicamento.</p>
+                    <p class="text-sm">Prueba con otro nombre de producto.</p>
                 </div>
             `);
             return;
@@ -392,8 +329,8 @@ cardapio.metodos = {
 
     // restaura la vista normal: categoría activa (o la primera por defecto)
     salirModoBusqueda: () => {
-        $(".container-menu").removeClass('modo-busqueda');
-        let ativo = $(".container-menu a.active").attr('id');
+        $(".categorias-grid").removeClass('modo-busqueda');
+        let ativo = $(".categorias-grid .categoria-card.active").attr('id');
         let categoria = ativo ? ativo.split('menu-')[1] : 'burgers';
         cardapio.metodos.obterItensCardapio(categoria);
     },
@@ -629,52 +566,10 @@ cardapio.metodos = {
             $("#btnEtapaResumo").removeClass('hidden');
             $("#btnVoltar").removeClass('hidden');
 
-            // reiniciar checkbox de política y deshabilitar "Enviar pedido"
-            // el usuario debe aceptar la política de cancelación cada vez
-            $("#chkAceptaPolitica").prop('checked', false);
-            $(".aviso-checkbox").removeClass('is-aceptado shake');
-            $("#btnEtapaResumo").addClass('btn-disabled').attr('aria-disabled', 'true');
-
             // los totales ya se muestran dentro del resumen, ocultamos la barra inferior
             $(".m-footer .container-total").addClass('hidden');
         }
 
-    },
-
-    // Toggle aceptación política de cancelación (Check-out)
-    toggleAceptaPolitica: (el) => {
-        let aceptado = !!(el && el.checked);
-        let $wrap = $(".aviso-checkbox");
-        let $btn = $("#btnEtapaResumo");
-
-        if (aceptado) {
-            $wrap.addClass('is-aceptado').removeClass('shake');
-            $btn.removeClass('btn-disabled').attr('aria-disabled', 'false');
-        } else {
-            $wrap.removeClass('is-aceptado');
-            $btn.addClass('btn-disabled').attr('aria-disabled', 'true');
-        }
-    },
-
-    // Interceptor antes de abrir WhatsApp: verifica que aceptó la política
-    antesDeEnviarPedido: (ev) => {
-        let aceptado = $("#chkAceptaPolitica").is(':checked');
-        if (!aceptado) {
-            if (ev && ev.preventDefault) ev.preventDefault();
-            let $wrap = $(".aviso-checkbox");
-            $wrap.removeClass('shake');
-            // forzar reflow para reiniciar animación
-            void $wrap[0].offsetWidth;
-            $wrap.addClass('shake');
-            cardapio.metodos.mensagem('Debes aceptar la Política de Cancelación para poder enviar el pedido.');
-            // scroll hacia el checkbox
-            let target = document.getElementById('chkAceptaPolitica');
-            if (target && target.scrollIntoView) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            return false;
-        }
-        return true;
     },
 
     // botão de voltar etapa
@@ -945,9 +840,6 @@ cardapio.metodos = {
         $("#modalContentDomicilio").addClass('hidden');
         $("#modalContentLocal").addClass('hidden');
 
-        // Asegurarse de renderizar los selectores de código de país
-        cardapio.metodos.renderCodigosPais();
-
         if (TIPO_ENTREGA === 'domicilio') {
             cardapio.metodos.renderMunicipios();
 
@@ -1171,15 +1063,6 @@ cardapio.metodos = {
             PAIS_TELEFONO_ACTUAL = $(this).val();
             cardapio.metodos.validarTelefonoEnVivo();
         });
-
-        // También llenar el selector de código de país para "quien recoge"
-        let $selRecoge = $("#ddlCountryCodeRecoge");
-        if ($selRecoge.length > 0 && $selRecoge.children().length === 0) {
-            $selRecoge.html(html);
-            $selRecoge.off('change.codigorecoge').on('change.codigorecoge', function () {
-                cardapio.metodos.validarTelefonoRecogeEnVivo();
-            });
-        }
     },
 
     // Busca el país por código
@@ -1238,61 +1121,6 @@ cardapio.metodos = {
             $fb.removeClass('ok').addClass('error')
                 .html(`<i class="fas fa-exclamation-triangle"></i> ${r.msg}`);
             $("#txtCEP").removeClass('input-ok').addClass('input-error');
-        }
-    },
-
-    // Valida el teléfono de quien recoge (opcional, pero si se proporciona debe ser válido)
-    validarTelefonoRecoge: () => {
-        let code = $("#ddlCountryCodeRecoge").val() || PAIS_TELEFONO_ACTUAL;
-        let pais = cardapio.metodos.buscarPaisTelefono(code);
-        let raw = ($("#txtTelefonoRecoge").val() || '').trim();
-        
-        // Si está vacío, es válido (campo opcional)
-        if (raw.length === 0) {
-            return { ok: true, msg: '', digitos: '', pais: pais, vacio: true };
-        }
-        
-        let digitos = raw.replace(/[\s\-()+]/g, '');
-        if (digitos.startsWith(pais.code.replace('+', ''))) {
-            digitos = digitos.substring(pais.code.replace('+', '').length);
-        }
-
-        if (!/^\d+$/.test(digitos)) {
-            return { ok: false, msg: 'El teléfono solo puede contener números.', digitos: digitos, pais: pais };
-        }
-        if (digitos.length < pais.min || digitos.length > pais.max) {
-            let rango = (pais.min === pais.max) ? `${pais.min} dígitos` : `entre ${pais.min} y ${pais.max} dígitos`;
-            return {
-                ok: false,
-                msg: `Número no válido para ${pais.name} (${pais.code}). Debe tener ${rango}.`,
-                digitos: digitos,
-                pais: pais
-            };
-        }
-
-        return { ok: true, msg: 'Número válido', digitos: digitos, pais: pais };
-    },
-
-    // Muestra feedback en vivo debajo del campo teléfono de quien recoge
-    validarTelefonoRecogeEnVivo: () => {
-        let $fb = $("#telefonoRecogeFeedback");
-        let raw = ($("#txtTelefonoRecoge").val() || '').trim();
-
-        if (raw.length === 0) {
-            $fb.removeClass('error ok').text('');
-            $("#txtTelefonoRecoge").removeClass('input-error input-ok');
-            return;
-        }
-
-        let r = cardapio.metodos.validarTelefonoRecoge();
-        if (r.ok) {
-            $fb.removeClass('error').addClass('ok')
-                .html(`<i class="fas fa-check-circle"></i> ${r.msg} · ${r.pais.code} ${r.pais.name}`);
-            $("#txtTelefonoRecoge").removeClass('input-error').addClass('input-ok');
-        } else {
-            $fb.removeClass('ok').addClass('error')
-                .html(`<i class="fas fa-exclamation-triangle"></i> ${r.msg}`);
-            $("#txtTelefonoRecoge").removeClass('input-ok').addClass('input-error');
         }
     },
 
@@ -1387,14 +1215,6 @@ cardapio.metodos = {
         let telefonoCompleto = `${tel.pais.code} ${tel.digitos}`;
         let cep = telefonoCompleto;
 
-        // Datos de quien recoge el pedido (opcionales)
-        let nombreRecoge = ($("#txtNombreRecoge").val() || '').trim();
-        let telRecoge = cardapio.metodos.validarTelefonoRecoge();
-        let telefonoRecogeCompleto = '';
-        if (telRecoge.ok && !telRecoge.vacio) {
-            telefonoRecogeCompleto = `${telRecoge.pais.code} ${telRecoge.digitos}`;
-        }
-
         if (TIPO_ENTREGA === 'domicilio') {
 
             let endereco = $("#txtEndereco").val().trim();
@@ -1418,12 +1238,7 @@ cardapio.metodos = {
                 uf: uf,
                 complemento: complemento,
                 municipio: MUNICIPIO_SELECCIONADO.nome,
-                costoEntrega: MUNICIPIO_SELECCIONADO.costo,
-                // Datos de quien recoge
-                nombreRecoge: nombreRecoge,
-                telefonoRecoge: telefonoRecogeCompleto,
-                telefonoRecogePais: telRecoge.ok && !telRecoge.vacio ? telRecoge.pais : null,
-                telefonoRecogeDigitos: telRecoge.ok && !telRecoge.vacio ? telRecoge.digitos : ''
+                costoEntrega: MUNICIPIO_SELECCIONADO.costo
             };
         }
         else {
@@ -1435,12 +1250,7 @@ cardapio.metodos = {
                 telefonoDigitos: tel.digitos,
                 uf: uf,
                 complemento: complemento,
-                costoEntrega: 0,
-                // Datos de quien recoge
-                nombreRecoge: nombreRecoge,
-                telefonoRecoge: telefonoRecogeCompleto,
-                telefonoRecogePais: telRecoge.ok && !telRecoge.vacio ? telRecoge.pais : null,
-                telefonoRecogeDigitos: telRecoge.ok && !telRecoge.vacio ? telRecoge.digitos : ''
+                costoEntrega: 0
             };
         }
 
@@ -1506,21 +1316,6 @@ cardapio.metodos = {
             }
             clienteHTML += cardapio.metodos.filaResumo('fas fa-phone', 'Teléfono:', telDisplay);
             clienteHTML += cardapio.metodos.filaResumo('fas fa-money-bill-wave', 'Método de pago:', MEU_ENDERECO.uf);
-
-            // Datos de quien recoge el pedido (si se proporcionaron)
-            if (MEU_ENDERECO.nombreRecoge || MEU_ENDERECO.telefonoRecoge) {
-                clienteHTML += `<div class="resumo-subsection-divider"><i class="fas fa-user-friends"></i> Quien recoge el pedido</div>`;
-                if (MEU_ENDERECO.nombreRecoge) {
-                    clienteHTML += cardapio.metodos.filaResumo('fas fa-user-check', 'Nombre:', MEU_ENDERECO.nombreRecoge);
-                }
-                if (MEU_ENDERECO.telefonoRecoge) {
-                    let telRecogeDisplay = MEU_ENDERECO.telefonoRecoge;
-                    if (MEU_ENDERECO.telefonoRecogePais) {
-                        telRecogeDisplay = `${MEU_ENDERECO.telefonoRecogePais.code} ${MEU_ENDERECO.telefonoRecogeDigitos} (${MEU_ENDERECO.telefonoRecogePais.name})`;
-                    }
-                    clienteHTML += cardapio.metodos.filaResumo('fas fa-mobile-alt', 'Teléfono:', telRecogeDisplay);
-                }
-            }
         }
         $("#resumoDatosCliente").html(clienteHTML);
 
@@ -1613,7 +1408,7 @@ cardapio.metodos = {
             let subtotalItem = fmt(e.price * e.qntd);
             let precioUnit = fmt(e.price);
             texto += `\n${i + 1}. *${e.name}*`;
-            texto += `\n   • Cantidad: ${e.qntd}`;
+            texto += `\n   �� Cantidad: ${e.qntd}`;
             texto += `\n   • Precio unitario: MN$ ${precioUnit}`;
             texto += `\n   • Subtotal: MN$ ${subtotalItem}`;
         });
@@ -1628,23 +1423,8 @@ cardapio.metodos = {
             telText = `${MEU_ENDERECO.telefonoPais.code} ${MEU_ENDERECO.telefonoDigitos} (${MEU_ENDERECO.telefonoPais.name})`;
         }
         texto += `• *Teléfono:* ${telText}\n`;
-        texto += `• *Método de pago:* ${MEU_ENDERECO.uf}\n`;
-
-        // Datos de quien recoge el pedido (si se proporcionaron)
-        if (MEU_ENDERECO.nombreRecoge || MEU_ENDERECO.telefonoRecoge) {
-            texto += '\n*¿QUIÉN RECOGE EL PEDIDO?*\n';
-            if (MEU_ENDERECO.nombreRecoge) {
-                texto += `• *Nombre:* ${MEU_ENDERECO.nombreRecoge}\n`;
-            }
-            if (MEU_ENDERECO.telefonoRecoge) {
-                let telRecogeText = MEU_ENDERECO.telefonoRecoge;
-                if (MEU_ENDERECO.telefonoRecogePais) {
-                    telRecogeText = `${MEU_ENDERECO.telefonoRecogePais.code} ${MEU_ENDERECO.telefonoRecogeDigitos} (${MEU_ENDERECO.telefonoRecogePais.name})`;
-                }
-                texto += `• *Teléfono:* ${telRecogeText}\n`;
-            }
-        }
-        texto += '\n' + separador + '\n\n';
+        texto += `• *Método de pago:* ${MEU_ENDERECO.uf}`;
+        texto += '\n\n' + separador + '\n\n';
 
         // --- Entrega ---
         if (esDomicilio) {
@@ -1716,463 +1496,6 @@ cardapio.metodos = {
 
     },
 
-    // ============================================================
-    //  MÁS VENDIDOS DE LA SEMANA + DESCARGA DE PDF
-    // ============================================================
-
-    // Devuelve el producto completo (del MENU) junto al nº de vendidos
-    obtenerTopSellersCompletos: () => {
-        let lista = [];
-        $.each(TOP_VENDIDOS_SEMANA, (i, top) => {
-            for (var cat in MENU) {
-                if (!MENU.hasOwnProperty(cat)) continue;
-                let encontrado = (MENU[cat] || []).find(p => p.id == top.id);
-                if (encontrado) {
-                    lista.push({
-                        item: encontrado,
-                        categoria: cat,
-                        categoriaNome: (CATEGORIAS[cat] || {}).nome || 'Otros',
-                        vendidos: top.vendidos,
-                        posicion: i + 1
-                    });
-                    break;
-                }
-            }
-        });
-        return lista;
-    },
-
-    // Renderiza las tarjetas en la sección #listaTopSellers
-    renderTopSellers: () => {
-        let $cont = $("#listaTopSellers");
-        if ($cont.length === 0) return;
-
-        let top = cardapio.metodos.obtenerTopSellersCompletos();
-        let html = '';
-
-        $.each(top, (i, t) => {
-            let e = t.item;
-            let rankClass = '';
-            if (t.posicion === 1) rankClass = 'rank-1';
-            else if (t.posicion === 2) rankClass = 'rank-2';
-            else if (t.posicion === 3) rankClass = 'rank-3';
-
-            let precio = e.price.toFixed(2).replace('.', ',');
-
-            html += `
-                <div class="col-6 col-md-4 col-lg-3 top-seller-col mb-4">
-                    <div class="top-seller-card animated fadeInUp">
-                        <span class="top-seller-rank ${rankClass}">
-                            <i class="fas fa-trophy"></i> #${t.posicion}
-                        </span>
-                        <div class="top-seller-img" onclick="cardapio.metodos.abrirLightbox('${e.img}', '${cardapio.metodos.escaparHTML(e.name)}')" role="button" tabindex="0" aria-label="Ampliar imagen de ${cardapio.metodos.escaparHTML(e.name)}">
-                            <img src="${e.img}" alt="${cardapio.metodos.escaparHTML(e.name)}" />
-                        </div>
-                        <p class="top-seller-nome" title="${cardapio.metodos.escaparHTML(e.name)}">${cardapio.metodos.escaparHTML(e.name)}</p>
-                        <p class="top-seller-preco"><b>MN$ ${precio}</b></p>
-                        <button type="button" class="top-seller-add" onclick="cardapio.metodos.adicionarTopSellerAlCarrito('${e.id}', '${t.categoria}')" aria-label="Añadir ${cardapio.metodos.escaparHTML(e.name)} al carrito">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span>Añadir al carrito</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-
-        $cont.html(html);
-    },
-
-    // Añade al carrito un producto desde la sección top sellers
-    adicionarTopSellerAlCarrito: (id, categoria) => {
-        let filtro = MENU[categoria] || [];
-        let item = filtro.find(p => p.id == id);
-        if (!item) return;
-
-        let existe = MEU_CARRINHO.find(e => e.id == id);
-        let novaQntd;
-
-        if (existe) {
-            existe.qntd = existe.qntd + 1;
-            novaQntd = existe.qntd;
-        } else {
-            let nuevoItem = Object.assign({}, item);
-            nuevoItem.qntd = 1;
-            MEU_CARRINHO.push(nuevoItem);
-            novaQntd = 1;
-        }
-
-        cardapio.metodos.mensagem(`1 × ${item.name} agregado`, 'green');
-        cardapio.metodos.marcarTarjetaEnCarrito(id, novaQntd);
-        cardapio.metodos.atualizarBadgeTotal();
-    },
-
-    // ============================================================
-    //  PDF: carga una imagen y la convierte a dataURL usando canvas
-    //  (maneja paths relativos del proyecto; same-origin, sin CORS)
-    // ============================================================
-    cargarImagenComoDataURL: (src) => {
-        return new Promise((resolve) => {
-            try {
-                let img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
-                    try {
-                        let canvas = document.createElement('canvas');
-                        // Mantener proporción pero tope de 600px de lado mayor
-                        let maxLado = 600;
-                        let w = img.naturalWidth || img.width;
-                        let h = img.naturalHeight || img.height;
-                        if (w > maxLado || h > maxLado) {
-                            if (w >= h) {
-                                h = Math.round(h * (maxLado / w));
-                                w = maxLado;
-                            } else {
-                                w = Math.round(w * (maxLado / h));
-                                h = maxLado;
-                            }
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        let ctx = canvas.getContext('2d');
-                        // fondo blanco para PNG con transparencia
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, w, h);
-                        ctx.drawImage(img, 0, 0, w, h);
-                        let dataURL = canvas.toDataURL('image/jpeg', 0.85);
-                        resolve({ ok: true, dataURL: dataURL, w: w, h: h });
-                    } catch (err) {
-                        resolve({ ok: false });
-                    }
-                };
-                img.onerror = () => resolve({ ok: false });
-                img.src = src;
-            } catch (e) {
-                resolve({ ok: false });
-            }
-        });
-    },
-
-    // Fecha legible (dd/mm/aaaa) y rango "semana"
-    obtenerRangoSemana: () => {
-        let hoy = new Date();
-        let inicio = new Date(hoy);
-        inicio.setDate(hoy.getDate() - 6);
-        let fmt = (d) => {
-            let dd = String(d.getDate()).padStart(2, '0');
-            let mm = String(d.getMonth() + 1).padStart(2, '0');
-            let yy = d.getFullYear();
-            return `${dd}/${mm}/${yy}`;
-        };
-        return { inicio: fmt(inicio), fin: fmt(hoy) };
-    },
-
-    // Cambia el estado visual "cargando" del botón
-    _setBotonDescargaCargando: (boton, cargando, textoOriginal) => {
-        let $b = $(boton);
-        if (cargando) {
-            $b.addClass('is-loading').attr('disabled', 'disabled');
-            let $t = $b.find('.btn-descarga-titulo');
-            $t.data('texto-original', $t.text());
-            $t.text('Generando PDF...');
-            $b.find('.btn-descarga-arrow i').attr('class', 'fas fa-spinner fa-spin-custom');
-        } else {
-            $b.removeClass('is-loading').removeAttr('disabled');
-            let $t = $b.find('.btn-descarga-titulo');
-            let orig = $t.data('texto-original');
-            if (orig) $t.text(orig);
-            $b.find('.btn-descarga-arrow i').attr('class', 'fas fa-download');
-        }
-    },
-
-    // ============================================================
-    //  PDF: utilidades comunes de layout
-    // ============================================================
-
-    _pdfDibujarEncabezado: (pdf, titulo, subtitulo) => {
-        let pageW = pdf.internal.pageSize.getWidth();
-        // banda naranja superior
-        pdf.setFillColor(255, 123, 0);
-        pdf.rect(0, 0, pageW, 26, 'F');
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(16);
-        pdf.text(titulo, 14, 13);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(10);
-        pdf.text(subtitulo, 14, 20);
-
-        // logo textual a la derecha
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(12);
-        let txt = "Cabrera's Shop";
-        let tw = pdf.getTextWidth(txt);
-        pdf.text(txt, pageW - tw - 14, 17);
-    },
-
-    _pdfDibujarPiePagina: (pdf, numPagina, totalPaginas) => {
-        let pageW = pdf.internal.pageSize.getWidth();
-        let pageH = pdf.internal.pageSize.getHeight();
-        pdf.setDrawColor(220, 220, 220);
-        pdf.setLineWidth(0.3);
-        pdf.line(14, pageH - 14, pageW - 14, pageH - 14);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(9);
-        pdf.setTextColor(120, 120, 120);
-        let fecha = new Date().toLocaleString('es-ES');
-        pdf.text(`Generado: ${fecha}`, 14, pageH - 7);
-        let txt = `Página ${numPagina} de ${totalPaginas}`;
-        let tw = pdf.getTextWidth(txt);
-        pdf.text(txt, pageW - tw - 14, pageH - 7);
-    },
-
-    // ============================================================
-    //  PDF: Descargar CATÁLOGO COMPLETO (todos los productos)
-    // ============================================================
-    descargarCatalogoPDF: async function (ev) {
-        // capturar referencia al botón ANTES del primer await
-        let boton = (ev && ev.currentTarget) ? ev.currentTarget : null;
-        if (!boton) boton = document.querySelector('.btn-descarga-secondary');
-        if (typeof window.jspdf === 'undefined') {
-            cardapio.metodos.mensagem('No se pudo cargar la librería de PDF. Verifica tu conexión.');
-            return;
-        }
-
-        cardapio.metodos._setBotonDescargaCargando(boton, true);
-
-        try {
-            let { jsPDF } = window.jspdf;
-            let pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            let pageW = pdf.internal.pageSize.getWidth();
-            let pageH = pdf.internal.pageSize.getHeight();
-            let margen = 12;
-            let hoy = new Date().toLocaleDateString('es-ES');
-
-            // Agrupar por categoría en el orden definido
-            let ordenCat = ['burgers', 'pizzas', 'churrasco', 'steaks', 'bebidas', 'sobremesas', 'outros'];
-            let grupos = ordenCat
-                .filter((c) => Array.isArray(MENU[c]) && MENU[c].length > 0)
-                .map((c) => ({
-                    key: c,
-                    nome: (CATEGORIAS[c] || {}).nome || c,
-                    items: MENU[c]
-                }));
-
-            let todos = [];
-            grupos.forEach((g) => g.items.forEach((it) => todos.push({ ...it, categoria: g.nome })));
-
-            // ========== PORTADA ==========
-            cardapio.metodos._pdfDibujarEncabezado(
-                pdf,
-                'Catálogo completo de productos',
-                `Todos los productos disponibles · Cabrera's Shop`
-            );
-
-            let y = 40;
-            pdf.setTextColor(33, 33, 33);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(14);
-            pdf.text('Resumen del catálogo', margen, y);
-            y += 6;
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(10);
-            pdf.setTextColor(80, 80, 80);
-            pdf.text(`• Total de productos: ${todos.length}`, margen, y); y += 5;
-            pdf.text(`• Total de categorías: ${grupos.length}`, margen, y); y += 5;
-            pdf.text(`• Fecha de generación: ${hoy}`, margen, y); y += 8;
-
-            pdf.setDrawColor(230, 230, 230);
-            pdf.setLineWidth(0.3);
-            pdf.line(margen, y, pageW - margen, y);
-            y += 7;
-
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(12);
-            pdf.setTextColor(255, 123, 0);
-            pdf.text('Índice de categorías', margen, y); y += 6;
-
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(10);
-            pdf.setTextColor(60, 60, 60);
-            grupos.forEach((g) => {
-                pdf.text(`• ${g.nome} (${g.items.length} productos)`, margen + 2, y);
-                y += 5;
-            });
-
-            // Precargar TODAS las imágenes (en paralelo) con barra de progreso
-            let imagenes = {};
-            let total = todos.length;
-            let cargadas = 0;
-            await Promise.all(todos.map(async (p) => {
-                let r = await cardapio.metodos.cargarImagenComoDataURL(p.img);
-                imagenes[p.id + '::' + p.img] = r;
-                cargadas++;
-                // actualizar texto del botón cada cierto número
-                if (cargadas % 5 === 0 || cargadas === total) {
-                    let pct = Math.round((cargadas / total) * 100);
-                    $(boton).find('.btn-descarga-titulo').text(`Generando PDF... ${pct}%`);
-                }
-            }));
-
-            // ========== PÁGINAS POR CATEGORÍA (grid 2 columnas) ==========
-            let colW = (pageW - margen * 2 - 6) / 2; // 2 columnas con gap 6
-            let altoItem = 64;
-
-            for (let gi = 0; gi < grupos.length; gi++) {
-                let g = grupos[gi];
-
-                // nueva página por categoría
-                pdf.addPage();
-                cardapio.metodos._pdfDibujarEncabezado(
-                    pdf,
-                    'Catálogo completo de productos',
-                    `Categoría: ${g.nome}`
-                );
-
-                let yStart = 34;
-                // Título de categoría
-                pdf.setFillColor(255, 242, 204);
-                pdf.roundedRect(margen, yStart, pageW - margen * 2, 11, 2, 2, 'F');
-                pdf.setTextColor(255, 123, 0);
-                pdf.setFont('helvetica', 'bold');
-                pdf.setFontSize(13);
-                pdf.text(g.nome, margen + 4, yStart + 7);
-                pdf.setFont('helvetica', 'normal');
-                pdf.setFontSize(9);
-                pdf.setTextColor(120, 120, 120);
-                let right = `${g.items.length} productos`;
-                let tw = pdf.getTextWidth(right);
-                pdf.text(right, pageW - margen - 4 - tw, yStart + 7);
-
-                let curY = yStart + 16;
-                let col = 0;
-
-                for (let pi = 0; pi < g.items.length; pi++) {
-                    let p = g.items[pi];
-
-                    // si no cabe, salto de página
-                    if (curY + altoItem > pageH - 20) {
-                        pdf.addPage();
-                        cardapio.metodos._pdfDibujarEncabezado(
-                            pdf,
-                            'Catálogo completo de productos',
-                            `Categoría: ${g.nome} (continuación)`
-                        );
-                        curY = 34;
-                        col = 0;
-                    }
-
-                    let xCol = margen + col * (colW + 6);
-
-                    // caja del producto
-                    pdf.setDrawColor(230, 230, 230);
-                    pdf.setFillColor(252, 252, 252);
-                    pdf.roundedRect(xCol, curY, colW, altoItem - 4, 3, 3, 'FD');
-
-                    // imagen
-                    let imgW = 30;
-                    let imgH = 30;
-                    let imgX = xCol + 4;
-                    let imgY = curY + 4;
-                    let imgData = imagenes[p.id + '::' + p.img];
-                    if (imgData && imgData.ok) {
-                        try {
-                            pdf.addImage(imgData.dataURL, 'JPEG', imgX, imgY, imgW, imgH);
-                        } catch (e) {
-                            pdf.setFillColor(240, 240, 240);
-                            pdf.rect(imgX, imgY, imgW, imgH, 'F');
-                        }
-                    } else {
-                        pdf.setFillColor(240, 240, 240);
-                        pdf.rect(imgX, imgY, imgW, imgH, 'F');
-                        pdf.setTextColor(150, 150, 150);
-                        pdf.setFont('helvetica', 'italic');
-                        pdf.setFontSize(7);
-                        pdf.text('Sin imagen', imgX + imgW / 2, imgY + imgH / 2, { align: 'center' });
-                    }
-
-                    // nombre
-                    let tx = imgX + imgW + 4;
-                    let maxTx = xCol + colW - 4;
-                    let maxNombreW = maxTx - tx;
-                    pdf.setTextColor(33, 33, 33);
-                    pdf.setFont('helvetica', 'bold');
-                    pdf.setFontSize(10);
-                    let nombre = p.name;
-                    // fraccionar nombre en hasta 2 líneas
-                    let linea1 = nombre;
-                    let linea2 = '';
-                    if (pdf.getTextWidth(nombre) > maxNombreW) {
-                        let palabras = nombre.split(' ');
-                        linea1 = '';
-                        for (let w = 0; w < palabras.length; w++) {
-                            let prueba = linea1 ? linea1 + ' ' + palabras[w] : palabras[w];
-                            if (pdf.getTextWidth(prueba) <= maxNombreW) {
-                                linea1 = prueba;
-                            } else {
-                                linea2 = palabras.slice(w).join(' ');
-                                break;
-                            }
-                        }
-                        // recortar línea 2 si es muy larga
-                        while (pdf.getTextWidth(linea2) > maxNombreW && linea2.length > 3) {
-                            linea2 = linea2.slice(0, -1);
-                        }
-                        if (linea2.length < nombre.length - linea1.length) linea2 = linea2.slice(0, -1) + '…';
-                    }
-                    pdf.text(linea1, tx, curY + 10);
-                    if (linea2) pdf.text(linea2, tx, curY + 15);
-
-                    // categoría
-                    pdf.setFont('helvetica', 'normal');
-                    pdf.setFontSize(8);
-                    pdf.setTextColor(120, 120, 120);
-                    pdf.text(g.nome, tx, curY + (linea2 ? 21 : 17));
-
-                    // precio
-                    pdf.setFont('helvetica', 'bold');
-                    pdf.setFontSize(12);
-                    pdf.setTextColor(255, 123, 0);
-                    pdf.text(`MN$ ${p.price.toFixed(2).replace('.', ',')}`, tx, curY + (linea2 ? 29 : 26));
-
-                    // id (pequeño, como referencia de producto)
-                    pdf.setFont('helvetica', 'italic');
-                    pdf.setFontSize(7);
-                    pdf.setTextColor(150, 150, 150);
-                    let idTxt = `ID: ${p.id}`;
-                    if (pdf.getTextWidth(idTxt) > colW - 8) {
-                        while (pdf.getTextWidth(idTxt) > colW - 8 && idTxt.length > 6) {
-                            idTxt = idTxt.slice(0, -1);
-                        }
-                        idTxt = idTxt.slice(0, -1) + '…';
-                    }
-                    pdf.text(idTxt, xCol + 4, curY + altoItem - 8);
-
-                    col++;
-                    if (col >= 2) {
-                        col = 0;
-                        curY += altoItem;
-                    }
-                }
-            }
-
-            // Paginación
-            let totalPaginas = pdf.internal.getNumberOfPages();
-            for (let p = 1; p <= totalPaginas; p++) {
-                pdf.setPage(p);
-                cardapio.metodos._pdfDibujarPiePagina(pdf, p, totalPaginas);
-            }
-
-            let nombreArchivo = `Catalogo-CabrerasShop-${hoy.replace(/\//g, '-')}.pdf`;
-            pdf.save(nombreArchivo);
-            cardapio.metodos.mensagem('Catálogo completo descargado correctamente.', 'green');
-        } catch (err) {
-            console.error(err);
-            cardapio.metodos.mensagem('Hubo un problema al generar el catálogo. Inténtalo de nuevo.');
-        } finally {
-            cardapio.metodos._setBotonDescargaCargando(boton, false);
-        }
-    },
-
     // mensagens
     mensagem: (texto, cor = 'red', tempo = 3500) => {
 
@@ -2198,9 +1521,8 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass} \${agotadoClass}" id="\${id}">
+            <div class="card card-item \${inCartClass}" id="\${id}">
                 \${inCartBadge}
-                \${agotadoBadge}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
                 <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
                     <img src="\${img}" alt="\${nome}" />
@@ -2210,17 +1532,17 @@ cardapio.templates = {
                     <b>\${nome}</b>
                 </p>
                 <p class="price-produto text-center">
-                    <b>MN$ \${preco}</b>\${pesajeBadge}
+                    <b>MN$ \${preco}</b>
                 </p>
-                <div class="add-carrinho \${addCarrinhoHidden}">
+                <div class="add-carrinho">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
                         <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
                         <span class="add-numero-itens" id="qntd-\${id}">1</span>
                         <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
                     </div>
-                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Anadir al carrito">
+                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="btn-add-label">Anadir</span>
+                        <span class="btn-add-label">Añadir</span>
                     </button>
                 </div>
             </div>
