@@ -896,6 +896,23 @@ margin-top: 2px;
     font-weight: normal;
 }
 
+/* Badge de unidad en el resumen del pedido */
+.modal-full .unit-badge-resumo {
+    font-size: 11px;
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-weight: 500;
+}
+
+.modal-full .unit-label-resumo {
+    font-size: 12px;
+    color: var(--color-text-out);
+    font-weight: normal;
+}
+
 .modal-full .dados-produto {
     flex: 1;
     padding-left: 25px;
