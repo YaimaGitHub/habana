@@ -1419,10 +1419,20 @@ cardapio.metodos = {
         // --- PRODUCTOS ---
         $("#listaItensResumo").html('');
         $.each(MEU_CARRINHO, (i, e) => {
+            // Mostrar unidad si es un producto con peso
+            let unitBadgeResumo = '';
+            let unitLabelResumo = '';
+            if (e.selectedUnit && e.selectedUnit !== 'unidad') {
+                unitBadgeResumo = ` <span class="unit-badge-resumo">(${e.selectedUnit})</span>`;
+                unitLabelResumo = `<span class="unit-label-resumo">/${e.selectedUnit}</span>`;
+            }
+
             let temp = cardapio.templates.itemResumo.replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
                 .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-                .replace(/\${qntd}/g, e.qntd);
+                .replace(/\${qntd}/g, e.qntd)
+                .replace(/\${unitBadgeResumo}/g, unitBadgeResumo)
+                .replace(/\${unitLabelResumo}/g, unitLabelResumo);
             $("#listaItensResumo").append(temp);
         });
 
@@ -1532,9 +1542,18 @@ cardapio.metodos = {
         $.each(MEU_CARRINHO, (i, e) => {
             let subtotalItem = fmt(e.price * e.qntd);
             let precioUnit = fmt(e.price);
-            texto += `\n${i + 1}. *${e.name}*`;
-            texto += `\n   �� Cantidad: ${e.qntd}`;
-            texto += `\n   • Precio unitario: MN$ ${precioUnit}`;
+            
+            // Determinar si tiene unidad de peso
+            let unitText = '';
+            let unitPriceLabel = '';
+            if (e.selectedUnit && e.selectedUnit !== 'unidad') {
+                unitText = ` (${e.selectedUnit})`;
+                unitPriceLabel = `/${e.selectedUnit}`;
+            }
+            
+            texto += `\n${i + 1}. *${e.name}*${unitText}`;
+            texto += `\n   • Cantidad: ${e.qntd}`;
+            texto += `\n   • Precio unitario: MN$ ${precioUnit}${unitPriceLabel}`;
             texto += `\n   • Subtotal: MN$ ${subtotalItem}`;
         });
         texto += `\n\n_Subtotal productos: MN$ ${fmt(VALOR_CARRINHO)}_`;
@@ -1700,10 +1719,10 @@ cardapio.templates = {
             </div>
             <div class="dados-produto">
                 <p class="title-produto-resumo">
-                    <b>\${nome}</b>
+                    <b>\${nome}</b>\${unitBadgeResumo}
                 </p>
                 <p class="price-produto-resumo">
-                    <b>MN$ \${preco}</b>
+                    <b>MN$ \${preco}</b>\${unitLabelResumo}
                 </p>
             </div>
             <p class="quantidade-produto-resumo">
