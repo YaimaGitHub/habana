@@ -469,7 +469,44 @@ a.navbar-brand {
 .card-item .price-produto {
     color: var(--color-primary);
     font-size: 22px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
+}
+
+.card-item .price-produto .unit-label {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--color-text-out);
+}
+
+/* Selector de unidad de peso (lb/kg) */
+.card-item .unit-selector {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-item .unit-selector .unit-btn {
+    background-color: var(--color-background);
+    border: 2px solid var(--color-separate);
+    color: var(--color-text);
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'PoppinsMedium', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card-item .unit-selector .unit-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.card-item .unit-selector .unit-btn.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
 }
 
 /* Controles de agregado: siempre visibles */
@@ -843,6 +880,20 @@ margin-top: 2px;
     color: var(--color-primary);
     font-size: 24px;
     margin-bottom: 0;
+}
+
+/* Badge de unidad en el carrito */
+.modal-full .unit-badge-cart {
+    font-size: 12px;
+    color: var(--color-text-out);
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.modal-full .unit-label-cart {
+    font-size: 14px;
+    color: var(--color-text-out);
+    font-weight: normal;
 }
 
 .modal-full .dados-produto {
