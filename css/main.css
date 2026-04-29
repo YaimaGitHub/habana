@@ -51,6 +51,14 @@ a.navbar-brand {
     padding-right: 35px!important;
 }
 
+.nav-link-cancelar {
+    color: var(--color-red)!important;
+}
+
+.nav-link-cancelar:hover {
+    color: var(--color-primary)!important;
+}
+
 .btn-white {
     background-color: var(--color-white);
     color: var(--color-black)!important;
@@ -2634,5 +2642,238 @@ body.modal-abierto {
 @media (min-width: 576px) and (max-width: 991px) {
     .resumo-orden-valor {
         font-size: 17px;
+    }
+}
+
+/* ============================================= */
+/* ======  DISPONIBILIDAD DE PRODUCTOS    ===== */
+/* ============================================= */
+
+/* Badge de disponibilidad */
+.badge-disponible,
+.badge-agotado {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+
+.badge-disponible {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: var(--color-green);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.badge-agotado {
+    background-color: rgba(214, 25, 4, 0.15);
+    color: var(--color-red);
+    border: 1px solid rgba(214, 25, 4, 0.3);
+}
+
+/* Tarjeta de producto agotado */
+.card-item.producto-agotado {
+    opacity: 0.75;
+    border-color: var(--color-separate);
+}
+
+.card-item.producto-agotado:hover {
+    transform: none;
+    box-shadow: 0px 10px 24px -12px rgba(0, 0, 0, 0.15);
+}
+
+.card-item .img-agotado {
+    position: relative;
+}
+
+.card-item .img-agotado::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+}
+
+.card-item .img-agotado img {
+    filter: grayscale(60%);
+}
+
+/* Controles deshabilitados para productos agotados */
+.add-carrinho-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.add-carrinho-disabled .btn-add {
+    background-color: var(--color-separate) !important;
+    color: var(--color-text-out) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+
+/* ============================================= */
+/* ======  BADGE DE PESAJE (lb/kg)        ===== */
+/* ============================================= */
+
+.badge-pesaje {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-pesaje i {
+    font-size: 12px;
+}
+
+/* ============================================= */
+/* ======  MODAL CANCELACION DE PEDIDOS   ===== */
+/* ============================================= */
+
+.modal-cancelacion-dialog {
+    max-width: 550px;
+}
+
+.modal-cancelacion-header .modal-direccion-header-texto > i {
+    color: var(--color-red);
+}
+
+/* Aviso de cancelacion */
+.cancelacion-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 152, 0, 0.08));
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+
+.cancelacion-aviso-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 12px;
+    background-color: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+    font-size: 20px;
+}
+
+.cancelacion-aviso-texto {
+    flex: 1;
+}
+
+.cancelacion-aviso-titulo {
+    font-size: 15px;
+    color: var(--color-black);
+    margin-bottom: 6px;
+}
+
+.cancelacion-aviso-desc {
+    font-size: 13px;
+    color: var(--color-text);
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+.cancelacion-aviso-desc b {
+    color: var(--color-red);
+}
+
+/* Pasos de cancelacion */
+.cancelacion-pasos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.cancelacion-paso {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background-color: var(--color-background);
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.cancelacion-paso:hover {
+    background-color: var(--color-secondary);
+}
+
+.cancelacion-paso-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.cancelacion-paso-texto {
+    font-size: 14px;
+    color: var(--color-black);
+    line-height: 1.4;
+}
+
+/* Boton WhatsApp para cancelacion */
+.btn-cancelacion-whatsapp {
+    background: linear-gradient(135deg, #25d366, #128c7e) !important;
+}
+
+.btn-cancelacion-whatsapp:hover {
+    background: linear-gradient(135deg, #20bd5a, #0f7a6d) !important;
+}
+
+.btn-cancelacion-whatsapp i {
+    font-size: 18px;
+}
+
+/* Responsive cancelacion */
+@media (max-width: 575px) {
+    .cancelacion-aviso {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .cancelacion-aviso-icon {
+        align-self: center;
+    }
+
+    .cancelacion-paso {
+        padding: 10px 12px;
+    }
+
+    .cancelacion-paso-texto {
+        font-size: 13px;
     }
 }

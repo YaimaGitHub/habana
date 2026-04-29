@@ -156,6 +156,25 @@ cardapio.metodos = {
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
 
+            // Verificar disponibilidad (por defecto disponible si no se especifica)
+            let estaDisponible = e.disponible !== false;
+            let agotadoClass = estaDisponible ? '' : 'producto-agotado';
+            let imgAgotadoClass = estaDisponible ? '' : 'img-agotado';
+            let addCarrinhoDisabled = estaDisponible ? '' : 'add-carrinho-disabled';
+            let btnDisabled = estaDisponible ? '' : 'disabled';
+            let btnAddLabel = estaDisponible ? 'Anadir' : 'Agotado';
+            let badgeDisponibilidad = estaDisponible 
+                ? '<span class="badge-disponible"><i class="fas fa-check-circle"></i> Disponible</span>'
+                : '<span class="badge-agotado"><i class="fas fa-times-circle"></i> Agotado</span>';
+
+            // Badge de pesaje (solo para Harinas y Carnicos)
+            let pesajeBadge = '';
+            if (e.pesaje) {
+                let pesajeIcon = e.pesaje === 'libras' ? 'fas fa-balance-scale' : 'fas fa-weight';
+                let pesajeTexto = e.pesaje === 'libras' ? 'lb' : 'kg';
+                pesajeBadge = `<span class="badge-pesaje" title="Pesaje en ${e.pesaje}"><i class="${pesajeIcon}"></i> ${pesajeTexto}</span>`;
+            }
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -166,14 +185,21 @@ cardapio.metodos = {
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+                    : '')
+                .replace(/\${agotadoClass}/g, agotadoClass)
+                .replace(/\${imgAgotadoClass}/g, imgAgotadoClass)
+                .replace(/\${addCarrinhoDisabled}/g, addCarrinhoDisabled)
+                .replace(/\${btnDisabled}/g, btnDisabled)
+                .replace(/\${btnAddLabel}/g, btnAddLabel)
+                .replace(/\${badgeDisponibilidad}/g, badgeDisponibilidad)
+                .replace(/\${pesajeBadge}/g, pesajeBadge);
 
-            // botão ver mais foi clicado (12 itens)
+            // botao ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
                 $("#itensCardapio").append(temp)
             }
 
-            // paginação inicial (8 itens)
+            // paginacao inicial (8 itens)
             if (!vermais && i < 47) {
                 $("#itensCardapio").append(temp)
             }
@@ -304,6 +330,25 @@ cardapio.metodos = {
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
 
+            // Verificar disponibilidad
+            let estaDisponible = e.disponible !== false;
+            let agotadoClass = estaDisponible ? '' : 'producto-agotado';
+            let imgAgotadoClass = estaDisponible ? '' : 'img-agotado';
+            let addCarrinhoDisabled = estaDisponible ? '' : 'add-carrinho-disabled';
+            let btnDisabled = estaDisponible ? '' : 'disabled';
+            let btnAddLabel = estaDisponible ? 'Anadir' : 'Agotado';
+            let badgeDisponibilidad = estaDisponible 
+                ? '<span class="badge-disponible"><i class="fas fa-check-circle"></i> Disponible</span>'
+                : '<span class="badge-agotado"><i class="fas fa-times-circle"></i> Agotado</span>';
+
+            // Badge de pesaje
+            let pesajeBadge = '';
+            if (e.pesaje) {
+                let pesajeIcon = e.pesaje === 'libras' ? 'fas fa-balance-scale' : 'fas fa-weight';
+                let pesajeTexto = e.pesaje === 'libras' ? 'lb' : 'kg';
+                pesajeBadge = `<span class="badge-pesaje" title="Pesaje en ${e.pesaje}"><i class="${pesajeIcon}"></i> ${pesajeTexto}</span>`;
+            }
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -314,7 +359,14 @@ cardapio.metodos = {
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+                    : '')
+                .replace(/\${agotadoClass}/g, agotadoClass)
+                .replace(/\${imgAgotadoClass}/g, imgAgotadoClass)
+                .replace(/\${addCarrinhoDisabled}/g, addCarrinhoDisabled)
+                .replace(/\${btnDisabled}/g, btnDisabled)
+                .replace(/\${btnAddLabel}/g, btnAddLabel)
+                .replace(/\${badgeDisponibilidad}/g, badgeDisponibilidad)
+                .replace(/\${pesajeBadge}/g, pesajeBadge);
 
             $("#itensCardapio").append(temp);
         });
@@ -1513,6 +1565,89 @@ cardapio.metodos = {
             }, 800);
         }, tempo)
 
+    },
+
+    // ============================================================
+    //  CANCELACION DE PEDIDOS
+    // ============================================================
+
+    // Abre el modal de cancelacion de pedidos
+    abrirModalCancelacion: () => {
+        $("#modalCancelacion").removeClass('hidden');
+        $("body").addClass('modal-abierto');
+        $("#txtNumeroOrdenCancelar").val('').focus();
+        $("#cancelacionFeedback").removeClass('error ok').text('');
+    },
+
+    // Cierra el modal de cancelacion
+    cerrarModalCancelacion: () => {
+        $("#modalCancelacion").addClass('hidden');
+        $("body").removeClass('modal-abierto');
+    },
+
+    // Valida el formato del numero de orden
+    validarNumeroOrden: (numero) => {
+        if (!numero || numero.trim().length === 0) {
+            return { ok: false, msg: 'Ingresa el numero de orden.' };
+        }
+        // Formato esperado: FH-YYMMDD-HHMMSS-XXXX
+        let regex = /^FH-\d{6}-\d{6}-\d{4}$/;
+        if (!regex.test(numero.trim())) {
+            return { ok: false, msg: 'Formato de orden no valido. Ejemplo: FH-250429-143052-1234' };
+        }
+        return { ok: true, msg: 'Numero de orden valido' };
+    },
+
+    // Valida en vivo el numero de orden
+    validarNumeroOrdenEnVivo: () => {
+        let $fb = $("#cancelacionFeedback");
+        let numero = ($("#txtNumeroOrdenCancelar").val() || '').trim();
+
+        if (numero.length === 0) {
+            $fb.removeClass('error ok').text('');
+            return;
+        }
+
+        let r = cardapio.metodos.validarNumeroOrden(numero);
+        if (r.ok) {
+            $fb.removeClass('error').addClass('ok')
+                .html(`<i class="fas fa-check-circle"></i> ${r.msg}`);
+        } else {
+            $fb.removeClass('ok').addClass('error')
+                .html(`<i class="fas fa-exclamation-triangle"></i> ${r.msg}`);
+        }
+    },
+
+    // Enviar solicitud de cancelacion por WhatsApp
+    enviarCancelacionWhatsApp: () => {
+        let numero = ($("#txtNumeroOrdenCancelar").val() || '').trim();
+
+        let validacion = cardapio.metodos.validarNumeroOrden(numero);
+        if (!validacion.ok) {
+            cardapio.metodos.mensagem(validacion.msg);
+            $("#txtNumeroOrdenCancelar").focus();
+            return;
+        }
+
+        let separador = '━━━━━━━━━━━━━━━━━━';
+        let texto = '';
+
+        texto += '*SOLICITUD DE CANCELACION DE PEDIDO*\n';
+        texto += separador + '\n\n';
+        texto += `*Numero de Orden:* ${numero}\n\n`;
+        texto += separador + '\n\n';
+        texto += '*IMPORTANTE:*\n';
+        texto += 'Solicito la cancelacion del pedido indicado arriba.\n\n';
+        texto += '_Por favor, confirme si la cancelacion es posible._\n';
+
+        let encode = encodeURIComponent(texto);
+        let URL = `https://wa.me/${CELULAR_EMPRESA}?text=${encode}`;
+
+        // Abrir WhatsApp
+        window.open(URL, '_blank');
+
+        cardapio.metodos.mensagem('Solicitud enviada a WhatsApp.', 'green');
+        cardapio.metodos.cerrarModalCancelacion();
     }
 
 }
@@ -1521,28 +1656,30 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass}" id="\${id}">
+            <div class="card card-item \${inCartClass} \${agotadoClass}" id="\${id}">
                 \${inCartBadge}
+                \${badgeDisponibilidad}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
-                <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
+                <div class="img-produto \${imgAgotadoClass}" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
                     <img src="\${img}" alt="\${nome}" />
                     <span class="img-zoom-hint" aria-hidden="true"><i class="fas fa-search-plus"></i></span>
                 </div>
                 <p class="title-produto text-center mt-4">
                     <b>\${nome}</b>
                 </p>
+                \${pesajeBadge}
                 <p class="price-produto text-center">
                     <b>MN$ \${preco}</b>
                 </p>
-                <div class="add-carrinho">
+                <div class="add-carrinho \${addCarrinhoDisabled}">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
                         <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
                         <span class="add-numero-itens" id="qntd-\${id}">1</span>
                         <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
                     </div>
-                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
+                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito" \${btnDisabled}>
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="btn-add-label">Añadir</span>
+                        <span class="btn-add-label">\${btnAddLabel}</span>
                     </button>
                 </div>
             </div>
