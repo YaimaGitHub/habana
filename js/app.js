@@ -156,6 +156,24 @@ cardapio.metodos = {
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
 
+            // Determinar si el producto soporta peso (lb/kg)
+            let unit = e.unit || 'unidad';
+            let supportsWeight = (unit === 'lb' || unit === 'kg' || unit === 'peso');
+            
+            // Generar etiqueta de unidad y selector si aplica
+            let unitLabel = '';
+            let unitSelector = '';
+            
+            if (supportsWeight) {
+                unitLabel = ' <span class="unit-label" id="unit-label-' + e.id + '">/lb</span>';
+                unitSelector = `
+                    <div class="unit-selector" aria-label="Seleccionar unidad de peso">
+                        <button type="button" class="unit-btn active" id="btn-lb-${e.id}" onclick="cardapio.metodos.cambiarUnidad('${e.id}', 'lb', ${e.price})">lb</button>
+                        <button type="button" class="unit-btn" id="btn-kg-${e.id}" onclick="cardapio.metodos.cambiarUnidad('${e.id}', 'kg', ${e.price})">kg</button>
+                    </div>
+                `;
+            }
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -166,7 +184,9 @@ cardapio.metodos = {
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+                    : '')
+                .replace(/\${unitLabel}/g, unitLabel)
+                .replace(/\${unitSelector}/g, unitSelector);
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -304,6 +324,24 @@ cardapio.metodos = {
             let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
             let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
 
+            // Determinar si el producto soporta peso (lb/kg)
+            let unit = e.unit || 'unidad';
+            let supportsWeight = (unit === 'lb' || unit === 'kg' || unit === 'peso');
+            
+            // Generar etiqueta de unidad y selector si aplica
+            let unitLabel = '';
+            let unitSelector = '';
+            
+            if (supportsWeight) {
+                unitLabel = ' <span class="unit-label" id="unit-label-' + e.id + '">/lb</span>';
+                unitSelector = `
+                    <div class="unit-selector" aria-label="Seleccionar unidad de peso">
+                        <button type="button" class="unit-btn active" id="btn-lb-${e.id}" onclick="cardapio.metodos.cambiarUnidad('${e.id}', 'lb', ${e.price})">lb</button>
+                        <button type="button" class="unit-btn" id="btn-kg-${e.id}" onclick="cardapio.metodos.cambiarUnidad('${e.id}', 'kg', ${e.price})">kg</button>
+                    </div>
+                `;
+            }
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -314,7 +352,9 @@ cardapio.metodos = {
                 .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
                 .replace(/\${inCartBadge}/g, qntdCarrinho > 0
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+                    : '')
+                .replace(/\${unitLabel}/g, unitLabel)
+                .replace(/\${unitSelector}/g, unitSelector);
 
             $("#itensCardapio").append(temp);
         });
@@ -392,10 +432,43 @@ cardapio.metodos = {
 
     },
 
+    // cambiar unidad de peso (lb/kg) para un producto
+    cambiarUnidad: (id, unit, precioBase) => {
+        let escapedId = cardapio.metodos.escaparId(id);
+        
+        // Calcular el precio según la unidad
+        let precio;
+        if (unit === 'kg') {
+            // Convertir precio de lb a kg (1 kg = 2.20462 lb)
+            precio = precioBase * CONVERSION_LB_KG;
+        } else {
+            precio = precioBase;
+        }
+        
+        // Actualizar el precio mostrado
+        let $priceEl = $("#price-" + escapedId);
+        $priceEl.find('b').text('MN$ ' + precio.toFixed(2).replace('.', ','));
+        
+        // Actualizar la etiqueta de unidad
+        let $unitLabel = $("#unit-label-" + escapedId);
+        $unitLabel.text('/' + unit);
+        
+        // Actualizar estado de los botones
+        $("#btn-lb-" + escapedId).removeClass('active');
+        $("#btn-kg-" + escapedId).removeClass('active');
+        $("#btn-" + unit + "-" + escapedId).addClass('active');
+        
+        // Guardar la unidad seleccionada en el elemento para usarla al agregar al carrito
+        let $card = $("#" + escapedId);
+        $card.attr('data-selected-unit', unit);
+        $card.attr('data-selected-price', precio);
+    },
+
     // adicionar ao carrinho o item do cardápio
     adicionarAoCarrinho: (id) => {
 
         let qntdAtual = parseInt($("#qntd-" + id).text()) || 1;
+        let escapedId = cardapio.metodos.escaparId(id);
 
         // obter a categoria ativa (o la del producto si estamos en modo búsqueda)
         let $ativo = $(".container-menu a.active");
@@ -411,13 +484,25 @@ cardapio.metodos = {
 
         if (item.length > 0) {
 
-            // validar si ya existe ese item en el carrito
-            let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.id == id });
+            // Obtener unidad y precio seleccionados (si aplica)
+            let $card = $("#" + escapedId);
+            let selectedUnit = $card.attr('data-selected-unit') || item[0].unit || 'unidad';
+            let selectedPrice = parseFloat($card.attr('data-selected-price')) || item[0].price;
+
+            // Crear un ID único que incluya la unidad para productos con peso
+            let cartItemId = id;
+            let supportsWeight = (item[0].unit === 'lb' || item[0].unit === 'kg' || item[0].unit === 'peso');
+            if (supportsWeight) {
+                cartItemId = id + '-' + selectedUnit;
+            }
+
+            // validar si ya existe ese item en el carrito (con la misma unidad)
+            let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.cartId == cartItemId });
 
             let novaQntd;
 
             if (existe.length > 0) {
-                let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
+                let objIndex = MEU_CARRINHO.findIndex((obj => obj.cartId == cartItemId));
                 MEU_CARRINHO[objIndex].qntd = MEU_CARRINHO[objIndex].qntd + qntdAtual;
                 novaQntd = MEU_CARRINHO[objIndex].qntd;
             }
@@ -425,14 +510,19 @@ cardapio.metodos = {
                 // clonar para no contaminar el MENU original
                 let nuevoItem = Object.assign({}, item[0]);
                 nuevoItem.qntd = qntdAtual;
+                nuevoItem.cartId = cartItemId;
+                nuevoItem.selectedUnit = selectedUnit;
+                nuevoItem.price = selectedPrice;
                 MEU_CARRINHO.push(nuevoItem);
                 novaQntd = qntdAtual;
             }
 
-            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name} agregado`, 'green');
+            // Mensaje con unidad si aplica
+            let unitText = supportsWeight ? ` (${selectedUnit})` : '';
+            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name}${unitText} agregado`, 'green');
 
             // resetear selector a 1 y actualizar estado visual de la tarjeta
-            $("#qntd-" + id).text(1);
+            $("#qntd-" + escapedId).text(1);
             cardapio.metodos.marcarTarjetaEnCarrito(id, novaQntd);
 
             cardapio.metodos.atualizarBadgeTotal();
@@ -463,12 +553,15 @@ cardapio.metodos = {
         void $card[0].offsetWidth;
         $card.addClass('just-added');
 
+        // Calcular cantidad total de todos los items con este id (puede haber lb y kg)
+        let totalQntd = MEU_CARRINHO.filter(e => e.id == id).reduce((sum, e) => sum + e.qntd, 0);
+
         // actualizar/crear badge "en carrito"
         let $badge = $card.find('.badge-in-cart');
         if ($badge.length === 0) {
-            $card.prepend(`<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntd}</span>`);
+            $card.prepend(`<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${totalQntd}</span>`);
         } else {
-            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+            $badge.html(`<i class="fa fa-check"></i> ${totalQntd}`);
         }
     },
 
@@ -593,11 +686,22 @@ cardapio.metodos = {
 
             $.each(MEU_CARRINHO, (i, e) => {
 
+                // Mostrar unidad si es un producto con peso
+                let unitBadge = '';
+                let unitLabelCart = '';
+                if (e.selectedUnit && e.selectedUnit !== 'unidad') {
+                    unitBadge = ` <span class="unit-badge-cart">(${e.selectedUnit})</span>`;
+                    unitLabelCart = `<span class="unit-label-cart">/${e.selectedUnit}</span>`;
+                }
+
                 let temp = cardapio.templates.itemCarrinho.replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
                 .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
                 .replace(/\${id}/g, e.id)
+                .replace(/\${cartId}/g, e.cartId || e.id)
                 .replace(/\${qntd}/g, e.qntd)
+                .replace(/\${unitBadge}/g, unitBadge)
+                .replace(/\${unitLabelCart}/g, unitLabelCart)
 
                 $("#itensCarrinho").append(temp);
 
@@ -630,8 +734,8 @@ cardapio.metodos = {
             return;
         }
 
-        // capturar ids antes de limpiar para actualizar las tarjetas del cardápio
-        let ids = MEU_CARRINHO.map(e => e.id);
+        // capturar ids originales (únicos) antes de limpiar para actualizar las tarjetas del cardápio
+        let ids = [...new Set(MEU_CARRINHO.map(e => e.id))];
         MEU_CARRINHO = [];
 
         // resetear estado de entrega relacionado con costos
@@ -652,37 +756,43 @@ cardapio.metodos = {
     },
 
     // diminuir quantidade do item no carrinho
-    diminuirQuantidadeCarrinho: (id) => {
+    diminuirQuantidadeCarrinho: (cartId) => {
 
-        let qntdAtual = parseInt($("#qntd-carrinho-" + id).text());
+        let escapedCartId = cardapio.metodos.escaparId(cartId);
+        let qntdAtual = parseInt($("#qntd-carrinho-" + escapedCartId).text());
 
         if (qntdAtual > 1) {
-            $("#qntd-carrinho-" + id).text(qntdAtual - 1);
-            cardapio.metodos.atualizarCarrinho(id, qntdAtual - 1);
+            $("#qntd-carrinho-" + escapedCartId).text(qntdAtual - 1);
+            cardapio.metodos.atualizarCarrinho(cartId, qntdAtual - 1);
         }
         else {
-            cardapio.metodos.removerItemCarrinho(id)
+            cardapio.metodos.removerItemCarrinho(cartId)
         }
 
     },
 
     // aumentar quantidade do item no carrinho
-    aumentarQuantidadeCarrinho: (id) => {
+    aumentarQuantidadeCarrinho: (cartId) => {
 
-        let qntdAtual = parseInt($("#qntd-carrinho-" + id).text());
-        $("#qntd-carrinho-" + id).text(qntdAtual + 1);
-        cardapio.metodos.atualizarCarrinho(id, qntdAtual + 1);
+        let escapedCartId = cardapio.metodos.escaparId(cartId);
+        let qntdAtual = parseInt($("#qntd-carrinho-" + escapedCartId).text());
+        $("#qntd-carrinho-" + escapedCartId).text(qntdAtual + 1);
+        cardapio.metodos.atualizarCarrinho(cartId, qntdAtual + 1);
 
     },
 
     // botão remover item do carrinho
-    removerItemCarrinho: (id) => {
+    removerItemCarrinho: (cartId) => {
 
-        MEU_CARRINHO = $.grep(MEU_CARRINHO, (e, i) => { return e.id != id });
+        // Obtener el id del producto original antes de remover
+        let item = MEU_CARRINHO.find(e => (e.cartId || e.id) == cartId);
+        let originalId = item ? item.id : cartId;
+
+        MEU_CARRINHO = $.grep(MEU_CARRINHO, (e, i) => { return (e.cartId || e.id) != cartId });
         cardapio.metodos.carregarCarrinho();
 
         // refrescar tarjetas del cardápio para quitar badge "en carrito"
-        cardapio.metodos.refrescarEstadoEnCarrito(id);
+        cardapio.metodos.refrescarEstadoEnCarrito(originalId);
 
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
@@ -693,23 +803,38 @@ cardapio.metodos = {
     refrescarEstadoEnCarrito: (id) => {
         let $card = $("#" + cardapio.metodos.escaparId(id));
         if ($card.length === 0) return;
-        $card.removeClass('in-cart just-added');
-        $card.find('.badge-in-cart').remove();
+        // Solo quitar si no quedan items con este id en el carrito
+        let itemsRestantes = MEU_CARRINHO.filter(e => e.id == id);
+        if (itemsRestantes.length === 0) {
+            $card.removeClass('in-cart just-added');
+            $card.find('.badge-in-cart').remove();
+        } else {
+            // Actualizar el contador con la suma de todos los items
+            let totalQntd = itemsRestantes.reduce((sum, e) => sum + e.qntd, 0);
+            let $badge = $card.find('.badge-in-cart');
+            if ($badge.length > 0) {
+                $badge.html(`<i class="fa fa-check"></i> ${totalQntd}`);
+            }
+        }
     },
 
     // atualiza o carrinho com a quantidade atual
-    atualizarCarrinho: (id, qntd) => {
+    atualizarCarrinho: (cartId, qntd) => {
 
-        let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
+        let objIndex = MEU_CARRINHO.findIndex((obj => (obj.cartId || obj.id) == cartId));
+        if (objIndex === -1) return;
         MEU_CARRINHO[objIndex].qntd = qntd;
 
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
 
         // actualizar badge en la tarjeta del cardápio si visible
-        let $badge = $("#" + cardapio.metodos.escaparId(id)).find('.badge-in-cart');
+        let originalId = MEU_CARRINHO[objIndex].id;
+        let $badge = $("#" + cardapio.metodos.escaparId(originalId)).find('.badge-in-cart');
         if ($badge.length > 0) {
-            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+            // Sumar cantidad de todos los items con el mismo id original
+            let totalQntd = MEU_CARRINHO.filter(e => e.id == originalId).reduce((sum, e) => sum + e.qntd, 0);
+            $badge.html(`<i class="fa fa-check"></i> ${totalQntd}`);
         }
 
         // atualiza os valores (R$) totais do carrinho
@@ -1531,9 +1656,10 @@ cardapio.templates = {
                 <p class="title-produto text-center mt-4">
                     <b>\${nome}</b>
                 </p>
-                <p class="price-produto text-center">
-                    <b>MN$ \${preco}</b>
+                <p class="price-produto text-center" id="price-\${id}">
+                    <b>MN$ \${preco}</b>\${unitLabel}
                 </p>
+                \${unitSelector}
                 <div class="add-carrinho">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
                         <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
@@ -1555,14 +1681,14 @@ cardapio.templates = {
                 <img src="\${img}" />
             </div>
             <div class="dados-produto">
-                <p class="title-produto"><b>\${nome}</b></p>
-                <p class="price-produto"><b>MN$ \${preco}</b></p>
+                <p class="title-produto"><b>\${nome}</b>\${unitBadge}</p>
+                <p class="price-produto"><b>MN$ \${preco}</b>\${unitLabelCart}</p>
             </div>
             <div class="add-carrinho">
-                <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidadeCarrinho('\${id}')"><i class="fas fa-minus"></i></span>
-                <span class="add-numero-itens" id="qntd-carrinho-\${id}">\${qntd}</span>
-                <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidadeCarrinho('\${id}')"><i class="fas fa-plus"></i></span>
-                <span class="btn btn-remove no-mobile" onclick="cardapio.metodos.removerItemCarrinho('\${id}')"><i class="fa fa-times"></i></span>
+                <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidadeCarrinho('\${cartId}')"><i class="fas fa-minus"></i></span>
+                <span class="add-numero-itens" id="qntd-carrinho-\${cartId}">\${qntd}</span>
+                <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidadeCarrinho('\${cartId}')"><i class="fas fa-plus"></i></span>
+                <span class="btn btn-remove no-mobile" onclick="cardapio.metodos.removerItemCarrinho('\${cartId}')"><i class="fa fa-times"></i></span>
             </div>
         </div>
     `,

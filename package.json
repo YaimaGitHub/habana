@@ -1,0 +1,9 @@
+{
+  "name": "cabrera-market",
+  "version": "1.0.0",
+  "description": "Cabrera's Market - Tienda de Alimentos",
+  "scripts": {
+    "dev": "npx serve -l 3000",
+    "start": "npx serve -l 3000"
+  }
+}
