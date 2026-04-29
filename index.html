@@ -69,6 +69,9 @@
                         <li class="nav-item">
                             <a href="#depoimentos" class="nav-link"><b>Testimonios</b></a>
                         </li>
+                        <li class="nav-item">
+                            <a href="#cancelacion" class="nav-link" onclick="cardapio.metodos.enfocarCancelacion()"><b>Cancelar pedido</b></a>
+                        </li>
                     </ul>
                     <a class="btn btn-white btn-icon wow fadeIn" onclick="cardapio.metodos.abrirCarrinho(true)">
                         Mi carrito <span class="icon">
@@ -107,6 +110,10 @@
         <a onclick="cardapio.metodos.abrirCarrinho(true)" class="link">                            <i class="fa fa-shopping-bag"></i>
 
         <span>Mi carrito</span></a>
+      </li>
+      <li class="more-button-list-item">
+        <a href="#cancelacion" onclick="cardapio.metodos.enfocarCancelacion()" class="link"><i class="fas fa-ban"></i>
+        <span>Cancelar pedido</span></a>
       </li>
     </d>
   </div>
@@ -323,6 +330,77 @@
         </div>
     </div>
 </section>
+
+<section class="cancelacion" id="cancelacion">
+
+    <div class="background-cancelacion"></div>
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-12 col-one text-center mb-5 wow fadeIn">
+                <span class="hint-title"><b>Cancelación</b></span>
+                <h1 class="title">
+                    <b>¿Necesitas cancelar tu pedido?</b>
+                </h1>
+            </div>
+
+            <div class="col-12 col-lg-10 col-md-12 col-sm-12 mx-auto wow fadeInUp">
+                <div class="cancelacion-card">
+
+                    <div class="cancelacion-aviso">
+                        <i class="fas fa-clock"></i>
+                        <p>
+                            <b>Importante:</b> la cancelación de pedidos solo se permite durante un tiempo
+                            estimado de <b>4 horas como máximo</b> después de haber realizado tu pedido.
+                            Pasado ese plazo, no podremos procesar la cancelación.
+                        </p>
+                    </div>
+
+                    <div class="cancelacion-form">
+                        <label for="txtNumeroOrdenCancelar" class="cancelacion-label">
+                            <i class="fas fa-receipt"></i>
+                            Escribe el número de orden generado al hacer tu pedido
+                        </label>
+                        <div class="cancelacion-input-wrap">
+                            <input type="text"
+                                   id="txtNumeroOrdenCancelar"
+                                   class="form-control cancelacion-input"
+                                   placeholder="Ej: FH-260429-143205-1234"
+                                   autocomplete="off"
+                                   oninput="cardapio.metodos.cancelacionInputLive()" />
+                            <button type="button"
+                                    class="btn-cancelacion-limpiar"
+                                    onclick="cardapio.metodos.limpiarCancelacion()"
+                                    aria-label="Limpiar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p class="cancelacion-feedback" id="cancelacionFeedback"></p>
+
+                        <div class="cancelacion-acciones">
+                            <button type="button"
+                                    class="btn btn-yellow btn-cancelacion-enviar"
+                                    onclick="cardapio.metodos.enviarCancelacion()">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Enviar cancelación por WhatsApp</span>
+                            </button>
+                        </div>
+
+                        <p class="cancelacion-nota">
+                            <i class="fas fa-info-circle"></i>
+                            Al pulsar el botón se abrirá WhatsApp con el número de orden listo para
+                            enviar a nuestro equipo, quien procesará la cancelación.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 
 <section class="depoimentos" id="depoimentos">
 

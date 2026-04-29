@@ -73,6 +73,25 @@ var VALOR_ENTREGA = 0;
 
 var CELULAR_EMPRESA = '5355135487';
 
+// Tabla de conversión y etiquetas para el sistema de pesaje
+// 1 kg = 2.2046226 lb  -> 1 lb = 0.45359237 kg
+var FACTOR_LB_POR_KG = 2.2046226;
+var PESAJE_LABELS = {
+    'lb': { corto: 'lb',  largo: 'Libras (lb)' },
+    'kg': { corto: 'kg',  largo: 'Kilogramos (kg)' }
+};
+
+// Estado por producto: unidad de pesaje seleccionada actualmente en la tarjeta
+// (clave = id del producto, valor = 'lb' | 'kg')
+var PESAJE_SELECCIONADO = {};
+
+// Tiempo máximo permitido para cancelar un pedido (en milisegundos)
+// 4 horas = 4 * 60 * 60 * 1000 = 14_400_000
+var LIMITE_CANCELACION_MS = 4 * 60 * 60 * 1000;
+
+// Clave usada para guardar los pedidos generados en localStorage
+var KEY_PEDIDOS_LOCAL = 'cabreras_pedidos';
+
 // Metadata de las categorías: nombre visible, icono y clave interna
 var CATEGORIAS = {
     "burgers":     { nome: "Mercado", icone: "fas fa-store" },
@@ -111,11 +130,148 @@ cardapio.eventos = {
                 $(this).trigger('click');
             }
         });
+
+        // al pulsar "Enviar pedido" (WhatsApp), registrar el pedido localmente
+        // para poder validar la cancelación dentro de las 4 horas posteriores
+        $(document).on('click', '#btnEtapaResumo', function () {
+            cardapio.metodos.registrarPedidoLocal();
+        });
     }
 
 }
 
 cardapio.metodos = {
+
+    // ============================================================
+    //  PESAJE: helpers para conversión libras <-> kilogramos
+    // ============================================================
+
+    // Devuelve la unidad seleccionada actualmente para un producto (lb por defecto)
+    obtenerUnidadActual: (producto) => {
+        if (!producto || !producto.pesaje) return null;
+        if (PESAJE_SELECCIONADO[producto.id]) {
+            return PESAJE_SELECCIONADO[producto.id];
+        }
+        return producto.pesaje.defecto || 'lb';
+    },
+
+    // Calcula el precio del producto en la unidad indicada (a partir del precio base)
+    precioEnUnidad: (producto, unidad) => {
+        if (!producto || !producto.pesaje) return producto.price;
+        let precioPor = producto.pesaje.precioPor || 'lb';
+        if (unidad === precioPor) return producto.price;
+        // El precio base es por libra y se quiere en kg => multiplicar por 2.2046
+        if (precioPor === 'lb' && unidad === 'kg') {
+            return producto.price * FACTOR_LB_POR_KG;
+        }
+        // El precio base es por kg y se quiere en lb => dividir por 2.2046
+        if (precioPor === 'kg' && unidad === 'lb') {
+            return producto.price / FACTOR_LB_POR_KG;
+        }
+        return producto.price;
+    },
+
+    // Formato monetario en estilo del sitio
+    fmtMoneda: (valor) => {
+        return Number(valor).toFixed(2).replace('.', ',');
+    },
+
+    // Genera el HTML del selector de pesaje (lb / kg) para un producto
+    construirSelectorPesaje: (producto, unidadActual) => {
+        if (!producto.pesaje) return '';
+        let unidades = producto.pesaje.unidades || ['lb', 'kg'];
+        let opciones = unidades.map((u) => {
+            let label = (PESAJE_LABELS[u] && PESAJE_LABELS[u].corto) || u;
+            let activa = (u === unidadActual) ? 'active' : '';
+            return `
+                <button type="button"
+                        class="pesaje-opt ${activa}"
+                        data-unidad="${u}"
+                        onclick="cardapio.metodos.cambiarPesaje('${producto.id}', '${u}')"
+                        aria-pressed="${u === unidadActual ? 'true' : 'false'}">
+                    ${label}
+                </button>
+            `;
+        }).join('');
+        return `
+            <div class="pesaje-selector" role="group" aria-label="Tipo de pesaje">
+                <span class="pesaje-label"><i class="fas fa-balance-scale"></i> Pesaje:</span>
+                <div class="pesaje-opts" id="pesajeOpts-${producto.id}">
+                    ${opciones}
+                </div>
+            </div>
+        `;
+    },
+
+    // Cambia la unidad de pesaje del producto y actualiza la tarjeta sin recargar
+    cambiarPesaje: (id, unidad) => {
+        let producto = cardapio.metodos.encontrarProductoPorId(id);
+        if (!producto || !producto.pesaje) return;
+        if (!producto.disponible) return;
+
+        PESAJE_SELECCIONADO[id] = unidad;
+
+        // Actualizar precio mostrado
+        let nuevoPrecio = cardapio.metodos.precioEnUnidad(producto, unidad);
+        let safeId = cardapio.metodos.escaparId(id);
+        $("#preco-" + safeId).text(cardapio.metodos.fmtMoneda(nuevoPrecio));
+        let label = (PESAJE_LABELS[unidad] && PESAJE_LABELS[unidad].corto) || unidad;
+        $("#precoUnidad-" + safeId).text(' / ' + label);
+
+        // Actualizar estado visual de los botones
+        let $opts = $("#pesajeOpts-" + safeId).find('.pesaje-opt');
+        $opts.removeClass('active').attr('aria-pressed', 'false');
+        $opts.filter(`[data-unidad='${unidad}']`).addClass('active').attr('aria-pressed', 'true');
+    },
+
+    // Busca un producto por su id en cualquier categoría del MENU
+    encontrarProductoPorId: (id) => {
+        for (var key in MENU) {
+            if (MENU.hasOwnProperty(key)) {
+                let p = (MENU[key] || []).find(x => x.id == id);
+                if (p) return p;
+            }
+        }
+        return null;
+    },
+
+    // Construye el HTML de una tarjeta de producto a partir del template
+    construirTarjetaProducto: (e, infoCat) => {
+        let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
+        let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
+
+        let disponible = e.disponible !== false;
+        let unidadActual = cardapio.metodos.obtenerUnidadActual(e);
+        let precio = unidadActual
+            ? cardapio.metodos.precioEnUnidad(e, unidadActual)
+            : e.price;
+        let precoUnidadTexto = unidadActual
+            ? ' / ' + ((PESAJE_LABELS[unidadActual] && PESAJE_LABELS[unidadActual].corto) || unidadActual)
+            : '';
+        let precioPor = (e.pesaje && e.pesaje.precioPor) || '';
+
+        return cardapio.templates.item
+            .replace(/\$\{img\}/g, e.img)
+            .replace(/\$\{nome\}/g, e.name)
+            .replace(/\$\{preco\}/g, cardapio.metodos.fmtMoneda(precio))
+            .replace(/\$\{precoBase\}/g, e.price)
+            .replace(/\$\{precoPor\}/g, precioPor)
+            .replace(/\$\{precoUnidadTexto\}/g, precoUnidadTexto)
+            .replace(/\$\{id\}/g, e.id)
+            .replace(/\$\{categoriaNome\}/g, infoCat.nome)
+            .replace(/\$\{categoriaIcone\}/g, infoCat.icone)
+            .replace(/\$\{disponibleClass\}/g, disponible ? '' : 'agotado')
+            .replace(/\$\{disabledAttr\}/g, disponible ? '' : 'disabled aria-disabled="true"')
+            .replace(/\$\{addBtnLabel\}/g, disponible ? 'Añadir' : 'Agotado')
+            .replace(/\$\{agotadoBadge\}/g, disponible
+                ? ''
+                : `<span class="badge-agotado" title="Producto agotado"><i class="fas fa-ban"></i> Agotado</span>`)
+            .replace(/\$\{pesajeSelector\}/g, cardapio.metodos.construirSelectorPesaje(e, unidadActual))
+            .replace(/\$\{inCartClass\}/g, qntdCarrinho > 0 ? 'in-cart' : '')
+            .replace(/\$\{inCartBadge\}/g, qntdCarrinho > 0
+                ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
+                : '');
+    },
 
     // actualizar el contador (badge) de cada categoría en el menú
     atualizarContadoresCategorias: () => {
@@ -152,21 +308,7 @@ cardapio.metodos = {
 
         $.each(filtro, (i, e) => {
 
-            // obtener cantidad actual en el carrito (si existe)
-            let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
-            let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
-
-            let temp = cardapio.templates.item
-                .replace(/\${img}/g, e.img)
-                .replace(/\${nome}/g, e.name)
-                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-                .replace(/\${id}/g, e.id)
-                .replace(/\${categoriaNome}/g, infoCat.nome)
-                .replace(/\${categoriaIcone}/g, infoCat.icone)
-                .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
-                .replace(/\${inCartBadge}/g, qntdCarrinho > 0
-                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
+            let temp = cardapio.metodos.construirTarjetaProducto(e, infoCat);
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -297,25 +439,9 @@ cardapio.metodos = {
         }
 
         $.each(resultados, (i, r) => {
-
             let e = r.item;
             let infoCat = CATEGORIAS[r.categoria] || { nome: '', icone: '' };
-
-            let emCarrinho = MEU_CARRINHO.find(obj => obj.id == e.id);
-            let qntdCarrinho = emCarrinho ? emCarrinho.qntd : 0;
-
-            let temp = cardapio.templates.item
-                .replace(/\${img}/g, e.img)
-                .replace(/\${nome}/g, e.name)
-                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-                .replace(/\${id}/g, e.id)
-                .replace(/\${categoriaNome}/g, infoCat.nome)
-                .replace(/\${categoriaIcone}/g, infoCat.icone)
-                .replace(/\${inCartClass}/g, qntdCarrinho > 0 ? 'in-cart' : '')
-                .replace(/\${inCartBadge}/g, qntdCarrinho > 0
-                    ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
-                    : '');
-
+            let temp = cardapio.metodos.construirTarjetaProducto(e, infoCat);
             $("#itensCardapio").append(temp);
         });
     },
@@ -395,7 +521,8 @@ cardapio.metodos = {
     // adicionar ao carrinho o item do cardápio
     adicionarAoCarrinho: (id) => {
 
-        let qntdAtual = parseInt($("#qntd-" + id).text()) || 1;
+        let safeId = cardapio.metodos.escaparId(id);
+        let qntdAtual = parseInt($("#qntd-" + safeId).text()) || 1;
 
         // obter a categoria ativa (o la del producto si estamos en modo búsqueda)
         let $ativo = $(".container-menu a.active");
@@ -411,28 +538,47 @@ cardapio.metodos = {
 
         if (item.length > 0) {
 
-            // validar si ya existe ese item en el carrito
-            let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.id == id });
+            let producto = item[0];
+
+            // No permitir agregar productos agotados
+            if (producto.disponible === false) {
+                cardapio.metodos.mensagem(`"${producto.name}" está agotado por el momento.`);
+                return;
+            }
+
+            // Determinar precio y unidad de pesaje según selección actual
+            let unidadActual = cardapio.metodos.obtenerUnidadActual(producto);
+            let precioFinal = unidadActual
+                ? cardapio.metodos.precioEnUnidad(producto, unidadActual)
+                : producto.price;
+
+            // validar si ya existe ese item en el carrito (mismo id + misma unidad)
+            let lineId = unidadActual ? (id + '__' + unidadActual) : id;
+            let objIndex = MEU_CARRINHO.findIndex((obj) => obj.lineId == lineId);
 
             let novaQntd;
 
-            if (existe.length > 0) {
-                let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
+            if (objIndex >= 0) {
                 MEU_CARRINHO[objIndex].qntd = MEU_CARRINHO[objIndex].qntd + qntdAtual;
+                MEU_CARRINHO[objIndex].price = precioFinal;
                 novaQntd = MEU_CARRINHO[objIndex].qntd;
             }
             else {
                 // clonar para no contaminar el MENU original
-                let nuevoItem = Object.assign({}, item[0]);
+                let nuevoItem = Object.assign({}, producto);
+                nuevoItem.lineId = lineId;
                 nuevoItem.qntd = qntdAtual;
+                nuevoItem.price = precioFinal;
+                nuevoItem.pesajeUnidad = unidadActual; // 'lb' | 'kg' | undefined
                 MEU_CARRINHO.push(nuevoItem);
                 novaQntd = qntdAtual;
             }
 
-            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name} agregado`, 'green');
+            let sufijoUnidad = unidadActual ? ` (${unidadActual})` : '';
+            cardapio.metodos.mensagem(`${qntdAtual}${sufijoUnidad} × ${producto.name} agregado`, 'green');
 
             // resetear selector a 1 y actualizar estado visual de la tarjeta
-            $("#qntd-" + id).text(1);
+            $("#qntd-" + safeId).text(1);
             cardapio.metodos.marcarTarjetaEnCarrito(id, novaQntd);
 
             cardapio.metodos.atualizarBadgeTotal();
@@ -463,12 +609,18 @@ cardapio.metodos = {
         void $card[0].offsetWidth;
         $card.addClass('just-added');
 
+        // sumar todas las entradas del carrito con este id (puede haber varias unidades)
+        let totalEnCarrito = MEU_CARRINHO
+            .filter(obj => obj.id == id)
+            .reduce((acc, obj) => acc + (parseInt(obj.qntd) || 0), 0);
+        if (!totalEnCarrito) totalEnCarrito = qntd;
+
         // actualizar/crear badge "en carrito"
         let $badge = $card.find('.badge-in-cart');
         if ($badge.length === 0) {
-            $card.prepend(`<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntd}</span>`);
+            $card.prepend(`<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${totalEnCarrito}</span>`);
         } else {
-            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+            $badge.html(`<i class="fa fa-check"></i> ${totalEnCarrito}`);
         }
     },
 
@@ -593,11 +745,21 @@ cardapio.metodos = {
 
             $.each(MEU_CARRINHO, (i, e) => {
 
-                let temp = cardapio.templates.itemCarrinho.replace(/\${img}/g, e.img)
-                .replace(/\${nome}/g, e.name)
-                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-                .replace(/\${id}/g, e.id)
-                .replace(/\${qntd}/g, e.qntd)
+                let lineId = e.lineId || e.id;
+                let unidadTexto = e.pesajeUnidad
+                    ? ` <span class="cart-item-unidad">/ ${e.pesajeUnidad}</span>`
+                    : '';
+                let nombreCompleto = e.pesajeUnidad
+                    ? `${e.name} <span class="cart-item-unidad-tag">${e.pesajeUnidad}</span>`
+                    : e.name;
+
+                let temp = cardapio.templates.itemCarrinho
+                    .replace(/\$\{img\}/g, e.img)
+                    .replace(/\$\{nome\}/g, nombreCompleto)
+                    .replace(/\$\{preco\}/g, e.price.toFixed(2).replace('.', ','))
+                    .replace(/\$\{unidadTexto\}/g, unidadTexto)
+                    .replace(/\$\{lineId\}/g, lineId)
+                    .replace(/\$\{qntd\}/g, e.qntd)
 
                 $("#itensCarrinho").append(temp);
 
@@ -651,42 +813,60 @@ cardapio.metodos = {
         cardapio.metodos.mensagem('Carrito vaciado correctamente.', 'green');
     },
 
-    // diminuir quantidade do item no carrinho
-    diminuirQuantidadeCarrinho: (id) => {
+    // diminuir quantidade do item no carrinho (lineId = id + unidad opcional)
+    diminuirQuantidadeCarrinho: (lineId) => {
 
-        let qntdAtual = parseInt($("#qntd-carrinho-" + id).text());
+        let safeId = cardapio.metodos.escaparId(lineId);
+        let qntdAtual = parseInt($("#qntd-carrinho-" + safeId).text());
 
         if (qntdAtual > 1) {
-            $("#qntd-carrinho-" + id).text(qntdAtual - 1);
-            cardapio.metodos.atualizarCarrinho(id, qntdAtual - 1);
+            $("#qntd-carrinho-" + safeId).text(qntdAtual - 1);
+            cardapio.metodos.atualizarCarrinho(lineId, qntdAtual - 1);
         }
         else {
-            cardapio.metodos.removerItemCarrinho(id)
+            cardapio.metodos.removerItemCarrinho(lineId)
         }
 
     },
 
     // aumentar quantidade do item no carrinho
-    aumentarQuantidadeCarrinho: (id) => {
+    aumentarQuantidadeCarrinho: (lineId) => {
 
-        let qntdAtual = parseInt($("#qntd-carrinho-" + id).text());
-        $("#qntd-carrinho-" + id).text(qntdAtual + 1);
-        cardapio.metodos.atualizarCarrinho(id, qntdAtual + 1);
+        let safeId = cardapio.metodos.escaparId(lineId);
+        let qntdAtual = parseInt($("#qntd-carrinho-" + safeId).text());
+        $("#qntd-carrinho-" + safeId).text(qntdAtual + 1);
+        cardapio.metodos.atualizarCarrinho(lineId, qntdAtual + 1);
 
     },
 
     // botão remover item do carrinho
-    removerItemCarrinho: (id) => {
+    removerItemCarrinho: (lineId) => {
 
-        MEU_CARRINHO = $.grep(MEU_CARRINHO, (e, i) => { return e.id != id });
+        // recordar el id "padre" antes de eliminar para refrescar la tarjeta
+        let item = MEU_CARRINHO.find(e => e.lineId == lineId);
+        let parentId = item ? item.id : lineId;
+
+        MEU_CARRINHO = $.grep(MEU_CARRINHO, (e, i) => { return e.lineId != lineId });
         cardapio.metodos.carregarCarrinho();
 
-        // refrescar tarjetas del cardápio para quitar badge "en carrito"
-        cardapio.metodos.refrescarEstadoEnCarrito(id);
+        // si ya no quedan entradas con ese id, quitar el badge "en carrito"
+        let aunEnCarrito = MEU_CARRINHO.some(e => e.id == parentId);
+        if (!aunEnCarrito) {
+            cardapio.metodos.refrescarEstadoEnCarrito(parentId);
+        } else {
+            // actualizar contador del badge
+            let total = MEU_CARRINHO
+                .filter(e => e.id == parentId)
+                .reduce((acc, e) => acc + (parseInt(e.qntd) || 0), 0);
+            let $badge = $("#" + cardapio.metodos.escaparId(parentId)).find('.badge-in-cart');
+            if ($badge.length > 0) {
+                $badge.html(`<i class="fa fa-check"></i> ${total}`);
+            }
+        }
 
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
-        
+
     },
 
     // refresca el estado visual de la tarjeta del producto (quitar badge)
@@ -698,18 +878,23 @@ cardapio.metodos = {
     },
 
     // atualiza o carrinho com a quantidade atual
-    atualizarCarrinho: (id, qntd) => {
+    atualizarCarrinho: (lineId, qntd) => {
 
-        let objIndex = MEU_CARRINHO.findIndex((obj => obj.id == id));
+        let objIndex = MEU_CARRINHO.findIndex((obj => obj.lineId == lineId));
+        if (objIndex < 0) return;
         MEU_CARRINHO[objIndex].qntd = qntd;
+        let parentId = MEU_CARRINHO[objIndex].id;
 
         // atualiza o botão carrinho com a quantidade atualizada
         cardapio.metodos.atualizarBadgeTotal();
 
-        // actualizar badge en la tarjeta del cardápio si visible
-        let $badge = $("#" + cardapio.metodos.escaparId(id)).find('.badge-in-cart');
+        // actualizar badge en la tarjeta del cardápio si visible (suma de todas las líneas con ese id)
+        let total = MEU_CARRINHO
+            .filter(e => e.id == parentId)
+            .reduce((acc, e) => acc + (parseInt(e.qntd) || 0), 0);
+        let $badge = $("#" + cardapio.metodos.escaparId(parentId)).find('.badge-in-cart');
         if ($badge.length > 0) {
-            $badge.html(`<i class="fa fa-check"></i> ${qntd}`);
+            $badge.html(`<i class="fa fa-check"></i> ${total}`);
         }
 
         // atualiza os valores (R$) totais do carrinho
@@ -1294,10 +1479,16 @@ cardapio.metodos = {
         // --- PRODUCTOS ---
         $("#listaItensResumo").html('');
         $.each(MEU_CARRINHO, (i, e) => {
-            let temp = cardapio.templates.itemResumo.replace(/\${img}/g, e.img)
-                .replace(/\${nome}/g, e.name)
-                .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
-                .replace(/\${qntd}/g, e.qntd);
+            let unidadTexto = e.pesajeUnidad ? ` <span class="cart-item-unidad">/ ${e.pesajeUnidad}</span>` : '';
+            let nombreCompleto = e.pesajeUnidad
+                ? `${e.name} <span class="cart-item-unidad-tag">${e.pesajeUnidad}</span>`
+                : e.name;
+            let temp = cardapio.templates.itemResumo
+                .replace(/\$\{img\}/g, e.img)
+                .replace(/\$\{nome\}/g, nombreCompleto)
+                .replace(/\$\{preco\}/g, e.price.toFixed(2).replace('.', ','))
+                .replace(/\$\{unidadTexto\}/g, unidadTexto)
+                .replace(/\$\{qntd\}/g, e.qntd);
             $("#listaItensResumo").append(temp);
         });
 
@@ -1407,9 +1598,10 @@ cardapio.metodos = {
         $.each(MEU_CARRINHO, (i, e) => {
             let subtotalItem = fmt(e.price * e.qntd);
             let precioUnit = fmt(e.price);
-            texto += `\n${i + 1}. *${e.name}*`;
-            texto += `\n   �� Cantidad: ${e.qntd}`;
-            texto += `\n   • Precio unitario: MN$ ${precioUnit}`;
+            let unidad = e.pesajeUnidad ? ` (${e.pesajeUnidad})` : '';
+            texto += `\n${i + 1}. *${e.name}${unidad}*`;
+            texto += `\n   • Cantidad: ${e.qntd}${e.pesajeUnidad ? ' ' + e.pesajeUnidad : ''}`;
+            texto += `\n   • Precio unitario: MN$ ${precioUnit}${e.pesajeUnidad ? ' / ' + e.pesajeUnidad : ''}`;
             texto += `\n   • Subtotal: MN$ ${subtotalItem}`;
         });
         texto += `\n\n_Subtotal productos: MN$ ${fmt(VALOR_CARRINHO)}_`;
@@ -1496,6 +1688,165 @@ cardapio.metodos = {
 
     },
 
+    // ============================================================
+    //  CANCELACIÓN DE PEDIDOS (límite: 4 horas tras el pedido)
+    // ============================================================
+
+    // Lee el listado de pedidos guardados en localStorage
+    leerPedidosLocal: () => {
+        try {
+            let raw = localStorage.getItem(KEY_PEDIDOS_LOCAL);
+            if (!raw) return {};
+            let parsed = JSON.parse(raw);
+            return (parsed && typeof parsed === 'object') ? parsed : {};
+        } catch (err) {
+            console.log('[v0] Error leyendo pedidos locales:', err && err.message);
+            return {};
+        }
+    },
+
+    // Guarda el listado de pedidos en localStorage
+    guardarPedidosLocal: (pedidos) => {
+        try {
+            localStorage.setItem(KEY_PEDIDOS_LOCAL, JSON.stringify(pedidos));
+        } catch (err) {
+            console.log('[v0] Error guardando pedidos locales:', err && err.message);
+        }
+    },
+
+    // Registra el pedido recién enviado por WhatsApp con marca de tiempo
+    registrarPedidoLocal: () => {
+        if (!NUMERO_ORDEN) return;
+        let pedidos = cardapio.metodos.leerPedidosLocal();
+        // limpiar pedidos viejos (>48h) para evitar acumulación
+        let ahora = Date.now();
+        Object.keys(pedidos).forEach((k) => {
+            if (!pedidos[k] || !pedidos[k].timestamp) {
+                delete pedidos[k];
+            } else if ((ahora - pedidos[k].timestamp) > (48 * 60 * 60 * 1000)) {
+                delete pedidos[k];
+            }
+        });
+        // calcular total para guardar como referencia
+        let total = VALOR_CARRINHO + ((MEU_ENDERECO && MEU_ENDERECO.costoEntrega) || 0);
+        pedidos[NUMERO_ORDEN] = {
+            timestamp: ahora,
+            total: total,
+            cliente: (MEU_ENDERECO && MEU_ENDERECO.complemento) || ''
+        };
+        cardapio.metodos.guardarPedidosLocal(pedidos);
+    },
+
+    // Abre la sección de cancelación enfocando el input
+    enfocarCancelacion: () => {
+        let $input = $("#txtNumeroOrdenCancelar");
+        if ($input.length > 0) {
+            setTimeout(() => $input.trigger('focus'), 100);
+        }
+    },
+
+    // Limpia el formulario de cancelación
+    limpiarCancelacion: () => {
+        $("#txtNumeroOrdenCancelar").val('');
+        $("#cancelacionFeedback").removeClass('error ok').html('');
+        $("#txtNumeroOrdenCancelar").removeClass('input-error input-ok');
+    },
+
+    // Valida y envía la cancelación por WhatsApp
+    enviarCancelacion: () => {
+        let $input = $("#txtNumeroOrdenCancelar");
+        let $fb = $("#cancelacionFeedback");
+        let numero = ($input.val() || '').trim();
+
+        if (numero.length === 0) {
+            $fb.removeClass('ok').addClass('error')
+                .html('<i class="fas fa-exclamation-triangle"></i> Debes escribir el número de orden para poder solicitar la cancelación.');
+            $input.removeClass('input-ok').addClass('input-error').trigger('focus');
+            return;
+        }
+
+        // Si el pedido fue generado en este dispositivo, validamos la regla de 4 horas
+        let pedidos = cardapio.metodos.leerPedidosLocal();
+        let registro = pedidos[numero];
+
+        if (registro && registro.timestamp) {
+            let ahora = Date.now();
+            let transcurridoMs = ahora - registro.timestamp;
+            if (transcurridoMs > LIMITE_CANCELACION_MS) {
+                let horas = Math.floor(transcurridoMs / (60 * 60 * 1000));
+                let mins = Math.floor((transcurridoMs % (60 * 60 * 1000)) / (60 * 1000));
+                $fb.removeClass('ok').addClass('error')
+                    .html(`<i class="fas fa-clock"></i> No puedes cancelar este pedido. Han pasado ${horas} h ${mins} min desde que lo realizaste y el plazo máximo permitido es de 4 horas.`);
+                $input.removeClass('input-ok').addClass('input-error');
+                return;
+            }
+        }
+
+        // Construir mensaje de WhatsApp para la cancelación
+        let separador = '━━━━━━━━━━━━━━━━━━';
+        let texto = '';
+        texto += '*SOLICITUD DE CANCELACIÓN DE PEDIDO*\n';
+        texto += separador + '\n\n';
+        texto += `• *N° de orden a cancelar:* ${numero}\n`;
+        if (registro) {
+            let fecha = new Date(registro.timestamp);
+            let pad = (n) => String(n).padStart(2, '0');
+            let fechaTxt = `${pad(fecha.getDate())}/${pad(fecha.getMonth() + 1)}/${fecha.getFullYear()} ${pad(fecha.getHours())}:${pad(fecha.getMinutes())}`;
+            texto += `• *Fecha del pedido:* ${fechaTxt}\n`;
+            if (registro.cliente) texto += `• *Cliente:* ${registro.cliente}\n`;
+            if (registro.total) {
+                texto += `• *Total:* MN$ ${cardapio.metodos.fmtMoneda(registro.total)}\n`;
+            }
+        }
+        texto += '\n' + separador + '\n\n';
+        texto += 'Hola, deseo solicitar la *cancelación* del pedido con el número de orden indicado arriba.\n';
+        texto += 'Por favor, confirmen la cancelación. ¡Gracias!';
+
+        let url = `https://wa.me/${CELULAR_EMPRESA}?text=${encodeURIComponent(texto)}`;
+
+        // Mostrar confirmación en pantalla y abrir WhatsApp
+        $fb.removeClass('error').addClass('ok')
+            .html('<i class="fas fa-check-circle"></i> Solicitud lista. Abriendo WhatsApp para enviar la cancelación...');
+        $input.removeClass('input-error').addClass('input-ok');
+
+        // Abrir en una pestaña nueva
+        window.open(url, '_blank');
+    },
+
+    // Atajo: limpia mensaje al escribir
+    cancelacionInputLive: () => {
+        let val = ($("#txtNumeroOrdenCancelar").val() || '').trim();
+        let $fb = $("#cancelacionFeedback");
+        let $input = $("#txtNumeroOrdenCancelar");
+        if (val.length === 0) {
+            $fb.removeClass('error ok').html('');
+            $input.removeClass('input-error input-ok');
+            return;
+        }
+        // si hay un pedido registrado, mostrar tiempo restante
+        let pedidos = cardapio.metodos.leerPedidosLocal();
+        let registro = pedidos[val];
+        if (registro && registro.timestamp) {
+            let ahora = Date.now();
+            let transcurridoMs = ahora - registro.timestamp;
+            let restanteMs = LIMITE_CANCELACION_MS - transcurridoMs;
+            if (restanteMs > 0) {
+                let horas = Math.floor(restanteMs / (60 * 60 * 1000));
+                let mins = Math.floor((restanteMs % (60 * 60 * 1000)) / (60 * 1000));
+                $fb.removeClass('error').addClass('ok')
+                    .html(`<i class="fas fa-clock"></i> Pedido encontrado. Tiempo restante para cancelar: ${horas} h ${mins} min.`);
+                $input.removeClass('input-error').addClass('input-ok');
+            } else {
+                $fb.removeClass('ok').addClass('error')
+                    .html('<i class="fas fa-clock"></i> El plazo de 4 horas para cancelar este pedido ya ha vencido.');
+                $input.removeClass('input-ok').addClass('input-error');
+            }
+        } else {
+            $fb.removeClass('error ok').html('<i class="fas fa-info-circle"></i> Verifica que el número sea correcto. Si fue realizado en otro dispositivo, igual puedes enviarlo por WhatsApp.');
+            $input.removeClass('input-error input-ok');
+        }
+    },
+
     // mensagens
     mensagem: (texto, cor = 'red', tempo = 3500) => {
 
@@ -1521,28 +1872,31 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass}" id="\${id}">
-                \${inCartBadge}
-                <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
-                <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
-                    <img src="\${img}" alt="\${nome}" />
+            <div class="card card-item ${inCartClass} ${disponibleClass}" id="${id}" data-precio-base="${precoBase}" data-precio-por="${precioPor}">
+                ${inCartBadge}
+                ${agotadoBadge}
+                <span class="card-badge-categoria"><i class="${categoriaIcone}"></i> ${categoriaNome}</span>
+                <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('${img}', '${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de ${nome}" title="Toca para ampliar">
+                    <img src="${img}" alt="${nome}" />
                     <span class="img-zoom-hint" aria-hidden="true"><i class="fas fa-search-plus"></i></span>
                 </div>
                 <p class="title-produto text-center mt-4">
-                    <b>\${nome}</b>
+                    <b>${nome}</b>
                 </p>
                 <p class="price-produto text-center">
-                    <b>MN$ \${preco}</b>
+                    <b>MN$ <span id="preco-${id}">${preco}</span></b>
+                    <small class="price-unidad" id="precoUnidad-${id}">${precoUnidadTexto}</small>
                 </p>
+                ${pesajeSelector}
                 <div class="add-carrinho">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
-                        <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
-                        <span class="add-numero-itens" id="qntd-\${id}">1</span>
-                        <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
+                        <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
+                        <span class="add-numero-itens" id="qntd-${id}">1</span>
+                        <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
                     </div>
-                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
+                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('${id}')" aria-label="Añadir al carrito" ${disabledAttr}>
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="btn-add-label">Añadir</span>
+                        <span class="btn-add-label">${addBtnLabel}</span>
                     </button>
                 </div>
             </div>
@@ -1552,17 +1906,17 @@ cardapio.templates = {
     itemCarrinho: `
         <div class="col-12 item-carrinho">
             <div class="img-produto">
-                <img src="\${img}" />
+                <img src="${img}" />
             </div>
             <div class="dados-produto">
-                <p class="title-produto"><b>\${nome}</b></p>
-                <p class="price-produto"><b>MN$ \${preco}</b></p>
+                <p class="title-produto"><b>${nome}</b></p>
+                <p class="price-produto"><b>MN$ ${preco}${unidadTexto}</b></p>
             </div>
             <div class="add-carrinho">
-                <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidadeCarrinho('\${id}')"><i class="fas fa-minus"></i></span>
-                <span class="add-numero-itens" id="qntd-carrinho-\${id}">\${qntd}</span>
-                <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidadeCarrinho('\${id}')"><i class="fas fa-plus"></i></span>
-                <span class="btn btn-remove no-mobile" onclick="cardapio.metodos.removerItemCarrinho('\${id}')"><i class="fa fa-times"></i></span>
+                <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidadeCarrinho('${lineId}')"><i class="fas fa-minus"></i></span>
+                <span class="add-numero-itens" id="qntd-carrinho-${lineId}">${qntd}</span>
+                <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidadeCarrinho('${lineId}')"><i class="fas fa-plus"></i></span>
+                <span class="btn btn-remove no-mobile" onclick="cardapio.metodos.removerItemCarrinho('${lineId}')"><i class="fa fa-times"></i></span>
             </div>
         </div>
     `,
@@ -1570,18 +1924,18 @@ cardapio.templates = {
     itemResumo: `
         <div class="col-12 item-carrinho resumo">
             <div class="img-produto-resumo">
-                <img src="\${img}" />
+                <img src="${img}" />
             </div>
             <div class="dados-produto">
                 <p class="title-produto-resumo">
-                    <b>\${nome}</b>
+                    <b>${nome}</b>
                 </p>
                 <p class="price-produto-resumo">
-                    <b>MN$ \${preco}</b>
+                    <b>MN$ ${preco}${unidadTexto}</b>
                 </p>
             </div>
             <p class="quantidade-produto-resumo">
-                x <b>\${qntd}</b>
+                x <b>${qntd}</b>
             </p>
         </div>
     `
