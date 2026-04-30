@@ -1147,7 +1147,7 @@ cardapio.metodos = {
         }
         $("#iconResumenDireccion").attr('class', 'fas fa-store');
         $("#resumenDireccionTitulo").text('Recoger en el local');
-        $("#resumenDireccionValor").text('Farmacia Habana · Calle 23 #456 entre E y F, Vedado');
+        $("#resumenDireccionValor").text('D\'Mima · Calle 23 #456 entre E y F, Vedado');
         $("#resumenDireccionMunicipio").text('Horario: Lun a Sáb, 9:00 AM - 7:00 PM · Envío gratis');
         $("#resumenDireccionConfirmada").removeClass('hidden');
     },
@@ -1470,7 +1470,7 @@ cardapio.metodos = {
             $("#iconResumoSectionEntrega").attr('class', 'fas fa-store');
 
             entregaHTML += cardapio.metodos.filaResumo('fas fa-store', 'Modalidad:', 'Recoger en el local');
-            entregaHTML += cardapio.metodos.filaResumo('fas fa-clinic-medical', 'Local:', 'Farmacia Habana');
+            entregaHTML += cardapio.metodos.filaResumo('fas fa-clinic-medical', 'Local:', 'D\'Mima');
             entregaHTML += cardapio.metodos.filaResumo('fas fa-map-marker-alt', 'Dirección:', 'Calle 23 #456 entre E y F, Vedado, Plaza de la Revolución, La Habana');
             entregaHTML += cardapio.metodos.filaResumo('far fa-clock', 'Horario:', 'Lun a Sáb, 9:00 AM - 7:00 PM');
         }
@@ -1580,7 +1580,7 @@ cardapio.metodos = {
             texto += `• *Costo del envío (${MEU_ENDERECO.municipio}):* MN$ ${fmt(costoEntrega)}\n`;
         } else {
             texto += '*RECOGIDA EN EL LOCAL:*\n';
-            texto += `• *Local:* Farmacia Habana\n`;
+            texto += `• *Local:* D'Mima\n`;
             texto += `• *Dirección:* Calle 23 #456 entre E y F, Vedado, Plaza de la Revolución, La Habana\n`;
             texto += `• *Horario:* Lun a Sáb, 9:00 AM - 7:00 PM\n`;
             texto += `• *Envío:* Gratis\n`;
