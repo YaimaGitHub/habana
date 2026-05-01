@@ -42,6 +42,54 @@ var MENU = {
             "dsc": "Huevos Sueltos de Gallina",
             "price": 100,
             "unit": "unidad"
+        },
+        {
+            "id": "Amitriptilina",
+            "img": "./img/cardapio/Carnico/Lomo de cerdo NATURAL.webp",
+            "name": "Lomo de cerdo (Natural)",
+            "dsc": "Lomo de cerdo (Natural)",
+            "price": 1200,
+            "unit": "lb"
+        },
+        {
+            "id": "super2",
+            "img": "./img/cardapio/Carnico/Mollejas de Pollo Aurora 1kg.webp",
+            "name": "Mollejas de Pollo Aurora 1kg",
+            "dsc": "Mollejas de Pollo Aurora 1kg",
+            "price": 1200,
+            "unit": "unidad"
+        },
+        {
+            "id": "paletas-de-cerdo-deshuesada",
+            "img": "./img/cardapio/Carnico/Paletas de Cerdo deshuesada.jpeg",
+            "name": "Paletas de Cerdo deshuesada",
+            "dsc": "Paletas de Cerdo deshuesada",
+            "price": 1100,
+            "unit": "lb"
+        },
+        {
+            "id": "pechuga-de-pollo-sin-hueso-10-lb",
+            "img": "./img/cardapio/Carnico/Pechuga de pollo sin hueso 10 lb.jpeg",
+            "name": "Pechuga de pollo sin hueso 10 lb",
+            "dsc": "Pechuga de pollo sin hueso 10 lb",
+            "price": 900,
+            "unit": "lb"
+        },
+        {
+            "id": "picadillo-mdm",
+            "img": "./img/cardapio/Carnico/Picadillo MDM.jpg",
+            "name": "Picadillo MDM",
+            "dsc": "Picadillo MDM",
+            "price": 320,
+            "unit": "lb"
+        },
+        {
+            "id": "muslos-de-pollo-10-lb-",
+            "img": "./img/cardapio/Carnico/Muslos de pollo (10 lb).jpg",
+            "name": "Muslos de pollo (10 lb)",
+            "dsc": "Muslos de pollo (10 lb)",
+            "price": 4250,
+            "unit": "unidad"
         }
     ],
     "burgers": [
@@ -116,6 +164,70 @@ var MENU = {
             "dsc": "Gelatina de piña",
             "price": 280,
             "unit": "unidad"
+        },
+        {
+            "id": "23699-choose-your-own-thin-crust-pizza-4-pack",
+            "img": "./img/cardapio/Mercado/Leche en Polvo MU (1kg).webp",
+            "name": "Leche en Polvo MU (1kg)",
+            "dsc": "Leche en Polvo MU (1kg)",
+            "price": 2550,
+            "unit": "unidad"
+        },
+        {
+            "id": "choose-your-own-new-haven-style-pizza-6-pack",
+            "img": "./img/cardapio/Mercado/Leche condensada Vamica (380 g).jpg",
+            "name": "Leche condensada Vamica (380 g)",
+            "dsc": "Leche condensada Vamica (380 g)",
+            "price": 500,
+            "unit": "unidad"
+        },
+        {
+            "id": "california-reserve-filet-mignon-steaks-gift-box",
+            "img": "./img/cardapio/Mercado/Jabita de Leche en polvo 1Kg.webp",
+            "name": "Jabita de Leche en polvo 1Kg",
+            "dsc": "Jabita de Leche en polvo 1Kg",
+            "price": 2230,
+            "unit": "unidad"
+        },
+        {
+            "id": "6-lou-malnatis-deep-dish-pizzas",
+            "img": "./img/cardapio/Mercado/Mantequilla Bel Campo.jpg",
+            "name": "Mantequilla Bel Campo",
+            "dsc": "Mantequilla Bel Campo",
+            "price": 550,
+            "unit": "unidad"
+        },
+        {
+            "id": "pasta-para-bocadito",
+            "img": "./img/cardapio/Mercado/Pasta para Bocadito.webp",
+            "name": "Pasta para Bocadito",
+            "dsc": "Pasta para Bocadito",
+            "price": 950,
+            "unit": "unidad"
+        },
+        {
+            "id": "pasta-para-bocaditos-hena",
+            "img": "./img/cardapio/Mercado/Pasta para bocaditos Hena.jpg",
+            "name": "Pasta para bocaditos Hena",
+            "dsc": "Pasta para bocaditos Hena",
+            "price": 1400,
+            "unit": "unidad"
+        },
+        {
+            "id": "paquete-de-sal-fina-1kg-",
+            "img": "./img/cardapio/Mercado/Paquete de Sal Fina (1kg).webp",
+            "name": "Paquete de Sal Fina (1kg)",
+            "dsc": "Paquete de Sal Fina (1kg)",
+            "price": 350,
+            "unit": "unidad"
+        },
+        {
+            "id": "sardinas-en-tomate-docanned",
+            "img": "./img/cardapio/Mercado/Sardinas en Tomate Docanned.webp",
+            "name": "Sardinas en Tomate Docanned",
+            "dsc": "Sardinas en Tomate Docanned",
+            "price": 800,
+            "unit": "unidad"
         }
     ],
     "sobremesas": [
@@ -150,6 +262,14 @@ var MENU = {
             "dsc": "Jabón de lavar miya 150g",
             "price": 260,
             "unit": "unidad"
+        },
+        {
+            "id": "papel-higi-nico",
+            "img": "./img/cardapio/Aseo/Papel higiénico.jpg",
+            "name": "Papel higiénico",
+            "dsc": "Papel higiénico",
+            "price": 140,
+            "unit": "unidad"
         }
     ],
     "bebidas": [
@@ -165,58 +285,10 @@ var MENU = {
     "outros": [
         {
             "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
-            "img": "./img/cardapio/outros/aceite-higado-de-bacalao-x10-tabletas-1.jpg",
-            "name": "Aceite Higado de Bacalao",
-            "dsc": "Brooklyn Blackout Cookie + Brownie Combo Pack - 2 Tins",
-            "price": 150,
-            "unit": "unidad"
-        },
-        {
-            "id": "best-seller-cupcake-dozen",
-            "img": "./img/cardapio/outros/Óvulos Clotrimazol.jpg",
-            "name": "Ovulos Clotrimazol",
-            "dsc": "Best Seller Cupcake Dozen",
-            "price": 90,
-            "unit": "unidad"
-        },
-        {
-            "id": "choose-your-own-ice-cream-donuts-6-pack",
-            "img": "./img/cardapio/outros/Óvulos Clotrimazol+nistatina.jpg",
-            "name": "Ovulos Metronidazol + Nistatina",
-            "dsc": "Choose Your Own Ice Cream Donuts - 6 Pack",
-            "price": 90,
-            "unit": "unidad"
-        },
-        {
-            "id": "Amitriptilina",
-            "img": "./img/cardapio/outros/Amitriptilina 25 mg.jpg",
-            "name": "Amitriptilina 25 mg",
-            "dsc": "Jewish Classics Dessert Pack",
-            "price": 420,
-            "unit": "unidad"
-        },
-        {
-            "id": "super",
-            "img": "./img/cardapio/outros/super b-complex.jpg",
-            "name": "Super B-Complex (pomo)",
-            "dsc": "Jewish Classics Dessert Pack",
-            "price": 600,
-            "unit": "unidad"
-        },
-        {
-            "id": "super1",
-            "img": "./img/cardapio/outros/mentol muscle rub.jpg",
-            "name": "Mentol Muscle Rub (crema)",
-            "dsc": "Jewish Classics Dessert Pack",
-            "price": 700,
-            "unit": "unidad"
-        },
-        {
-            "id": "super2",
-            "img": "./img/cardapio/outros/Prednisolona.jpg",
-            "name": "Prednisolona",
-            "dsc": "Choose Your Own Deep Dish Pizza - 3 Pack",
-            "price": 300,
+            "img": "./img/cardapio/Mercado/Fanguito (Leche Condensada).webp",
+            "name": "Fanguito (Leche Condensada)",
+            "dsc": "Fanguito (Leche Condensada)",
+            "price": 550,
             "unit": "unidad"
         },
         {
@@ -234,41 +306,25 @@ var MENU = {
             "dsc": "Galletas sueltas de Soda Crokantinas",
             "price": 190,
             "unit": "unidad"
-        }
-    ],
-    "pizzas": [
-        {
-            "id": "23699-choose-your-own-thin-crust-pizza-4-pack",
-            "img": "./img/cardapio/antiinflamatorios/paracetamol.jpg",
-            "name": "Paracetamol",
-            "dsc": "Choose Your Own Thin Crust Pizza - 4 Pack",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "choose-your-own-new-haven-style-pizza-6-pack",
-            "img": "./img/cardapio/antiinflamatorios/IBUPROFENO-MK-TAB-800MG-CJAX-30UND-81001065-1.jpg",
-            "name": "Ibuprofeno",
-            "dsc": "New Haven-Style Pizza - 6 Pack (Choose Your Own)",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "6-lou-malnatis-deep-dish-pizzas",
-            "img": "./img/cardapio/antiinflamatorios/Paracetamol (jarabe).jpg",
-            "name": "Paracetamol (jarabe)",
-            "dsc": "6 Lou Malnati's Deep Dish Pizzas",
-            "price": 800,
-            "unit": "unidad"
         },
         {
             "id": "wood-fired-pizzas-best-seller-4-pack",
-            "img": "./img/cardapio/antiinflamatorios/Ibuprofeno (jarabe).jpg",
-            "name": "Ibuprofeno (jarabe)",
-            "dsc": "Wood Fired Pizzas Best Seller - 4 Pack",
-            "price": 800,
+            "img": "./img/cardapio/Confituras/Natilla.webp",
+            "name": "Natilla",
+            "dsc": "Natilla",
+            "price": 220,
             "unit": "unidad"
         },
+        {
+            "id": "papas-potato-china-110g",
+            "img": "./img/cardapio/Confituras/Papas potato china 110g.jpg",
+            "name": "Papas potato china 110g",
+            "dsc": "Papas potato china 110g",
+            "price": 750,
+            "unit": "unidad"
+        }
+    ],
+    "pizzas": [
         {
             "id": "hong-kong-boba-tea-kit-for-6",
             "img": "./img/cardapio/Quesos y Embutidos/QUESO-GOUDA-VIMA.webp",
@@ -276,33 +332,33 @@ var MENU = {
             "dsc": "Queso Gouda Vima 3Kg Aprox.",
             "price": 14500,
             "unit": "unidad"
+        },
+        {
+            "id": "super1",
+            "img": "./img/cardapio/Quesos y Embutidos/Mortadela Seara 1 kg.webp",
+            "name": "Mortadela Seara 1 kg",
+            "dsc": "Mortadela Seara 1 kg",
+            "price": 1180,
+            "unit": "unidad"
+        },
+        {
+            "id": "salchicha-de-pollo-oderich-340g-",
+            "img": "./img/cardapio/Quesos y Embutidos/Salchicha de Pollo Oderich (340g).webp",
+            "name": "Salchicha de Pollo Oderich (340g)",
+            "dsc": "",
+            "price": 510,
+            "unit": "unidad"
+        },
+        {
+            "id": "queso-crema-prairie",
+            "img": "./img/cardapio/Quesos y Embutidos/Queso crema Prairie.jpg",
+            "name": "Queso crema Prairie",
+            "dsc": "Queso crema Prairie",
+            "price": 1150,
+            "unit": "unidad"
         }
     ],
     "steaks": [
-        {
-            "id": "california-reserve-filet-mignon-steaks-gift-box",
-            "img": "./img/cardapio/Antidepresivos/ENALAPRIL-MALEATO-20MG-CAJA-POR-20-TABLETAS-CON-BLISTER.jpg",
-            "name": "Enalapril",
-            "dsc": "California Reserve Filet Mignon Steaks Gift Box",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "steaks-and-cakes-date-night-dinner-for-2",
-            "img": "./img/cardapio/Antidepresivos/Captopril.png",
-            "name": "Captopril",
-            "dsc": "Steaks and Cakes Date Night Dinner for 2",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "Prime-holiday-steak-sampler-for-10-12",
-            "img": "./img/cardapio/Antidepresivos/Furosemida.jpg",
-            "name": "Furosemida",
-            "dsc": "Chef Matt's Steak Sampler for 10-12",
-            "price": 220,
-            "unit": "unidad"
-        },
         {
             "id": "2-lou-malnatis-deep-dish-pizzas",
             "img": "./img/cardapio/Harinas y Levaduras/Harina.webp",
@@ -310,6 +366,14 @@ var MENU = {
             "dsc": "Harina por libra",
             "price": 350,
             "unit": "lb"
+        },
+        {
+            "id": "choose-your-own-ice-cream-donuts-6-pack",
+            "img": "./img/cardapio/Harinas y Levaduras/Levadura Apalav.jpg",
+            "name": "Levadura Apalav (500g)",
+            "dsc": "Levadura Apalav (500g)",
+            "price": 1500,
+            "unit": "unidad"
         }
     ],
     "Condimentos": [
@@ -344,15 +408,79 @@ var MENU = {
             "dsc": "Tomato Ketchup KURTZ (680g)",
             "price": 1000,
             "unit": "unidad"
+        },
+        {
+            "id": "super",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Mojo Marinado BADIA.webp",
+            "name": "Mojo Marinado BADIA (295mL) ",
+            "dsc": "Mojo Marinado BADIA (295mL)",
+            "price": 850,
+            "unit": "unidad"
+        },
+        {
+            "id": "steaks-and-cakes-date-night-dinner-for-2",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Mostaza Kurtz.jpg",
+            "name": "Mostaza Kurtz",
+            "dsc": "Mostaza Kurtz",
+            "price": 820,
+            "unit": "unidad"
+        },
+        {
+            "id": "Prime-holiday-steak-sampler-for-10-12",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Jugo Naranja Agria BADIA.webp",
+            "name": "Jugo Naranja Agria BADIA",
+            "dsc": "Jugo Naranja Agria BADIA",
+            "price": 980,
+            "unit": "unidad"
+        },
+        {
+            "id": "or-gano-entero-en-hojas",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Orégano Entero En Hojas.jpg",
+            "name": "Orégano Entero En Hojas",
+            "dsc": "Orégano Entero En Hojas",
+            "price": 850,
+            "unit": "unidad"
+        },
+        {
+            "id": "pan-rallado-con-saz-n-completa-15oz",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Badia Pan Rallado con Sazón Completa 15oz.webp",
+            "name": "Pan Rallado con Sazón Completa 15oz",
+            "dsc": "Pan Rallado con Sazón Completa 15oz",
+            "price": 1550,
+            "unit": "unidad"
+        },
+        {
+            "id": "pasta-tomate-zer",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Pasta tomate zer.webp",
+            "name": "Pasta tomate zer",
+            "dsc": "Pasta tomate zer",
+            "price": 460,
+            "unit": "unidad"
+        },
+        {
+            "id": "pasta-de-ajo",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Pasta de Ajo.webp",
+            "name": "Pasta de Ajo",
+            "dsc": "Pasta de Ajo",
+            "price": 280,
+            "unit": "unidad"
+        },
+        {
+            "id": "salsa-picante-chili-badia-150ml-",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Salsa picante Chili BADIA (150mL).webp",
+            "name": "Salsa picante Chili BADIA (150mL)",
+            "dsc": "Salsa picante Chili BADIA (150mL)",
+            "price": 1000,
+            "unit": "unidad"
         }
     ],
     "Granos y Pastas": [
         {
             "id": "best-seller-cupcake-dozen",
-            "img": "./img/cardapio/Granos y Pastas/Frijoles blancos Del Campo (500g).jpg",
-            "name": "Frijoles blancos Del Campo (500g)",
-            "dsc": "Frijoles blancos Del Campo (500g)",
-            "price": 820,
+            "img": "./img/cardapio/Granos y Pastas/Lentejas Del Campo (500g).webp",
+            "name": "Lentejas Del Campo (500g)",
+            "dsc": "Lentejas Del Campo (500g)",
+            "price": 750,
             "unit": "unidad"
         },
         {
