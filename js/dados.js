@@ -7,8 +7,8 @@ var MENU = {
             "id": "carne-de-res",
             "img": "./img/cardapio/carnes/carne-res.jpg",
             "name": "Carne de Res",
-            "dsc": "Carne de res fresca de primera calidad",
-            "price": 450,
+            "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
+            "price": 1650,
             "unit": "lb"
         },
         {
@@ -32,14 +32,6 @@ var MENU = {
             "img": "./img/cardapio/Antialérgicos/Ciproheptadina.jpg",
             "name": "Ciproheptadina",
             "dsc": "Joe's KC Ribs, Brisket & Burnt Ends",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "005-kings-carolina-oink-sampler",
-            "img": "./img/cardapio/Antialérgicos/Loratadina.jpg",
-            "name": "Loratadina",
-            "dsc": "Carolina BBQ Oink Sampler",
             "price": 200,
             "unit": "unidad"
         }
@@ -135,84 +127,84 @@ var MENU = {
         },
         {
             "id": "complete",
-            "img": "./img/cardapio/burguers/cefalexina suspension.jpg",
-            "name": "Cefalexina (suspención)",
-            "dsc": "complete",
-            "price": 700,
+            "img": "./img/cardapio/Mercado/Mayonesa Celorio (500ML).webp",
+            "name": "Mayonesa Celorio (500ML)",
+            "dsc": "Mayonesa Celorio (500ML)",
+            "price": 1650,
             "unit": "unidad"
         },
         {
             "id": "1",
-            "img": "./img/cardapio/burguers/nistatina-suspension.jpg",
-            "name": "Nistatina (suspensión)",
-            "dsc": "1",
-            "price": 700,
+            "img": "./img/cardapio/Mercado/Chícharos verdes Del campo.webp",
+            "name": "Chícharos verdes Del campo (500g)",
+            "dsc": "Chícharos verdes Del campo (500g)",
+            "price": 650,
+            "unit": "unidad"
+        },
+        {
+            "id": "15259-german-chocolate-killer-brownie-tin-pack",
+            "img": "./img/cardapio/Mercado/Coditos Doga 500g.jpg",
+            "name": "Coditos Doga 500g",
+            "dsc": "Coditos Doga 500g",
+            "price": 300,
+            "unit": "unidad"
+        },
+        {
+            "id": "jacques-world-famous-chocolate-chip-cookies",
+            "img": "./img/cardapio/Mercado/COMINO_MOLIDO.jpg",
+            "name": "Comino Molido",
+            "dsc": " COMINO MOLIDO",
+            "price": 800,
+            "unit": "unidad"
+        },
+        {
+            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
+            "img": "./img/cardapio/Mercado/Paquete de espaguetis.webp",
+            "name": "Paquete de espaguetis",
+            "dsc": "Paquete de espaguetis",
+            "price": 300,
+            "unit": "unidad"
+        },
+        {
+            "id": "best-seller-cupcake-dozen",
+            "img": "./img/cardapio/Mercado/Frijoles blancos Del Campo (500g).jpg",
+            "name": "Frijoles blancos Del Campo (500g)",
+            "dsc": "Frijoles blancos Del Campo (500g)",
+            "price": 820,
+            "unit": "unidad"
+        },
+        {
+            "id": "choose-your-own-ice-cream-donuts-6-pack",
+            "img": "./img/cardapio/Mercado/Frijoles Colorados.jpg",
+            "name": "Frijoles Colorados",
+            "dsc": "Frijoles Colorados",
+            "price": 375,
+            "unit": "lb"
+        },
+        {
+            "id": "005-kings-carolina-oink-sampler",
+            "img": "./img/cardapio/Mercado/Frijol Negro Rainha.webp",
+            "name": "Frijol Negro 1Kg Paquete",
+            "dsc": "Frijol Negro Rainha",
+            "price": 750,
             "unit": "unidad"
         }
     ],
     "sobremesas": [
         {
-            "id": "15259-german-chocolate-killer-brownie-tin-pack",
-            "img": "./img/cardapio/Dermatológicos/Clotrimazol-crema.png",
-            "name": "Clotrimazol (crema)",
-            "dsc": "German Chocolate Killer Brownie®",
-            "price": 700,
-            "unit": "unidad"
-        },
-        {
-            "id": "jacques-world-famous-chocolate-chip-cookies",
-            "img": "./img/cardapio/Dermatológicos/mentholán con diclofenaco jalea.jpg",
-            "name": "Mentholán con diclofenaco jalea",
-            "dsc": "Jacques' World Famous Chocolate Chip Cookies - 6 Pack",
-            "price": 600,
-            "unit": "unidad"
-        },
-        {
             "id": "luigis-original-cannoli-pie",
-            "img": "./img/cardapio/Dermatológicos/piojín unguento.jpg",
-            "name": "Piojín (ungüento)",
-            "dsc": "Original Cannoli Pie",
-            "price": 550,
-            "unit": "unidad"
-        },
-        {
-            "id": "sea-salted-caramel-swirl-cheesecake",
-            "img": "./img/cardapio/Dermatológicos/aciclovir-crema.jpg",
-            "name": "Aciclovir (crema)",
-            "dsc": "Sea-Salted Caramel Swirl Cheesecake",
-            "price": 700,
-            "unit": "unidad"
-        },
-        {
-            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
-            "img": "./img/cardapio/Dermatológicos/miconazol crema.jpg",
-            "name": "Miconazol (crema)",
-            "dsc": "Brooklyn Blackout Cookie + Brownie Combo Pack - 2 Tins",
+            "img": "./img/cardapio/Aseo/Detergente Marwa 400g.webp",
+            "name": "Detergente Marwa 400g",
+            "dsc": "Detergente Marwa 400g",
             "price": 450,
             "unit": "unidad"
         },
         {
-            "id": "best-seller-cupcake-dozen",
-            "img": "./img/cardapio/Dermatológicos/KETOLEF_2__CREMA_X_15_G.png",
-            "name": "Ketoconazol (crema)",
-            "dsc": "Best Seller Cupcake Dozen",
-            "price": 700,
-            "unit": "unidad"
-        },
-        {
-            "id": "choose-your-own-ice-cream-donuts-6-pack",
-            "img": "./img/cardapio/Dermatológicos/04IU-Nistaderm-300x300.png",
-            "name": "Nistatina (crema)",
-            "dsc": "Choose Your Own Ice Cream Donuts - 6 Pack",
-            "price": 700,
-            "unit": "unidad"
-        },
-        {
-            "id": "17481-jewish-dessert-3-pack",
-            "img": "./img/cardapio/Dermatológicos/Permetrina.jpg",
-            "name": "Permetrina (crema)",
-            "dsc": "Jewish Classics Dessert Pack",
-            "price": 700,
+            "id": "sea-salted-caramel-swirl-cheesecake",
+            "img": "./img/cardapio/Aseo/Detergente Líquido KAPITAL.jpg",
+            "name": "Detergente Líquido KAPITAL 750G",
+            "dsc": "Detergente Líquido KAPITAL 750G",
+            "price": 740,
             "unit": "unidad"
         },
         {
@@ -337,6 +329,14 @@ var MENU = {
             "name": "Prednisolona",
             "dsc": "Choose Your Own Deep Dish Pizza - 3 Pack",
             "price": 300,
+            "unit": "unidad"
+        },
+        {
+            "id": "17481-jewish-dessert-3-pack",
+            "img": "./img/cardapio/Confituras/Galletas Crokantinas.webp",
+            "name": "Galletas Crokantinas ",
+            "dsc": "Galletas Crokantinas Paquete entero",
+            "price": 1250,
             "unit": "unidad"
         }
     ],
