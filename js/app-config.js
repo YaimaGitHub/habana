@@ -1,7 +1,7 @@
 /**
  * D'Mima - Tienda Online
  * Archivo de configuracion generado desde el Panel de Control
- * Fecha: 2/5/2026, 0:55:20
+ * Fecha: 2/5/2026, 1:27:34
  */
 
 // =============================================

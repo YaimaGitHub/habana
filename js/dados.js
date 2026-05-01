@@ -90,6 +90,14 @@ var MENU = {
             "dsc": "Muslos de pollo (10 lb)",
             "price": 4250,
             "unit": "unidad"
+        },
+        {
+            "id": "pechugas-de-pollo-lar-2kg-",
+            "img": "./img/cardapio/Carnico/Pechugas de Pollo - Lar (2Kg).webp",
+            "name": "Pechugas de Pollo - Lar (2Kg)",
+            "dsc": "Pechugas de Pollo - Lar (2Kg)",
+            "price": 4400,
+            "unit": "unidad"
         }
     ],
     "burgers": [
@@ -228,6 +236,30 @@ var MENU = {
             "dsc": "Sardinas en Tomate Docanned",
             "price": 800,
             "unit": "unidad"
+        },
+        {
+            "id": "sopa-de-fideos-instant-neos-vitarella",
+            "img": "./img/cardapio/Mercado/Sopa de Fideos Instantáneos Vitarella.webp",
+            "name": "Sopa de Fideos Instantáneos Vitarella",
+            "dsc": "Sopa de Fideos Instantáneos Vitarella",
+            "price": 230,
+            "unit": "unidad"
+        },
+        {
+            "id": "vinagre-la-esperanza-1l-",
+            "img": "./img/cardapio/Mercado/Vinagre La Esperanza ( 1L ).jpg",
+            "name": "Vinagre La Esperanza ( 1L )",
+            "dsc": "Vinagre La Esperanza ( 1L )",
+            "price": 300,
+            "unit": "unidad"
+        },
+        {
+            "id": "vino-seco-la-esperanza-1000-g-",
+            "img": "./img/cardapio/Mercado/Vino Seco La Esperanza (1000 g).webp",
+            "name": "Vino Seco La Esperanza (1000 g)",
+            "dsc": "Vino Seco La Esperanza (1000 g)",
+            "price": 300,
+            "unit": "unidad"
         }
     ],
     "sobremesas": [
@@ -279,6 +311,14 @@ var MENU = {
             "name": "Jugo Goliath",
             "dsc": "Jugo Goliath",
             "price": 800,
+            "unit": "unidad"
+        },
+        {
+            "id": "yogurt-probi-tico-yokey-1-54-litros",
+            "img": "./img/cardapio/Liquidos/Yogurt Probiótico Yokey - 1.54 litros.webp",
+            "name": "Yogurt Probiótico Yokey - 1.54 litros",
+            "dsc": "Yogurt Probiótico Yokey - 1.54 litros",
+            "price": 2400,
             "unit": "unidad"
         }
     ],
@@ -355,6 +395,22 @@ var MENU = {
             "name": "Queso crema Prairie",
             "dsc": "Queso crema Prairie",
             "price": 1150,
+            "unit": "unidad"
+        },
+        {
+            "id": "spam-de-pollo-tubo-de-400-g-",
+            "img": "./img/cardapio/Quesos y Embutidos/Spam de pollo ( tubo de 400 g).webp",
+            "name": "Spam de pollo ( tubo de 400 g)",
+            "dsc": "Spam de pollo ( tubo de 400 g)",
+            "price": 650,
+            "unit": "unidad"
+        },
+        {
+            "id": "spam-jamonilla-de-pollo-enlatado-340g",
+            "img": "./img/cardapio/Quesos y Embutidos/Spam ( jamonilla ) de Pollo Enlatado 340g.webp",
+            "name": "Spam ( jamonilla ) de Pollo Enlatado 340g",
+            "dsc": "Spam ( jamonilla ) de Pollo Enlatado 340g",
+            "price": 670,
             "unit": "unidad"
         }
     ],
@@ -471,6 +527,22 @@ var MENU = {
             "name": "Salsa picante Chili BADIA (150mL)",
             "dsc": "Salsa picante Chili BADIA (150mL)",
             "price": 1000,
+            "unit": "unidad"
+        },
+        {
+            "id": "saz-n-con-cilantro-y-achiote",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Sazón con cilantro y achiote.webp",
+            "name": "Sazón con cilantro y achiote",
+            "dsc": "Sazón con cilantro y achiote",
+            "price": 60,
+            "unit": "unidad"
+        },
+        {
+            "id": "saz-n-completo-badia-3-5-oz",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Sazón Completo BADIA 9 Oz.jpg",
+            "name": "Sazón Completo BADIA 3.5 Oz",
+            "dsc": "Sazón Completo BADIA 3.5 Oz",
+            "price": 850,
             "unit": "unidad"
         }
     ],
