@@ -131,7 +131,7 @@ var MENU = {
             "name": "Azucar 1KG",
             "dsc": "Azucar 1KG",
             "price": 690,
-            "unit": "kg"
+            "unit": "unidad"
         },
         {
             "id": "burger-au-poivre-kit-4-pack",
