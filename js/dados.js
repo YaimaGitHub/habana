@@ -63,74 +63,74 @@ var MENU = {
         },
         {
             "id": "gotts-cheeseburger-kit-for-4",
-            "img": "./img/cardapio/burguers/Cefalexina.jpg",
-            "name": "Cefalexina",
-            "dsc": "Gott's Complete Cheeseburger Kit for 4",
-            "price": 440,
+            "img": "./img/cardapio/Mercado/Adobo con pimienta.jpg",
+            "name": "Adobo con pimienta",
+            "dsc": "Adobo con pimienta",
+            "price": 1800,
             "unit": "unidad"
         },
         {
             "id": "le-big-matt-kit-for-6",
-            "img": "./img/cardapio/burguers/sulfaprim.jpg",
-            "name": "Sulfaprim",
-            "dsc": "Le Big Matt Burger Kit for 6",
-            "price": 220,
+            "img": "./img/cardapio/Mercado/Ajo_troceado_BADIA.jpg",
+            "name": "Ajo_troceado_BADIA.jpg",
+            "dsc": "Ajo troceado BADIA",
+            "price": 880,
             "unit": "unidad"
         },
         {
             "id": "shake-shack-shackburger-16-pack",
-            "img": "./img/cardapio/burguers/doxiciclina.jpg",
-            "name": "Doxiciclina",
-            "dsc": "Shake Shack Shackburger® - 16 Pack",
-            "price": 260,
-            "unit": "unidad"
+            "img": "./img/cardapio/Mercado/Arroz Guayanés.jpg",
+            "name": "Arroz Guayanés por libra",
+            "dsc": "Arroz Guayanés por libra",
+            "price": 290,
+            "unit": "lb"
         },
         {
             "id": "shake-shack-shackburger-16-packkk",
-            "img": "./img/cardapio/burguers/AZITROMICINA-500MG-CAJA-POR-3-TABLETAS-INCLINADO.jpg",
-            "name": "Azitromicina",
-            "dsc": "shake-shack-shackburger-16-pack",
-            "price": 440,
-            "unit": "unidad"
+            "img": "./img/cardapio/Mercado/Paquete de Arroz (1kg).jpg",
+            "name": "Paquete de Arroz (1kg)",
+            "dsc": "Paquete de Arroz (1kg)",
+            "price": 620,
+            "unit": "kg"
         },
         {
             "id": "double-stack-burger-kit-for-4",
-            "img": "./img/cardapio/burguers/METRONIDAZOL-500MG.jpg",
-            "name": "Metronidazol (500mg)",
-            "dsc": "Double Stack Burger Kit for 4",
-            "price": 250,
+            "img": "./img/cardapio/Mercado/Atun en Aceite 140 gramos.webp",
+            "name": "Atun en Aceite 140 gramos",
+            "dsc": "Atun en Aceite 140 gramos",
+            "price": 450,
             "unit": "unidad"
         },
         {
             "id": "goldbelly-burger-bash-pack",
-            "img": "./img/cardapio/burguers/albendazol.png",
-            "name": "Albendazol (400mg)",
-            "dsc": "Goldbelly \"Burger Bash\" Pack",
-            "price": 280,
-            "unit": "unidad"
+            "img": "./img/cardapio/Mercado/Azucar 1KG Energy.webp",
+            "name": "Azucar 1KG",
+            "dsc": "Azucar 1KG",
+            "price": 690,
+            "unit": "kg"
         },
         {
             "id": "burger-au-poivre-kit-4-pack",
-            "img": "./img/cardapio/burguers/Secnidazol.jpg",
-            "name": "Cecnidazol",
-            "dsc": "Burger Au Poivre Kit - 4 Pack",
-            "price": 380,
+            "img": "./img/cardapio/Mercado/Café SELLO ROJO.webp",
+            "name": "Café Sello Rojo",
+            "dsc": "Café SELLO ROJO",
+            "price": 1850,
             "unit": "unidad"
         },
         {
             "id": "goldbelly-burger-blend-4-lbs",
-            "img": "./img/cardapio/burguers/mebendazol.jpg",
-            "name": "Mebendazol",
-            "dsc": "Goldbelly Burger Blend - 4 lbs.",
-            "price": 220,
+            "img": "./img/cardapio/Mercado/CAFÉ CANDADO.webp",
+            "name": "Café Candado",
+            "dsc": "CAFÉ CANDADO",
+            "price": 1900,
             "unit": "unidad"
         },
         {
             "id": "gotts-complete-cheeseburger-kit-for-8",
-            "img": "./img/cardapio/burguers/amoxicilina suspención.jpg",
-            "name": "Amoxicilina (suspención)",
-            "dsc": "Gott's Complete Cheeseburger Kit for 8",
-            "price": 600,
+            "img": "./img/cardapio/Mercado/CAFÉ PILÓN.webp",
+            "name": "Café Pilón",
+            "dsc": "Café Pilón",
+            "price": 1850,
             "unit": "unidad"
         },
         {
