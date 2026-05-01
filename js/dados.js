@@ -1,4 +1,4 @@
-// Factor de conversión: 1 kg = 2.20462 lb
+// Factor de conversion: 1 kg = 2.20462 lb
 var CONVERSION_LB_KG = 2.20462;
 
 var MENU = {
@@ -8,7 +8,7 @@ var MENU = {
             "img": "./img/cardapio/carnes/carne-res.jpg",
             "name": "Carne de Res",
             "dsc": "Carne de res fresca de primera calidad",
-            "price": 450,
+            "price": 1560,
             "unit": "lb"
         },
         {
@@ -140,7 +140,7 @@ var MENU = {
             "dsc": "complete",
             "price": 700,
             "unit": "unidad"
-        },   
+        },
         {
             "id": "1",
             "img": "./img/cardapio/burguers/nistatina-suspension.jpg",
@@ -343,7 +343,7 @@ var MENU = {
     "pizzas": [
         {
             "id": "2-lou-malnatis-deep-dish-pizzas",
-           "img": "./img/cardapio/antiinflamatorios/Diclofenaco + Paracetamol.jpg",
+            "img": "./img/cardapio/antiinflamatorios/Diclofenaco + Paracetamol.jpg",
             "name": "Diclofenaco + Paracetamol",
             "dsc": "2 Lou Malnati's Deep Dish Pizzas",
             "price": 210,
