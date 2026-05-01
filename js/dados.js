@@ -55,7 +55,7 @@ var MENU = {
         },
         {
             "id": "shake-shack-shackburger-8-pack",
-            "img": "./img/cardapio/mercado/aceituna con hueso.jpg",
+            "img": "./img/cardapio/Mercado/aceituna con hueso.jpg",
             "name": "Aceituna Verde Con Hueso",
             "dsc": "Aceituna Verde Con Hueso",
             "price": 1000,
