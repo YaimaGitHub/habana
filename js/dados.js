@@ -62,22 +62,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "shake-shack-shackburger-16-pack",
-            "img": "./img/cardapio/Mercado/Arroz Guayanés.jpg",
-            "name": "Arroz Guayanés por libra",
-            "dsc": "Arroz Guayanés por libra",
-            "price": 290,
-            "unit": "lb"
-        },
-        {
-            "id": "shake-shack-shackburger-16-packkk",
-            "img": "./img/cardapio/Mercado/Paquete de Arroz (1kg).jpg",
-            "name": "Paquete de Arroz (1kg)",
-            "dsc": "Paquete de Arroz (1kg)",
-            "price": 620,
-            "unit": "kg"
-        },
-        {
             "id": "double-stack-burger-kit-for-4",
             "img": "./img/cardapio/Mercado/Atun en Aceite 140 gramos.webp",
             "name": "Atun en Aceite 140 gramos",
@@ -123,62 +107,6 @@ var MENU = {
             "name": "Mayonesa Celorio (500ML)",
             "dsc": "Mayonesa Celorio (500ML)",
             "price": 1650,
-            "unit": "unidad"
-        },
-        {
-            "id": "1",
-            "img": "./img/cardapio/Mercado/Chícharos verdes Del campo.webp",
-            "name": "Chícharos verdes Del campo (500g)",
-            "dsc": "Chícharos verdes Del campo (500g)",
-            "price": 650,
-            "unit": "unidad"
-        },
-        {
-            "id": "15259-german-chocolate-killer-brownie-tin-pack",
-            "img": "./img/cardapio/Mercado/Coditos Doga 500g.jpg",
-            "name": "Coditos Doga 500g",
-            "dsc": "Coditos Doga 500g",
-            "price": 300,
-            "unit": "unidad"
-        },
-        {
-            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
-            "img": "./img/cardapio/Mercado/Paquete de espaguetis.webp",
-            "name": "Paquete de espaguetis",
-            "dsc": "Paquete de espaguetis",
-            "price": 300,
-            "unit": "unidad"
-        },
-        {
-            "id": "best-seller-cupcake-dozen",
-            "img": "./img/cardapio/Mercado/Frijoles blancos Del Campo (500g).jpg",
-            "name": "Frijoles blancos Del Campo (500g)",
-            "dsc": "Frijoles blancos Del Campo (500g)",
-            "price": 820,
-            "unit": "unidad"
-        },
-        {
-            "id": "choose-your-own-ice-cream-donuts-6-pack",
-            "img": "./img/cardapio/Mercado/Frijoles Colorados.jpg",
-            "name": "Frijoles Colorados",
-            "dsc": "Frijoles Colorados",
-            "price": 375,
-            "unit": "lb"
-        },
-        {
-            "id": "005-kings-carolina-oink-sampler",
-            "img": "./img/cardapio/Mercado/Frijol Negro Rainha.webp",
-            "name": "Frijol Negro 1Kg Paquete",
-            "dsc": "Frijol Negro Rainha",
-            "price": 750,
-            "unit": "unidad"
-        },
-        {
-            "id": "garbanzos-del-campo-500g",
-            "img": "./img/cardapio/Mercado/Garbanzos del campo 500g.webp",
-            "name": "Garbanzos del campo 500g",
-            "dsc": "Garbanzos del campo 500g",
-            "price": 700,
             "unit": "unidad"
         },
         {
@@ -418,5 +346,78 @@ var MENU = {
             "unit": "unidad"
         }
     ],
-    "Granos y Pastas": []
+    "Granos y Pastas": [
+        {
+            "id": "best-seller-cupcake-dozen",
+            "img": "./img/cardapio/Granos y Pastas/Frijoles blancos Del Campo (500g).jpg",
+            "name": "Frijoles blancos Del Campo (500g)",
+            "dsc": "Frijoles blancos Del Campo (500g)",
+            "price": 820,
+            "unit": "unidad"
+        },
+        {
+            "id": "choose-your-own-ice-cream-donuts-6-pack",
+            "img": "./img/cardapio/Granos y Pastas/Frijoles Colorados.jpg",
+            "name": "Frijoles Colorados",
+            "dsc": "Frijoles Colorados",
+            "price": 375,
+            "unit": "lb"
+        },
+        {
+            "id": "005-kings-carolina-oink-sampler",
+            "img": "./img/cardapio/Granos y Pastas/Frijol Negro Rainha.webp",
+            "name": "Frijol Negro 1Kg Paquete",
+            "dsc": "Frijol Negro Rainha",
+            "price": 750,
+            "unit": "unidad"
+        },
+        {
+            "id": "garbanzos-del-campo-500g",
+            "img": "./img/cardapio/Granos y Pastas/Garbanzos del campo 500g.webp",
+            "name": "Garbanzos del campo 500g",
+            "dsc": "Garbanzos del campo 500g",
+            "price": 700,
+            "unit": "unidad"
+        },
+        {
+            "id": "1",
+            "img": "./img/cardapio/Granos y Pastas/Chícharos verdes Del campo.webp",
+            "name": "Chícharos verdes Del campo (500g)",
+            "dsc": "Chícharos verdes Del campo (500g)",
+            "price": 650,
+            "unit": "unidad"
+        },
+        {
+            "id": "shake-shack-shackburger-16-pack",
+            "img": "./img/cardapio/Granos y Pastas/Arroz Guayanés.jpg",
+            "name": "Arroz Guayanés por libra",
+            "dsc": "Arroz Guayanés por libra",
+            "price": 290,
+            "unit": "lb"
+        },
+        {
+            "id": "shake-shack-shackburger-16-packkk",
+            "img": "./img/cardapio/Granos y Pastas/Paquete de Arroz (1kg).jpg",
+            "name": "Paquete de Arroz (1kg)",
+            "dsc": "Paquete de Arroz (1kg)",
+            "price": 620,
+            "unit": "kg"
+        },
+        {
+            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
+            "img": "./img/cardapio/Granos y Pastas/Paquete de espaguetis.webp",
+            "name": "Paquete de espaguetis",
+            "dsc": "Paquete de espaguetis",
+            "price": 300,
+            "unit": "unidad"
+        },
+        {
+            "id": "15259-german-chocolate-killer-brownie-tin-pack",
+            "img": "./img/cardapio/Granos y Pastas/Coditos Doga 500g.jpg",
+            "name": "Coditos Doga 500g",
+            "dsc": "Coditos Doga 500g",
+            "price": 300,
+            "unit": "unidad"
+        }
+    ]
 }
