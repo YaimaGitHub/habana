@@ -671,53 +671,209 @@ var adminPanel = {
     },
 
     // =====================
-    // EXPORTAR/IMPORTAR
+    // EXPORTAR ARCHIVOS DEL SISTEMA
     // =====================
     
-    exportAll: function() {
-        var config = {
-            exportDate: new Date().toISOString(),
-            version: '1.0',
-            storeName: localCONTACT.storeName,
-            contact: {
-                whatsapp: localCONTACT.whatsapp,
-                address: localCONTACT.address
-            },
-            categories: localCATEGORIAS,
-            products: localMENU,
-            shipping: localMUNICIPIOS
+    // Generar contenido del archivo dados.js
+    generateDadosJS: function() {
+        var content = '// Factor de conversion: 1 kg = 2.20462 lb\n';
+        content += 'var CONVERSION_LB_KG = 2.20462;\n\n';
+        content += 'var MENU = ' + JSON.stringify(localMENU, null, 4) + '\n';
+        return content;
+    },
+    
+    // Generar contenido del archivo app.js con las configuraciones actualizadas
+    generateAppJS: function() {
+        var self = this;
+        
+        // Generar el array de municipios
+        var municipiosStr = 'var MUNICIPIOS_HABANA = [\n';
+        localMUNICIPIOS.forEach(function(mun, index) {
+            municipiosStr += '    { id: "' + mun.id + '", nome: "' + mun.nome + '", costo: ' + mun.costo + ' }';
+            if (index < localMUNICIPIOS.length - 1) municipiosStr += ',';
+            municipiosStr += '\n';
+        });
+        municipiosStr += '];';
+        
+        // Generar el objeto de categorias
+        var categoriasStr = 'var CATEGORIAS = {\n';
+        var catKeys = Object.keys(localCATEGORIAS);
+        catKeys.forEach(function(key, index) {
+            var cat = localCATEGORIAS[key];
+            categoriasStr += '    "' + key + '": { nome: "' + cat.nome + '", icone: "' + cat.icone + '" }';
+            if (index < catKeys.length - 1) categoriasStr += ',';
+            categoriasStr += '\n';
+        });
+        categoriasStr += '};';
+        
+        var content = '/**\n';
+        content += ' * D\'Mima - Tienda Online\n';
+        content += ' * Archivo de configuracion generado desde el Panel de Control\n';
+        content += ' * Fecha: ' + new Date().toLocaleString() + '\n';
+        content += ' */\n\n';
+        
+        content += '// =============================================\n';
+        content += '// CONFIGURACION DE LA TIENDA\n';
+        content += '// =============================================\n\n';
+        
+        content += '// Numero de WhatsApp para pedidos (sin el +)\n';
+        content += "var CELULAR_EMPRESA = '" + localCONTACT.whatsapp + "';\n\n";
+        
+        content += '// Direccion de la tienda\n';
+        content += "var MEU_ENDERECO = '" + (localCONTACT.address || '').replace(/'/g, "\\'") + "';\n\n";
+        
+        content += '// =============================================\n';
+        content += '// MUNICIPIOS Y COSTOS DE ENVIO\n';
+        content += '// =============================================\n\n';
+        content += municipiosStr + '\n\n';
+        
+        content += '// =============================================\n';
+        content += '// CATEGORIAS DE PRODUCTOS\n';
+        content += '// =============================================\n\n';
+        content += categoriasStr + '\n\n';
+        
+        content += '// =============================================\n';
+        content += '// RESTO DEL CODIGO DE LA APLICACION\n';
+        content += '// =============================================\n';
+        content += '// NOTA: Copie el resto del codigo de su archivo app.js original\n';
+        content += '// a partir de aqui, manteniendo las funciones existentes.\n';
+        
+        return content;
+    },
+    
+    // Generar index.html actualizado
+    generateIndexHTML: function() {
+        var whatsapp = localCONTACT.whatsapp;
+        var storeName = localCONTACT.storeName || "D'Mima";
+        
+        // Formatear telefono para mostrar
+        var phoneFormatted = '(' + whatsapp.substring(0, 2) + ') ' + 
+                            whatsapp.substring(2, 6) + '-' + 
+                            whatsapp.substring(6);
+        
+        var content = '<!-- \n';
+        content += '  ' + storeName + ' - Tienda Online\n';
+        content += '  Archivo generado desde el Panel de Control\n';
+        content += '  Fecha: ' + new Date().toLocaleString() + '\n';
+        content += '  \n';
+        content += '  INSTRUCCIONES:\n';
+        content += '  1. Este archivo contiene las referencias de contacto actualizadas\n';
+        content += '  2. Busque y reemplace los siguientes valores en su index.html original:\n';
+        content += '     - WhatsApp: ' + whatsapp + '\n';
+        content += '     - Telefono formateado: ' + phoneFormatted + '\n';
+        content += '     - Nombre tienda: ' + storeName + '\n';
+        content += '-->\n\n';
+        
+        content += '<!-- ========== VALORES PARA ACTUALIZAR ========== -->\n\n';
+        
+        content += '<!-- TITULO DE LA PAGINA -->\n';
+        content += '<title>' + storeName + ' - Tienda de Alimentos</title>\n\n';
+        
+        content += '<!-- ENLACES DE WHATSAPP (usar en href) -->\n';
+        content += '<a href="https://api.whatsapp.com/send?phone=' + whatsapp + '">WhatsApp</a>\n';
+        content += '<a href="https://api.whatsapp.com/send?phone=' + whatsapp + '&text=Hola%20me%20gustaria%20hacer%20un%20*pedido*">WhatsApp con mensaje</a>\n\n';
+        
+        content += '<!-- ENLACE DE TELEFONO -->\n';
+        content += '<a href="tel:+' + whatsapp + '">Llamar</a>\n\n';
+        
+        content += '<!-- NUMERO FORMATEADO PARA MOSTRAR -->\n';
+        content += '<span>' + phoneFormatted + '</span>\n\n';
+        
+        content += '<!-- COPYRIGHT -->\n';
+        content += '<b>Copyright &copy; ' + new Date().getFullYear() + ' ' + storeName + '.</b>\n';
+        
+        return content;
+    },
+    
+    // Exportar dados.js
+    exportDadosJS: function() {
+        var content = this.generateDadosJS();
+        this.downloadFile(content, 'dados.js', 'application/javascript');
+        this.showToast('Archivo dados.js exportado correctamente', 'success');
+    },
+    
+    // Exportar app.js
+    exportAppJS: function() {
+        var content = this.generateAppJS();
+        this.downloadFile(content, 'app.js', 'application/javascript');
+        this.showToast('Archivo app.js exportado. Recuerde agregar el resto del codigo original.', 'success');
+    },
+    
+    // Exportar index.html
+    exportIndexHTML: function() {
+        var content = this.generateIndexHTML();
+        this.downloadFile(content, 'index-actualizaciones.html', 'text/html');
+        this.showToast('Referencias de index.html exportadas', 'success');
+    },
+    
+    // Exportar todos los archivos como ZIP
+    exportAllFiles: function() {
+        var self = this;
+        
+        // Crear contenido de cada archivo
+        var files = {
+            'js/dados.js': this.generateDadosJS(),
+            'js/app-config.js': this.generateAppJS(),
+            'index-referencias.html': this.generateIndexHTML(),
+            'README.txt': this.generateReadme()
         };
         
-        this.downloadJSON(config, 'dmima-config-completa.json');
-        this.showToast('Configuracion exportada correctamente', 'success');
+        // Si JSZip esta disponible, crear ZIP
+        if (typeof JSZip !== 'undefined') {
+            var zip = new JSZip();
+            for (var filename in files) {
+                zip.file(filename, files[filename]);
+            }
+            zip.generateAsync({ type: 'blob' }).then(function(blob) {
+                self.downloadBlob(blob, 'dmima-config-' + Date.now() + '.zip');
+                self.showToast('Archivos exportados en ZIP correctamente', 'success');
+            });
+        } else {
+            // Sin JSZip, descargar archivos individuales
+            this.showToast('Descargando archivos individualmente...', 'info');
+            setTimeout(function() { self.exportDadosJS(); }, 100);
+            setTimeout(function() { self.exportAppJS(); }, 400);
+            setTimeout(function() { self.exportIndexHTML(); }, 700);
+        }
     },
-
-    exportProducts: function() {
-        var data = {
-            exportDate: new Date().toISOString(),
-            categories: localCATEGORIAS,
-            products: localMENU
-        };
-        
-        this.downloadJSON(data, 'dmima-productos.json');
-        this.showToast('Productos exportados correctamente', 'success');
+    
+    // Generar README con instrucciones
+    generateReadme: function() {
+        var content = '==============================================\n';
+        content += "D'Mima - Archivos de Configuracion\n";
+        content += '==============================================\n\n';
+        content += 'Fecha de exportacion: ' + new Date().toLocaleString() + '\n\n';
+        content += 'ARCHIVOS INCLUIDOS:\n';
+        content += '-------------------\n\n';
+        content += '1. js/dados.js\n';
+        content += '   - Contiene todos los productos del menu\n';
+        content += '   - Reemplace el archivo original en la carpeta /js/\n\n';
+        content += '2. js/app-config.js\n';
+        content += '   - Contiene la configuracion de WhatsApp, direccion, municipios y categorias\n';
+        content += '   - Copie las variables al inicio de su archivo app.js original\n\n';
+        content += '3. index-referencias.html\n';
+        content += '   - Contiene las referencias actualizadas de contacto\n';
+        content += '   - Use los valores para actualizar su index.html original\n\n';
+        content += 'COMO APLICAR LOS CAMBIOS:\n';
+        content += '-------------------------\n\n';
+        content += '1. Haga una copia de seguridad de sus archivos originales\n';
+        content += '2. Reemplace js/dados.js con el archivo incluido\n';
+        content += '3. Copie las variables de app-config.js al inicio de su app.js\n';
+        content += '4. Actualice los enlaces de contacto en index.html segun las referencias\n';
+        content += '5. Suba los archivos modificados a su servidor\n';
+        content += '6. Recargue la pagina para ver los cambios\n\n';
+        content += '==============================================\n';
+        return content;
     },
-
-    exportShipping: function() {
-        var data = {
-            exportDate: new Date().toISOString(),
-            shipping: localMUNICIPIOS
-        };
-        
-        this.downloadJSON(data, 'dmima-envios.json');
-        this.showToast('Configuracion de envios exportada', 'success');
+    
+    // Descargar archivo
+    downloadFile: function(content, filename, mimeType) {
+        var blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+        this.downloadBlob(blob, filename);
     },
-
-    downloadJSON: function(data, filename) {
-        var json = JSON.stringify(data, null, 2);
-        var blob = new Blob([json], { type: 'application/json' });
+    
+    downloadBlob: function(blob, filename) {
         var url = URL.createObjectURL(blob);
-        
         var a = document.createElement('a');
         a.href = url;
         a.download = filename;
@@ -725,64 +881,6 @@ var adminPanel = {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    },
-
-    importConfig: function(event) {
-        var file = event.target.files[0];
-        if (!file) return;
-        
-        var self = this;
-        var reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                var config = JSON.parse(e.target.result);
-                
-                // Importar datos
-                if (config.products) {
-                    localMENU = config.products;
-                    MENU = JSON.parse(JSON.stringify(localMENU));
-                }
-                
-                if (config.categories) {
-                    localCATEGORIAS = config.categories;
-                    if (typeof CATEGORIAS !== 'undefined') {
-                        CATEGORIAS = JSON.parse(JSON.stringify(localCATEGORIAS));
-                    }
-                }
-                
-                if (config.shipping) {
-                    localMUNICIPIOS = config.shipping;
-                    if (typeof MUNICIPIOS_HABANA !== 'undefined') {
-                        MUNICIPIOS_HABANA = JSON.parse(JSON.stringify(localMUNICIPIOS));
-                    }
-                }
-                
-                if (config.contact) {
-                    localCONTACT.whatsapp = config.contact.whatsapp || localCONTACT.whatsapp;
-                    localCONTACT.address = config.contact.address || localCONTACT.address;
-                    
-                    if (typeof CELULAR_EMPRESA !== 'undefined') {
-                        CELULAR_EMPRESA = localCONTACT.whatsapp;
-                    }
-                }
-                
-                if (config.storeName) {
-                    localCONTACT.storeName = config.storeName;
-                }
-                
-                // Recargar todo
-                self.loadAllSections();
-                self.updateDashboard();
-                self.showToast('Configuracion importada correctamente', 'success');
-                
-            } catch (error) {
-                self.showToast('Error al leer el archivo: ' + error.message, 'error');
-            }
-        };
-        
-        reader.readAsText(file);
-        event.target.value = '';
     },
 
     // =====================

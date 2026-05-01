@@ -258,48 +258,64 @@
                     <div class="section-header">
                         <h2>Exportar Configuracion</h2>
                     </div>
+                    <div class="export-info-banner">
+                        <div class="export-info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="export-info-text">
+                            <strong>Exportacion de archivos del sistema</strong>
+                            <p>Los archivos exportados son los ficheros reales que usa la tienda. Reemplace los archivos originales con estos para aplicar los cambios de forma permanente.</p>
+                        </div>
+                    </div>
                     <div class="export-options">
-                        <div class="export-card">
+                        <div class="export-card export-card-main">
                             <div class="export-icon">
-                                <i class="fas fa-file-code"></i>
+                                <i class="fas fa-file-archive"></i>
                             </div>
-                            <h3>Exportar Todo</h3>
-                            <p>Descarga un archivo JSON con toda la configuracion de la tienda: productos, categorias, municipios, contacto y mas.</p>
-                            <button class="btn-primary btn-large" onclick="adminPanel.exportAll()">
-                                <i class="fas fa-download"></i> Descargar Configuracion Completa
+                            <h3>Exportar Todos los Archivos</h3>
+                            <p>Descarga todos los archivos del sistema con la configuracion actualizada: datos de productos, categorias, municipios y contacto.</p>
+                            <button class="btn-primary btn-large" onclick="adminPanel.exportAllFiles()">
+                                <i class="fas fa-download"></i> Descargar Todo (ZIP)
                             </button>
                         </div>
                         <div class="export-card">
                             <div class="export-icon">
-                                <i class="fas fa-boxes"></i>
+                                <i class="fas fa-database"></i>
                             </div>
-                            <h3>Solo Productos</h3>
-                            <p>Descarga unicamente los productos con sus categorias.</p>
-                            <button class="btn-secondary" onclick="adminPanel.exportProducts()">
-                                <i class="fas fa-download"></i> Descargar Productos
+                            <h3>dados.js</h3>
+                            <p>Archivo con todos los productos y el menu de la tienda.</p>
+                            <button class="btn-secondary" onclick="adminPanel.exportDadosJS()">
+                                <i class="fas fa-download"></i> Descargar dados.js
                             </button>
                         </div>
                         <div class="export-card">
                             <div class="export-icon">
-                                <i class="fas fa-truck"></i>
+                                <i class="fas fa-cogs"></i>
                             </div>
-                            <h3>Solo Envios</h3>
-                            <p>Descarga los municipios y costos de envio.</p>
-                            <button class="btn-secondary" onclick="adminPanel.exportShipping()">
-                                <i class="fas fa-download"></i> Descargar Envios
+                            <h3>app.js</h3>
+                            <p>Archivo de configuracion con WhatsApp, direccion y municipios.</p>
+                            <button class="btn-secondary" onclick="adminPanel.exportAppJS()">
+                                <i class="fas fa-download"></i> Descargar app.js
                             </button>
                         </div>
                         <div class="export-card">
                             <div class="export-icon">
-                                <i class="fas fa-upload"></i>
+                                <i class="fas fa-code"></i>
                             </div>
-                            <h3>Importar Configuracion</h3>
-                            <p>Importa un archivo de configuracion previamente exportado.</p>
-                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="adminPanel.importConfig(event)">
-                            <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
-                                <i class="fas fa-upload"></i> Importar Archivo
+                            <h3>index.html</h3>
+                            <p>Pagina principal con nombre de tienda y enlaces de contacto actualizados.</p>
+                            <button class="btn-secondary" onclick="adminPanel.exportIndexHTML()">
+                                <i class="fas fa-download"></i> Descargar index.html
                             </button>
                         </div>
+                    </div>
+                    <div class="export-instructions">
+                        <h3><i class="fas fa-question-circle"></i> Como aplicar los cambios</h3>
+                        <ol>
+                            <li>Descargue los archivos que desea actualizar</li>
+                            <li>Reemplace los archivos originales en su servidor con los descargados</li>
+                            <li>Los cambios se aplicaran inmediatamente al recargar la tienda</li>
+                        </ol>
                     </div>
                 </section>
 
@@ -434,6 +450,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="js/dados.js"></script>
     <script src="js/admin.js"></script>
 </body>
