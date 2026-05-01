@@ -1,7 +1,7 @@
 /**
  * D'Mima - Tienda Online
  * Archivo de configuracion generado desde el Panel de Control
- * Fecha: 1/5/2026, 21:53:30
+ * Fecha: 1/5/2026, 22:05:56
  */
 
 // =============================================
@@ -29,11 +29,12 @@ var CATEGORIAS = {
     "burgers": { nome: "Mercado", icone: "fas fa-store" },
     "pizzas": { nome: "Quesos y Embutidos", icone: "fas fa-bacon" },
     "churrasco": { nome: "Carnico", icone: "fas fa-drumstick-bite" },
-    "steaks": { nome: "Harinas", icone: "fas fa-bread-slice" },
+    "steaks": { nome: "Harinas y Levaduras", icone: "fas fa-bread-slice" },
     "bebidas": { nome: "Liquidos", icone: "fas fa-tint" },
     "sobremesas": { nome: "Aseo", icone: "fas fa-soap" },
     "outros": { nome: "Confituras", icone: "fas fa-candy-cane" },
-    "Condimentos": { nome: "Salsas, condimentos y sazones", icone: "fas sun-full" }
+    "Condimentos": { nome: "Salsas, condimentos y sazones", icone: "fas sun-full" },
+    "Granos y Pastas": { nome: "Granos y Pastas", icone: "fa fa-check-square" }
 };
 
 // =============================================

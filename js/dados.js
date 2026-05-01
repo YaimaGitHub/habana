@@ -87,7 +87,7 @@ var MENU = {
         },
         {
             "id": "goldbelly-burger-bash-pack",
-            "img": "./img/cardapio/Mercado/Azucar 1KG Energy.webp",
+            "img": "./img/cardapio/Mercado/Azucar.webp",
             "name": "Azucar 1KG",
             "dsc": "Azucar 1KG",
             "price": 690,
@@ -310,14 +310,6 @@ var MENU = {
     ],
     "pizzas": [
         {
-            "id": "2-lou-malnatis-deep-dish-pizzas",
-            "img": "./img/cardapio/Arinas y Levaduras/NAC-HARINA-260121-01.webp",
-            "name": "Harina por libra",
-            "dsc": "Harina por libra",
-            "price": 350,
-            "unit": "lb"
-        },
-        {
             "id": "23699-choose-your-own-thin-crust-pizza-4-pack",
             "img": "./img/cardapio/antiinflamatorios/paracetamol.jpg",
             "name": "Paracetamol",
@@ -382,6 +374,14 @@ var MENU = {
             "dsc": "Chef Matt's Steak Sampler for 10-12",
             "price": 220,
             "unit": "unidad"
+        },
+        {
+            "id": "2-lou-malnatis-deep-dish-pizzas",
+            "img": "./img/cardapio/Harinas y Levaduras/Harina.webp",
+            "name": "Harina por libra",
+            "dsc": "Harina por libra",
+            "price": 350,
+            "unit": "lb"
         }
     ],
     "Condimentos": [
@@ -417,5 +417,6 @@ var MENU = {
             "price": 1000,
             "unit": "unidad"
         }
-    ]
+    ],
+    "Granos y Pastas": []
 }
