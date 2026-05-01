@@ -55,10 +55,10 @@ var MENU = {
         },
         {
             "id": "shake-shack-shackburger-8-pack",
-            "img": "./img/cardapio/burguers/CIPROFLOXACINO-500-MG.jpg",
-            "name": "Ciprofloxacino 500mg",
-            "dsc": "Shake Shack ShackBurger® - 8 Pack",
-            "price": 300,
+            "img": "./img/cardapio/mercado/aceituna con hueso.jpg",
+            "name": "Aceituna Verde Con Hueso",
+            "dsc": "Aceituna Verde Con Hueso",
+            "price": 1000,
             "unit": "unidad"
         },
         {
