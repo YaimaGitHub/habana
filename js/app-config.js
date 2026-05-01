@@ -1,7 +1,7 @@
 /**
  * D'Mima - Tienda Online
  * Archivo de configuracion generado desde el Panel de Control
- * Fecha: 1/5/2026, 19:53:18
+ * Fecha: 1/5/2026, 21:21:50
  */
 
 // =============================================
@@ -27,7 +27,7 @@ var MUNICIPIOS_HABANA = [
 
 var CATEGORIAS = {
     "burgers": { nome: "Mercado", icone: "fas fa-store" },
-    "pizzas": { nome: "Embutido", icone: "fas fa-bacon" },
+    "pizzas": { nome: "Quesos y Embutidos", icone: "fas fa-bacon" },
     "churrasco": { nome: "Carnico", icone: "fas fa-drumstick-bite" },
     "steaks": { nome: "Harinas", icone: "fas fa-bread-slice" },
     "bebidas": { nome: "Liquidos", icone: "fas fa-tint" },

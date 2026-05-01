@@ -5,7 +5,7 @@ var MENU = {
     "churrasco": [
         {
             "id": "carne-de-res",
-            "img": "./img/cardapio/carnes/carne-res.jpg",
+            "img": "./img/cardapio/Carnico/carne-res.jpg",
             "name": "Carne de Res",
             "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
             "price": 1650,
@@ -29,10 +29,34 @@ var MENU = {
         },
         {
             "id": "ribs-brisket-and-burnt-ends",
-            "img": "./img/cardapio/Antialérgicos/Ciproheptadina.jpg",
-            "name": "Ciproheptadina",
-            "dsc": "Joe's KC Ribs, Brisket & Burnt Ends",
-            "price": 200,
+            "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
+            "name": "Higado de pollo",
+            "dsc": "Higado de pollo",
+            "price": 780,
+            "unit": "unidad"
+        },
+        {
+            "id": "woodford-reserve-mint-julep-syrup",
+            "img": "./img/cardapio/Carnico/Hígado de res.jpg",
+            "name": "Hígado de res",
+            "dsc": "Hígado de res",
+            "price": 900,
+            "unit": "unidad"
+        },
+        {
+            "id": "guys-caliente-margaritas-for-12",
+            "img": "./img/cardapio/Carnico/Carton de huevo.webp",
+            "name": "Carton de huevo",
+            "dsc": "Carton de huevo",
+            "price": 2850,
+            "unit": "unidad"
+        },
+        {
+            "id": "sea-salted-caramel-swirl-cheesecake",
+            "img": "./img/cardapio/Carnico/Huevos Sueltos de Gallina.webp",
+            "name": "Huevos Sueltos de Gallina",
+            "dsc": "Huevos Sueltos de Gallina",
+            "price": 100,
             "unit": "unidad"
         }
     ],
@@ -188,6 +212,22 @@ var MENU = {
             "dsc": "Frijol Negro Rainha",
             "price": 750,
             "unit": "unidad"
+        },
+        {
+            "id": "garbanzos-del-campo-500g",
+            "img": "./img/cardapio/Mercado/Garbanzos del campo 500g.webp",
+            "name": "Garbanzos del campo 500g",
+            "dsc": "Garbanzos del campo 500g",
+            "price": 700,
+            "unit": "unidad"
+        },
+        {
+            "id": "gelatina-de-diferentes-sabores",
+            "img": "./img/cardapio/Mercado/Caja de 3 Gelatinas.webp",
+            "name": "Gelatina de diferentes sabores",
+            "dsc": "Gelatina de piña",
+            "price": 280,
+            "unit": "unidad"
         }
     ],
     "sobremesas": [
@@ -206,42 +246,9 @@ var MENU = {
             "dsc": "Detergente Líquido KAPITAL 750G",
             "price": 740,
             "unit": "unidad"
-        },
-        {
-            "id": "dessert-bar-care-package",
-            "img": "./img/cardapio/Dermatológicos/69298876654432239---2-.png",
-            "name": "Triple Accion - CLOTRIMAZOL + GENTAMICINA + BETAMETASONA (crema)",
-            "dsc": "Dessert Bar Care Package",
-            "price": 700,
-            "unit": "unidad"
         }
     ],
-    "bebidas": [
-        {
-            "id": "hong-kong-boba-tea-kit-for-6",
-            "img": "./img/cardapio/Digestivos/omeprazol.jpg",
-            "name": "Omeprasol",
-            "dsc": "Hong Kong Boba Tea Kit for 6",
-            "price": 200,
-            "unit": "unidad"
-        },
-        {
-            "id": "guys-caliente-margaritas-for-12",
-            "img": "./img/cardapio/Digestivos/Pack-RANITIDINA-comp.jpg",
-            "name": "Ranitidina",
-            "dsc": "Guy's Caliente Margaritas for 12",
-            "price": 250,
-            "unit": "unidad"
-        },
-        {
-            "id": "woodford-reserve-mint-julep-syrup",
-            "img": "./img/cardapio/Digestivos/Suspensi-n-Pepto-Bismol-Sabor-Original-473-ml-1-3238.jpg",
-            "name": "Pepto Bismol (jarabe para aliviar cualquier malestar estomacal)",
-            "dsc": "Woodford Reserve Mint Julep Syrup",
-            "price": 1700,
-            "unit": "unidad"
-        }
-    ],
+    "bebidas": [],
     "outros": [
         {
             "id": "15259-german-chocolate-killer-brownie-tin-pack",
@@ -265,14 +272,6 @@ var MENU = {
             "name": "Vitamina C",
             "dsc": "Original Cannoli Pie",
             "price": 250,
-            "unit": "unidad"
-        },
-        {
-            "id": "sea-salted-caramel-swirl-cheesecake",
-            "img": "./img/cardapio/outros/acido-folico.jpg",
-            "name": "Ácido Fólico",
-            "dsc": "Sea-Salted Caramel Swirl Cheesecake",
-            "price": 150,
             "unit": "unidad"
         },
         {
@@ -338,16 +337,24 @@ var MENU = {
             "dsc": "Galletas Crokantinas Paquete entero",
             "price": 1250,
             "unit": "unidad"
+        },
+        {
+            "id": "dessert-bar-care-package",
+            "img": "./img/cardapio/Confituras/Paquetico de Galletas de Soda Crokantinas.jpeg",
+            "name": "Galletas sueltas de Soda Crokantinas",
+            "dsc": "Galletas sueltas de Soda Crokantinas",
+            "price": 190,
+            "unit": "unidad"
         }
     ],
     "pizzas": [
         {
             "id": "2-lou-malnatis-deep-dish-pizzas",
-            "img": "./img/cardapio/antiinflamatorios/Diclofenaco + Paracetamol.jpg",
-            "name": "Diclofenaco + Paracetamol",
-            "dsc": "2 Lou Malnati's Deep Dish Pizzas",
-            "price": 210,
-            "unit": "unidad"
+            "img": "./img/cardapio/Arinas y Levaduras/NAC-HARINA-260121-01.webp",
+            "name": "Harina por libra",
+            "dsc": "Harina por libra",
+            "price": 350,
+            "unit": "lb"
         },
         {
             "id": "23699-choose-your-own-thin-crust-pizza-4-pack",
@@ -379,6 +386,14 @@ var MENU = {
             "name": "Ibuprofeno (jarabe)",
             "dsc": "Wood Fired Pizzas Best Seller - 4 Pack",
             "price": 800,
+            "unit": "unidad"
+        },
+        {
+            "id": "hong-kong-boba-tea-kit-for-6",
+            "img": "./img/cardapio/Quesos y Embutidos/QUESO-GOUDA-VIMA.webp",
+            "name": "Queso Gouda Vima 3Kg Aprox.",
+            "dsc": "Queso Gouda Vima 3Kg Aprox.",
+            "price": 14500,
             "unit": "unidad"
         }
     ],
