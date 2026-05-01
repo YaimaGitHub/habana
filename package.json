@@ -1,7 +1,7 @@
 {
-  "name": "cabrera-market",
+  "name": "dmima",
   "version": "1.0.0",
-  "description": "Cabrera's Market - Tienda de Alimentos",
+  "description": "D'Mima - Tienda de Alimentos",
   "scripts": {
     "dev": "npx serve -l 3000",
     "start": "npx serve -l 3000"
