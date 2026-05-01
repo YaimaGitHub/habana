@@ -71,7 +71,7 @@ var MEU_ENDERECO = null;
 var VALOR_CARRINHO = 0;
 var VALOR_ENTREGA = 0;
 
-var CELULAR_EMPRESA = '5355135487';
+var CELULAR_EMPRESA = '5363282554';
 
 // Metadata de las categorías: nombre visible, icono y clave interna
 var CATEGORIAS = {
