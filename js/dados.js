@@ -1,4 +1,4 @@
-// Factor de conversión: 1 kg = 2.20462 lb
+// Factor de conversion: 1 kg = 2.20462 lb
 var CONVERSION_LB_KG = 2.20462;
 
 var MENU = {
@@ -47,10 +47,10 @@ var MENU = {
     "burgers": [
         {
             "id": "the-gramercy-tavern-burger-4-pack",
-            "img": "./img/cardapio/burguers/amoxicilina.jpg",
-            "name": "Amoxicilina",
-            "dsc": "The Gramercy Tavern Burger - 4 Pack",
-            "price": 300,
+            "img": "./img/cardapio/Mercado/aseite sublime.jpg",
+            "name": "Aceite 900Ml",
+            "dsc": "Aceite Sublime del gordo",
+            "price": 1190,
             "unit": "unidad"
         },
         {
@@ -140,7 +140,7 @@ var MENU = {
             "dsc": "complete",
             "price": 700,
             "unit": "unidad"
-        },   
+        },
         {
             "id": "1",
             "img": "./img/cardapio/burguers/nistatina-suspension.jpg",
@@ -343,7 +343,7 @@ var MENU = {
     "pizzas": [
         {
             "id": "2-lou-malnatis-deep-dish-pizzas",
-           "img": "./img/cardapio/antiinflamatorios/Diclofenaco + Paracetamol.jpg",
+            "img": "./img/cardapio/antiinflamatorios/Diclofenaco + Paracetamol.jpg",
             "name": "Diclofenaco + Paracetamol",
             "dsc": "2 Lou Malnati's Deep Dish Pizzas",
             "price": 210,
