@@ -1,7 +1,7 @@
 /**
  * D'Mima - Tienda Online
  * Archivo de configuracion generado desde el Panel de Control
- * Fecha: 1/5/2026, 21:21:50
+ * Fecha: 1/5/2026, 21:53:30
  */
 
 // =============================================
@@ -32,7 +32,8 @@ var CATEGORIAS = {
     "steaks": { nome: "Harinas", icone: "fas fa-bread-slice" },
     "bebidas": { nome: "Liquidos", icone: "fas fa-tint" },
     "sobremesas": { nome: "Aseo", icone: "fas fa-soap" },
-    "outros": { nome: "Confituras", icone: "fas fa-candy-cane" }
+    "outros": { nome: "Confituras", icone: "fas fa-candy-cane" },
+    "Condimentos": { nome: "Salsas, condimentos y sazones", icone: "fas sun-full" }
 };
 
 // =============================================

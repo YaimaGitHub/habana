@@ -12,22 +12,6 @@ var MENU = {
             "unit": "lb"
         },
         {
-            "id": "pollo-entero",
-            "img": "./img/cardapio/carnes/pollo.jpg",
-            "name": "Pollo Entero",
-            "dsc": "Pollo fresco listo para cocinar",
-            "price": 320,
-            "unit": "lb"
-        },
-        {
-            "id": "cerdo-pierna",
-            "img": "./img/cardapio/carnes/cerdo.jpg",
-            "name": "Pierna de Cerdo",
-            "dsc": "Pierna de cerdo fresca",
-            "price": 380,
-            "unit": "lb"
-        },
-        {
             "id": "ribs-brisket-and-burnt-ends",
             "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
             "name": "Higado de pollo",
@@ -75,22 +59,6 @@ var MENU = {
             "name": "Aceituna Verde Con Hueso",
             "dsc": "Aceituna Verde Con Hueso",
             "price": 1000,
-            "unit": "unidad"
-        },
-        {
-            "id": "gotts-cheeseburger-kit-for-4",
-            "img": "./img/cardapio/Mercado/Adobo con pimienta.jpg",
-            "name": "Adobo con pimienta",
-            "dsc": "Adobo con pimienta",
-            "price": 1800,
-            "unit": "unidad"
-        },
-        {
-            "id": "le-big-matt-kit-for-6",
-            "img": "./img/cardapio/Mercado/Ajo_troceado_BADIA.jpg",
-            "name": "Ajo_troceado_BADIA.jpg",
-            "dsc": "Ajo troceado BADIA",
-            "price": 880,
             "unit": "unidad"
         },
         {
@@ -174,14 +142,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "jacques-world-famous-chocolate-chip-cookies",
-            "img": "./img/cardapio/Mercado/COMINO_MOLIDO.jpg",
-            "name": "Comino Molido",
-            "dsc": " COMINO MOLIDO",
-            "price": 800,
-            "unit": "unidad"
-        },
-        {
             "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
             "img": "./img/cardapio/Mercado/Paquete de espaguetis.webp",
             "name": "Paquete de espaguetis",
@@ -246,34 +206,35 @@ var MENU = {
             "dsc": "Detergente Líquido KAPITAL 750G",
             "price": 740,
             "unit": "unidad"
+        },
+        {
+            "id": "pollo-entero",
+            "img": "./img/cardapio/Aseo/jabon de baño 100g.webp",
+            "name": "Jabon de baño 100g",
+            "dsc": "jabon de baño 100g",
+            "price": 160,
+            "unit": "unidad"
+        },
+        {
+            "id": "cerdo-pierna",
+            "img": "./img/cardapio/Aseo/jabon de lavar miya.jpg",
+            "name": "Jabón de lavar miya 150g",
+            "dsc": "Jabón de lavar miya 150g",
+            "price": 260,
+            "unit": "unidad"
         }
     ],
-    "bebidas": [],
-    "outros": [
+    "bebidas": [
         {
             "id": "15259-german-chocolate-killer-brownie-tin-pack",
-            "img": "./img/cardapio/outros/Vitamina C (jarabe).jpg",
-            "name": "Vitamina C (jarabe)",
-            "dsc": "German Chocolate Killer Brownie®",
-            "price": 700,
+            "img": "./img/cardapio/Liquidos/Jugo Goliath.jpg",
+            "name": "Jugo Goliath",
+            "dsc": "Jugo Goliath",
+            "price": 800,
             "unit": "unidad"
-        },
-        {
-            "id": "jacques-world-famous-chocolate-chip-cookies",
-            "img": "./img/cardapio/outros/VITAMINA-C-GOTAS-100-MG--COASP_L.jpg",
-            "name": "Vitamina C (gotas)",
-            "dsc": "Jacques' World Famous Chocolate Chip Cookies - 6 Pack",
-            "price": 600,
-            "unit": "unidad"
-        },
-        {
-            "id": "luigis-original-cannoli-pie",
-            "img": "./img/cardapio/outros/Vitamina C.jpg",
-            "name": "Vitamina C",
-            "dsc": "Original Cannoli Pie",
-            "price": 250,
-            "unit": "unidad"
-        },
+        }
+    ],
+    "outros": [
         {
             "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
             "img": "./img/cardapio/outros/aceite-higado-de-bacalao-x10-tabletas-1.jpg",
@@ -420,6 +381,40 @@ var MENU = {
             "name": "Furosemida",
             "dsc": "Chef Matt's Steak Sampler for 10-12",
             "price": 220,
+            "unit": "unidad"
+        }
+    ],
+    "Condimentos": [
+        {
+            "id": "luigis-original-cannoli-pie",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Zumo de limón Badia (295.7 ml).webp",
+            "name": "Zumo de limón Badia (295.7 ml)",
+            "dsc": "Zumo de limón Badia (295.7 ml)",
+            "price": 900,
+            "unit": "unidad"
+        },
+        {
+            "id": "gotts-cheeseburger-kit-for-4",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Adobo con pimienta.jpg",
+            "name": "Adobo con pimienta",
+            "dsc": "Adobo con pimienta",
+            "price": 1800,
+            "unit": "unidad"
+        },
+        {
+            "id": "le-big-matt-kit-for-6",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Ajo_troceado_BADIA.jpg",
+            "name": "Ajo_troceado_BADIA.jpg",
+            "dsc": "Ajo troceado BADIA",
+            "price": 880,
+            "unit": "unidad"
+        },
+        {
+            "id": "jacques-world-famous-chocolate-chip-cookies",
+            "img": "./img/cardapio/Salsas, condimentos y sazones/Tomato Ketchup KURTZ (680g).webp",
+            "name": "Tomato Ketchup KURTZ (680g)",
+            "dsc": "Tomato Ketchup KURTZ (680g)",
+            "price": 1000,
             "unit": "unidad"
         }
     ]
