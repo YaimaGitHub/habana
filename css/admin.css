@@ -199,22 +199,27 @@ body {
 
 .input-icon {
     position: relative;
+    display: block;
 }
 
 .input-icon i {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--gray-500);
-    font-size: 14px;
+    font-size: 13px;
+    width: 16px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .input-icon input {
-    padding-left: 40px;
+    padding-left: 36px;
 }
 
-/* Responsive form group styles */
+/* Responsive form group styles - Tablet */
 @media (min-width: 576px) {
     .form-group {
         margin-bottom: 18px;
@@ -226,15 +231,17 @@ body {
     }
     
     .input-icon i {
-        left: 14px;
-        font-size: 15px;
+        left: 12px;
+        font-size: 14px;
+        width: 18px;
     }
     
     .input-icon input {
-        padding-left: 44px;
+        padding-left: 40px;
     }
 }
 
+/* Responsive form group styles - Laptop */
 @media (min-width: 992px) {
     .form-group {
         margin-bottom: 22px;
@@ -246,12 +253,26 @@ body {
     }
     
     .input-icon i {
-        left: 16px;
-        font-size: 16px;
+        left: 14px;
+        font-size: 15px;
+        width: 20px;
     }
     
     .input-icon input {
-        padding-left: 48px;
+        padding-left: 44px;
+    }
+}
+
+/* Responsive form group styles - PC/Large screens */
+@media (min-width: 1200px) {
+    .input-icon i {
+        left: 16px;
+        font-size: 16px;
+        width: 22px;
+    }
+    
+    .input-icon input {
+        padding-left: 50px;
     }
 }
 
