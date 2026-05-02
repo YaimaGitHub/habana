@@ -477,15 +477,21 @@ cardapio.metodos = {
             
             opt.choices.forEach((choice, choiceIndex) => {
                 let choiceId = `${id}-opt${optIndex}-choice${choiceIndex}`;
+                // Las opciones pueden ser strings o objetos {name, price}
+                let choiceName = typeof choice === 'object' ? choice.name : choice;
+                let choicePrice = typeof choice === 'object' ? (choice.price || 0) : 0;
+                let priceLabel = choicePrice > 0 ? ` (+$${choicePrice})` : '';
+                
                 html += `
                     <button type="button" 
                             class="option-chip" 
                             id="${choiceId}"
                             data-product-id="${id}"
                             data-option-index="${optIndex}"
-                            data-choice="${choice}"
-                            onclick="cardapio.metodos.seleccionarOpcion('${id}', ${optIndex}, '${choice}', this)">
-                        ${choice}
+                            data-choice="${choiceName}"
+                            data-choice-price="${choicePrice}"
+                            onclick="cardapio.metodos.seleccionarOpcion('${id}', ${optIndex}, '${choiceName}', ${choicePrice}, this)">
+                        ${choiceName}${priceLabel}
                     </button>
                 `;
             });
@@ -501,7 +507,7 @@ cardapio.metodos = {
     },
 
     // Selecciona una opción para un producto
-    seleccionarOpcion: (productId, optionIndex, choice, btnElement) => {
+    seleccionarOpcion: (productId, optionIndex, choice, choicePrice, btnElement) => {
         let escapedId = cardapio.metodos.escaparId(productId);
         let $card = $("#" + escapedId);
         
@@ -511,10 +517,10 @@ cardapio.metodos = {
         // Marcar la nueva selección
         $(btnElement).addClass('selected');
         
-        // Guardar la selección en el data del card
+        // Guardar la selección en el data del card (incluyendo el precio adicional)
         let selections = $card.data('selectedOptions') || {};
         let optionName = $(btnElement).closest('.product-option-group').data('option-name');
-        selections[optionIndex] = { name: optionName, choice: choice };
+        selections[optionIndex] = { name: optionName, choice: choice, price: choicePrice || 0 };
         $card.data('selectedOptions', selections);
         
         // Verificar si todas las opciones requeridas están seleccionadas
@@ -623,6 +629,15 @@ cardapio.metodos = {
                     return;
                 }
             }
+            
+            // Calcular precio adicional por opciones seleccionadas
+            let optionsExtraPrice = 0;
+            if (hasOptions && Object.keys(selectedOptions).length > 0) {
+                Object.values(selectedOptions).forEach(opt => {
+                    optionsExtraPrice += (opt.price || 0);
+                });
+            }
+            let finalPrice = selectedPrice + optionsExtraPrice;
 
             // Crear un ID único que incluya la unidad y las opciones
             let cartItemId = id;
@@ -653,7 +668,8 @@ cardapio.metodos = {
                 nuevoItem.qntd = qntdAtual;
                 nuevoItem.cartId = cartItemId;
                 nuevoItem.selectedUnit = selectedUnit;
-                nuevoItem.price = selectedPrice;
+                nuevoItem.price = finalPrice; // Precio base + extras de opciones
+                nuevoItem.optionsExtraPrice = optionsExtraPrice; // Guardar el extra para referencia
                 
                 // Guardar las opciones seleccionadas
                 if (hasOptions && Object.keys(selectedOptions).length > 0) {
@@ -853,10 +869,13 @@ cardapio.metodos = {
                     unitLabelCart = `<span class="unit-label-cart">/${e.selectedUnit}</span>`;
                 }
 
-                // Mostrar opciones seleccionadas
+                // Mostrar opciones seleccionadas (con precio extra si aplica)
                 let optionsBadgeCart = '';
                 if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
-                    let optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(' | ');
+                    let optionsText = Object.values(e.selectedOptions).map(o => {
+                        let priceExtra = o.price > 0 ? ` (+$${o.price})` : '';
+                        return `${o.name}: ${o.choice}${priceExtra}`;
+                    }).join(' | ');
                     optionsBadgeCart = `<span class="options-badge-cart">${optionsText}</span>`;
                 }
 
@@ -1594,10 +1613,13 @@ cardapio.metodos = {
                 unitLabelResumo = `<span class="unit-label-resumo">/${e.selectedUnit}</span>`;
             }
 
-            // Mostrar opciones seleccionadas
+            // Mostrar opciones seleccionadas (con precio extra si aplica)
             let optionsBadgeResumo = '';
             if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
-                let optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(' | ');
+                let optionsText = Object.values(e.selectedOptions).map(o => {
+                    let priceExtra = o.price > 0 ? ` (+$${o.price})` : '';
+                    return `${o.name}: ${o.choice}${priceExtra}`;
+                }).join(' | ');
                 optionsBadgeResumo = `<span class="options-badge-resumo">${optionsText}</span>`;
             }
 
