@@ -521,7 +521,9 @@ cardapio.metodos = {
         let $btn = $card.find('.btn-add');
         
         // Si el producto no tiene opciones, el botón siempre está habilitado
-        if ($card.data('has-options') !== 'true') {
+        // Usar attr() en lugar de data() para leer el atributo HTML correctamente
+        let hasOptions = $card.attr('data-has-options');
+        if (hasOptions !== 'true') {
             return true;
         }
         
@@ -531,7 +533,7 @@ cardapio.metodos = {
         // Verificar cada grupo de opciones requeridas
         $card.find('.product-option-group[data-required="true"]').each(function() {
             let optIndex = $(this).data('option-index');
-            if (!selections[optIndex]) {
+            if (selections[optIndex] === undefined) {
                 allComplete = false;
             }
         });
