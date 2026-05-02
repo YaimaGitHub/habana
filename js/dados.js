@@ -176,7 +176,13 @@ var MENU = {
                 {
                     "name": "Sabor",
                     "required": true,
-                    "choices": ["Piña", "Fresa", "Naranja", "Limón", "Uva"]
+                    "choices": [
+                        "Piña",
+                        "Fresa",
+                        "Naranja",
+                        "Limón",
+                        "Uva"
+                    ]
                 }
             ]
         },
@@ -331,7 +337,13 @@ var MENU = {
                 {
                     "name": "Sabor",
                     "required": true,
-                    "choices": ["Fresa", "Natural", "Vainilla", "Coco", "Piña"]
+                    "choices": [
+                        "Fresa",
+                        "Natural",
+                        "Vainilla",
+                        "Coco",
+                        "Piña"
+                    ]
                 }
             ]
         }
