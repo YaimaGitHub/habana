@@ -2,7 +2,9 @@ $(document).ready(function () {
     cardapio.eventos.init();
 })
 
-var cardapio = {};
+var cardapio = {
+    primeraCategoria: null // Se inicializa en renderizarCategorias
+};
 
 var MEU_CARRINHO = [];
 
@@ -48,45 +50,17 @@ var PAISES_TELEFONO = [
     { code: '+7',   name: 'Rusia',             min: 10, max: 10 }
 ];
 
-// Municipios reales de La Habana con costo de envío (en MN / CUP)
-var MUNICIPIOS_HABANA = [
-    { id: 'habana-vieja',        nome: 'Habana Vieja',                   costo: 200 },
-    { id: 'centro-habana',       nome: 'Centro Habana',                  costo: 200 },
-    { id: 'plaza',               nome: 'Plaza de la Revolución',         costo: 250 },
-    { id: 'cerro',               nome: 'Cerro',                          costo: 250 },
-    { id: 'diez-de-octubre',     nome: 'Diez de Octubre',                costo: 250 },
-    { id: 'playa',               nome: 'Playa',                          costo: 350 },
-    { id: 'marianao',            nome: 'Marianao',                       costo: 400 },
-    { id: 'la-lisa',             nome: 'La Lisa',                        costo: 450 },
-    { id: 'boyeros',             nome: 'Boyeros',                        costo: 400 },
-    { id: 'arroyo-naranjo',      nome: 'Arroyo Naranjo',                 costo: 400 },
-    { id: 'san-miguel',          nome: 'San Miguel del Padrón',          costo: 350 },
-    { id: 'guanabacoa',          nome: 'Guanabacoa',                     costo: 400 },
-    { id: 'regla',               nome: 'Regla',                          costo: 300 },
-    { id: 'habana-del-este',     nome: 'Habana del Este',                costo: 450 },
-    { id: 'cotorro',             nome: 'Cotorro',                        costo: 500 }
-];
-var MEU_ENDERECO = null;
+// Las variables MUNICIPIOS_HABANA, MEU_ENDERECO, CELULAR_EMPRESA y CATEGORIAS
+// ahora se cargan desde app-data.js para compartirlas con el panel de control
 
 var VALOR_CARRINHO = 0;
 var VALOR_ENTREGA = 0;
 
-var CELULAR_EMPRESA = '5363282554';
-
-// Metadata de las categorías: nombre visible, icono y clave interna
-var CATEGORIAS = {
-    "burgers":     { nome: "Mercado", icone: "fas fa-store" },
-    "pizzas":      { nome: "Embutido", icone: "fas fa-bacon" },
-    "churrasco":   { nome: "Carnico", icone: "fas fa-drumstick-bite" },
-    "steaks":      { nome: "Harinas", icone: "fas fa-bread-slice" },
-    "bebidas":     { nome: "Liquidos", icone: "fas fa-tint" },
-    "sobremesas":  { nome: "Aseo", icone: "fas fa-soap" },
-    "outros":      { nome: "Confituras", icone: "fas fa-candy-cane" }
-};
-
 cardapio.eventos = {
 
     init: () => {
+        // Generar las categorías dinámicamente desde CATEGORIAS
+        cardapio.metodos.renderizarCategorias();
         cardapio.metodos.atualizarContadoresCategorias();
         cardapio.metodos.obterItensCardapio();
         cardapio.metodos.carregarBotaoLigar();
@@ -117,6 +91,34 @@ cardapio.eventos = {
 
 cardapio.metodos = {
 
+    // Genera dinámicamente las tarjetas de categorías desde la variable CATEGORIAS
+    renderizarCategorias: () => {
+        let $container = $("#categoriasGrid");
+        if ($container.length === 0) return;
+        
+        $container.html(''); // Limpiar contenedor
+        
+        // La primera categoría con productos será la activa por defecto
+        let primeraCategoria = Object.keys(CATEGORIAS)[0] || 'burgers';
+        
+        $.each(CATEGORIAS, (key, info) => {
+            let activeClass = (key === primeraCategoria) ? 'active' : '';
+            let html = `
+                <a id="menu-${key}" class="categoria-card ${activeClass}" onclick="cardapio.metodos.obterItensCardapio('${key}')">
+                    <div class="categoria-icon-wrap">
+                        <i class="${info.icone}"></i>
+                    </div>
+                    <span class="categoria-nombre">${info.nome}</span>
+                    <span class="categoria-count">0</span>
+                </a>
+            `;
+            $container.append(html);
+        });
+        
+        // Guardar la primera categoría para usarla como default
+        cardapio.primeraCategoria = primeraCategoria;
+    },
+
     // actualizar el contador (badge) de cada categoría en el menú
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
@@ -129,7 +131,11 @@ cardapio.metodos = {
     },
 
     // obtener la lista de elementos del menú
-    obterItensCardapio: (categoria = 'burgers', vermais = false) => {
+    obterItensCardapio: (categoria, vermais = false) => {
+        // Si no se especifica categoría, usar la primera disponible
+        if (!categoria) {
+            categoria = cardapio.primeraCategoria || Object.keys(CATEGORIAS)[0] || 'burgers';
+        }
 
         // si el usuario pulsa una categoría, salir del modo búsqueda
         if (!vermais) {
@@ -279,7 +285,7 @@ cardapio.metodos = {
                 if ((MENU[key] || []).some(p => p.id == id)) return key;
             }
         }
-        return 'burgers';
+        return cardapio.primeraCategoria || Object.keys(CATEGORIAS)[0] || 'burgers';
     },
 
     // ejecuta la búsqueda en tiempo real
@@ -393,7 +399,8 @@ cardapio.metodos = {
     salirModoBusqueda: () => {
         $(".categorias-grid").removeClass('modo-busqueda');
         let ativo = $(".categorias-grid .categoria-card.active").attr('id');
-        let categoria = ativo ? ativo.split('menu-')[1] : 'burgers';
+        let primeraCategoria = cardapio.primeraCategoria || Object.keys(CATEGORIAS)[0] || 'burgers';
+        let categoria = ativo ? ativo.split('menu-')[1] : primeraCategoria;
         cardapio.metodos.obterItensCardapio(categoria);
     },
 

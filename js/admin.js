@@ -682,14 +682,14 @@ var adminPanel = {
         return content;
     },
     
-    // Generar contenido del archivo app.js con las configuraciones actualizadas
+    // Generar contenido del archivo app-data.js con las configuraciones actualizadas
     generateAppJS: function() {
         var self = this;
         
         // Generar el array de municipios
         var municipiosStr = 'var MUNICIPIOS_HABANA = [\n';
         localMUNICIPIOS.forEach(function(mun, index) {
-            municipiosStr += '    { id: "' + mun.id + '", nome: "' + mun.nome + '", costo: ' + mun.costo + ' }';
+            municipiosStr += '    { id: \'' + mun.id + '\', nome: \'' + mun.nome.replace(/'/g, "\\'") + '\', costo: ' + mun.costo + ' }';
             if (index < localMUNICIPIOS.length - 1) municipiosStr += ',';
             municipiosStr += '\n';
         });
@@ -700,43 +700,35 @@ var adminPanel = {
         var catKeys = Object.keys(localCATEGORIAS);
         catKeys.forEach(function(key, index) {
             var cat = localCATEGORIAS[key];
-            categoriasStr += '    "' + key + '": { nome: "' + cat.nome + '", icone: "' + cat.icone + '" }';
+            categoriasStr += '    "' + key + '": { nome: "' + cat.nome.replace(/"/g, '\\"') + '", icone: "' + cat.icone + '" }';
             if (index < catKeys.length - 1) categoriasStr += ',';
             categoriasStr += '\n';
         });
         categoriasStr += '};';
         
         var content = '/**\n';
-        content += ' * D\'Mima - Tienda Online\n';
-        content += ' * Archivo de configuracion generado desde el Panel de Control\n';
-        content += ' * Fecha: ' + new Date().toLocaleString() + '\n';
+        content += ' * D\'Mima - Datos Compartidos\n';
+        content += ' * Este archivo contiene los datos de configuracion que son compartidos\n';
+        content += ' * entre la tienda (index.html) y el panel de control (admin.html)\n';
+        content += ' * Generado desde el Panel de Control: ' + new Date().toLocaleString() + '\n';
         content += ' */\n\n';
-        
-        content += '// =============================================\n';
-        content += '// CONFIGURACION DE LA TIENDA\n';
-        content += '// =============================================\n\n';
         
         content += '// Numero de WhatsApp para pedidos (sin el +)\n';
         content += "var CELULAR_EMPRESA = '" + localCONTACT.whatsapp + "';\n\n";
         
         content += '// Direccion de la tienda\n';
-        content += "var MEU_ENDERECO = '" + (localCONTACT.address || '').replace(/'/g, "\\'") + "';\n\n";
+        var address = localCONTACT.address || '';
+        if (address) {
+            content += "var MEU_ENDERECO = '" + address.replace(/'/g, "\\'") + "';\n\n";
+        } else {
+            content += "var MEU_ENDERECO = null;\n\n";
+        }
         
-        content += '// =============================================\n';
-        content += '// MUNICIPIOS Y COSTOS DE ENVIO\n';
-        content += '// =============================================\n\n';
+        content += '// Municipios de La Habana con costo de envio (en MN / CUP)\n';
         content += municipiosStr + '\n\n';
         
-        content += '// =============================================\n';
-        content += '// CATEGORIAS DE PRODUCTOS\n';
-        content += '// =============================================\n\n';
-        content += categoriasStr + '\n\n';
-        
-        content += '// =============================================\n';
-        content += '// RESTO DEL CODIGO DE LA APLICACION\n';
-        content += '// =============================================\n';
-        content += '// NOTA: Copie el resto del codigo de su archivo app.js original\n';
-        content += '// a partir de aqui, manteniendo las funciones existentes.\n';
+        content += '// Metadata de las categorias: nombre visible, icono y clave interna\n';
+        content += categoriasStr + '\n';
         
         return content;
     },
@@ -792,11 +784,11 @@ var adminPanel = {
         this.showToast('Archivo dados.js exportado correctamente', 'success');
     },
     
-    // Exportar app.js
+    // Exportar app-data.js
     exportAppJS: function() {
         var content = this.generateAppJS();
-        this.downloadFile(content, 'app.js', 'application/javascript');
-        this.showToast('Archivo app.js exportado. Recuerde agregar el resto del codigo original.', 'success');
+        this.downloadFile(content, 'app-data.js', 'application/javascript');
+        this.showToast('Archivo app-data.js exportado correctamente', 'success');
     },
     
     // Exportar index.html
@@ -813,7 +805,7 @@ var adminPanel = {
         // Crear contenido de cada archivo
         var files = {
             'js/dados.js': this.generateDadosJS(),
-            'js/app-config.js': this.generateAppJS(),
+            'js/app-data.js': this.generateAppJS(),
             'index-referencias.html': this.generateIndexHTML(),
             'README.txt': this.generateReadme()
         };
@@ -848,9 +840,9 @@ var adminPanel = {
         content += '1. js/dados.js\n';
         content += '   - Contiene todos los productos del menu\n';
         content += '   - Reemplace el archivo original en la carpeta /js/\n\n';
-        content += '2. js/app-config.js\n';
+        content += '2. js/app-data.js\n';
         content += '   - Contiene la configuracion de WhatsApp, direccion, municipios y categorias\n';
-        content += '   - Copie las variables al inicio de su archivo app.js original\n\n';
+        content += '   - Reemplace el archivo app-data.js en la carpeta /js/\n\n';
         content += '3. index-referencias.html\n';
         content += '   - Contiene las referencias actualizadas de contacto\n';
         content += '   - Use los valores para actualizar su index.html original\n\n';
@@ -858,7 +850,7 @@ var adminPanel = {
         content += '-------------------------\n\n';
         content += '1. Haga una copia de seguridad de sus archivos originales\n';
         content += '2. Reemplace js/dados.js con el archivo incluido\n';
-        content += '3. Copie las variables de app-config.js al inicio de su app.js\n';
+        content += '3. Reemplace js/app-data.js con el archivo incluido\n';
         content += '4. Actualice los enlaces de contacto en index.html segun las referencias\n';
         content += '5. Suba los archivos modificados a su servidor\n';
         content += '6. Recargue la pagina para ver los cambios\n\n';
