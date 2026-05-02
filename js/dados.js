@@ -9,7 +9,19 @@ var MENU = {
             "name": "Carne de Res",
             "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
             "price": 1650,
-            "unit": "lb"
+            "unit": "lb",
+            "options": [
+                {
+                    "name": "jaba",
+                    "required": false,
+                    "choices": [
+                        {
+                            "name": "jaba",
+                            "price": 8
+                        }
+                    ]
+                }
+            ]
         },
         {
             "id": "ribs-brisket-and-burnt-ends",

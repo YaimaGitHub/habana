@@ -236,11 +236,16 @@ var adminPanel = {
                         return;
                     }
                     
+                    // Verificar si el producto tiene opciones
+                    var hasOptions = product.options && product.options.length > 0;
+                    var optionsBadge = hasOptions ? '<span class="options-badge" title="Tiene opciones/variantes"><i class="fas fa-list"></i> ' + product.options.length + '</span>' : '';
+                    
                     var card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = '\
                         <div class="product-image">\
                             <img src="' + product.img + '" alt="' + product.name + '" onerror="this.src=\'./img/icone-pedido.png\'">\
+                            ' + optionsBadge + '\
                         </div>\
                         <div class="product-info">\
                             <span class="product-category"><i class="' + catInfo.icone + '"></i> ' + catInfo.nome + '</span>\
@@ -275,11 +280,18 @@ var adminPanel = {
     showProductModal: function(isEdit) {
         document.getElementById('productModal').classList.remove('hidden');
         document.getElementById('productModalTitle').textContent = isEdit ? 'Editar Producto' : 'Nuevo Producto';
+        
+        // Cargar categorias en el select
+        this.loadCategorySelect();
+        
         if (!isEdit) {
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             document.getElementById('productOldCategory').value = '';
             document.getElementById('imagePreview').innerHTML = '';
+            // Limpiar opciones
+            document.getElementById('optionsContainer').innerHTML = '';
+            this.optionGroupCounter = 0;
         }
     },
 
@@ -303,6 +315,9 @@ var adminPanel = {
             document.getElementById('imagePreview').innerHTML = '<img src="' + product.img + '" alt="Preview">';
         }
         
+        // Cargar opciones del producto
+        this.loadOptionsToForm(product.options || []);
+        
         this.showProductModal(true);
     },
 
@@ -323,6 +338,9 @@ var adminPanel = {
             id = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         }
         
+        // Obtener opciones del formulario
+        var options = this.getOptionsFromForm();
+        
         var productData = {
             id: id,
             img: img || './img/icone-pedido.png',
@@ -331,6 +349,11 @@ var adminPanel = {
             price: price,
             unit: unit
         };
+        
+        // Agregar opciones solo si existen
+        if (options && options.length > 0) {
+            productData.options = options;
+        }
         
         // Si estamos editando y cambio la categoria, eliminar del viejo
         if (oldCategory && oldCategory !== category) {
@@ -375,6 +398,150 @@ var adminPanel = {
             this.renderProducts();
             this.updateDashboard();
             this.showToast('Producto "' + productName + '" eliminado', 'warning');
+        }
+    },
+
+    // =====================
+    // OPCIONES DE PRODUCTOS
+    // =====================
+    
+    // Contador para IDs unicos de grupos de opciones
+    optionGroupCounter: 0,
+    
+    // Agrega un nuevo grupo de opciones al formulario
+    addOptionGroup: function(optionData) {
+        var self = this;
+        var container = document.getElementById('optionsContainer');
+        var groupId = 'option-group-' + (++this.optionGroupCounter);
+        
+        var groupDiv = document.createElement('div');
+        groupDiv.className = 'option-group';
+        groupDiv.id = groupId;
+        
+        var optionName = optionData ? optionData.name : '';
+        var isRequired = optionData ? optionData.required : false;
+        
+        groupDiv.innerHTML = '\
+            <button type="button" class="btn-remove-option" onclick="adminPanel.removeOptionGroup(\'' + groupId + '\')" title="Eliminar opcion">\
+                <i class="fas fa-times"></i>\
+            </button>\
+            <div class="option-group-header">\
+                <input type="text" class="option-name" placeholder="Nombre de la opcion (ej: Sabor, Tamano)" value="' + optionName + '">\
+                <label>\
+                    <input type="checkbox" class="option-required" ' + (isRequired ? 'checked' : '') + '>\
+                    Requerido\
+                </label>\
+            </div>\
+            <div class="choices-labels">\
+                <span>Opcion</span>\
+                <span>Precio extra ($)</span>\
+            </div>\
+            <div class="choices-container" id="choices-' + groupId + '"></div>\
+            <button type="button" class="btn-add-choice" onclick="adminPanel.addChoice(\'' + groupId + '\')">\
+                <i class="fas fa-plus"></i> Agregar opcion\
+            </button>\
+        ';
+        
+        container.appendChild(groupDiv);
+        
+        // Agregar opciones existentes o una vacia
+        var choicesContainer = document.getElementById('choices-' + groupId);
+        if (optionData && optionData.choices && optionData.choices.length > 0) {
+            optionData.choices.forEach(function(choice) {
+                self.addChoice(groupId, choice);
+            });
+        } else {
+            this.addChoice(groupId);
+        }
+    },
+    
+    // Elimina un grupo de opciones
+    removeOptionGroup: function(groupId) {
+        var group = document.getElementById(groupId);
+        if (group) {
+            group.remove();
+        }
+    },
+    
+    // Agrega una opcion (choice) dentro de un grupo
+    addChoice: function(groupId, choiceData) {
+        var container = document.getElementById('choices-' + groupId);
+        if (!container) return;
+        
+        var choiceDiv = document.createElement('div');
+        choiceDiv.className = 'choice-row';
+        
+        var choiceName = '';
+        var choicePrice = 0;
+        
+        if (choiceData) {
+            if (typeof choiceData === 'string') {
+                choiceName = choiceData;
+            } else if (typeof choiceData === 'object') {
+                choiceName = choiceData.name || '';
+                choicePrice = choiceData.price || 0;
+            }
+        }
+        
+        choiceDiv.innerHTML = '\
+            <input type="text" class="choice-name" placeholder="Ej: Fresa, Grande, Extra queso" value="' + choiceName + '">\
+            <input type="number" class="choice-price" placeholder="0" min="0" step="1" value="' + choicePrice + '">\
+            <button type="button" class="btn-remove-choice" onclick="this.parentElement.remove()" title="Eliminar">\
+                <i class="fas fa-times"></i>\
+            </button>\
+        ';
+        
+        container.appendChild(choiceDiv);
+    },
+    
+    // Obtiene todas las opciones del formulario
+    getOptionsFromForm: function() {
+        var options = [];
+        var groups = document.querySelectorAll('#optionsContainer .option-group');
+        
+        groups.forEach(function(group) {
+            var name = group.querySelector('.option-name').value.trim();
+            if (!name) return; // Ignorar grupos sin nombre
+            
+            var required = group.querySelector('.option-required').checked;
+            var choices = [];
+            
+            group.querySelectorAll('.choice-row').forEach(function(row) {
+                var choiceName = row.querySelector('.choice-name').value.trim();
+                var choicePrice = parseFloat(row.querySelector('.choice-price').value) || 0;
+                
+                if (choiceName) {
+                    if (choicePrice > 0) {
+                        choices.push({ name: choiceName, price: choicePrice });
+                    } else {
+                        choices.push(choiceName);
+                    }
+                }
+            });
+            
+            if (choices.length > 0) {
+                options.push({
+                    name: name,
+                    required: required,
+                    choices: choices
+                });
+            }
+        });
+        
+        return options.length > 0 ? options : null;
+    },
+    
+    // Carga las opciones de un producto en el formulario
+    loadOptionsToForm: function(options) {
+        var self = this;
+        var container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        this.optionGroupCounter = 0;
+        
+        if (options && options.length > 0) {
+            options.forEach(function(opt) {
+                self.addOptionGroup(opt);
+            });
         }
     },
 

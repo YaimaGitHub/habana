@@ -368,6 +368,19 @@
                     <input type="text" id="productImg" placeholder="./img/cardapio/categoria/imagen.jpg">
                     <div class="image-preview" id="imagePreview"></div>
                 </div>
+                
+                <!-- Seccion de Opciones/Agregados -->
+                <div class="form-group options-section">
+                    <div class="options-header">
+                        <label>Opciones / Agregados</label>
+                        <button type="button" class="btn-small btn-add-option" onclick="adminPanel.addOptionGroup()">
+                            <i class="fas fa-plus"></i> Agregar Opcion
+                        </button>
+                    </div>
+                    <p class="options-help">Agrega variantes como sabores, tamanios, extras, etc. Puedes asignar precio adicional a cada opcion.</p>
+                    <div id="optionsContainer"></div>
+                </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="adminPanel.closeProductModal()">Cancelar</button>
                     <button type="submit" class="btn-primary">

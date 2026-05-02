@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 2/5/2026, 21:36:13
+ * Generado desde el Panel de Control: 2/5/2026, 21:57:52
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -13,7 +13,7 @@ var MEU_ENDERECO = null;
 
 // Municipios de La Habana con costo de envio (en MN / CUP)
 var MUNICIPIOS_HABANA = [
-    { id: 'habana-viejaaaaaa', nome: 'Habana Vieja', costo: 300 },
+    { id: 'habana-vieja', nome: 'Habana Vieja', costo: 200 },
     { id: 'centro-habana', nome: 'Centro Habana', costo: 200 },
     { id: 'plaza', nome: 'Plaza de la Revolución', costo: 250 },
     { id: 'cerro', nome: 'Cerro', costo: 250 },
@@ -25,9 +25,9 @@ var MUNICIPIOS_HABANA = [
     { id: 'arroyo-naranjo', nome: 'Arroyo Naranjo', costo: 400 },
     { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 350 },
     { id: 'guanabacoa', nome: 'Guanabacoa', costo: 400 },
+    { id: 'regla', nome: 'Regla', costo: 300 },
     { id: 'habana-del-este', nome: 'Habana del Este', costo: 450 },
-    { id: 'cotorro', nome: 'Cotorro', costo: 500 },
-    { id: 'regla', nome: 'regla', costo: 200 }
+    { id: 'cotorro', nome: 'Cotorro', costo: 500 }
 ];
 
 // Metadata de las categorias: nombre visible, icono y clave interna
