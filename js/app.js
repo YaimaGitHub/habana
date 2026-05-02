@@ -174,6 +174,13 @@ cardapio.metodos = {
                 `;
             }
 
+            // Generar selector de opciones si el producto tiene opciones
+            let hasOptions = e.options && e.options.length > 0;
+            let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
+            let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
+            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
+            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -186,7 +193,11 @@ cardapio.metodos = {
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
                     : '')
                 .replace(/\${unitLabel}/g, unitLabel)
-                .replace(/\${unitSelector}/g, unitSelector);
+                .replace(/\${unitSelector}/g, unitSelector)
+                .replace(/\${hasOptions}/g, hasOptions ? 'true' : 'false')
+                .replace(/\${optionsSelector}/g, optionsSelector)
+                .replace(/\${btnDisabledClass}/g, btnDisabledClass)
+                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr);
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -342,6 +353,13 @@ cardapio.metodos = {
                 `;
             }
 
+            // Generar selector de opciones si el producto tiene opciones
+            let hasOptions = e.options && e.options.length > 0;
+            let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
+            let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
+            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
+            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
+
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
@@ -354,7 +372,11 @@ cardapio.metodos = {
                     ? `<span class="badge-in-cart" title="En el carrito"><i class="fa fa-check"></i> ${qntdCarrinho}</span>`
                     : '')
                 .replace(/\${unitLabel}/g, unitLabel)
-                .replace(/\${unitSelector}/g, unitSelector);
+                .replace(/\${unitSelector}/g, unitSelector)
+                .replace(/\${hasOptions}/g, hasOptions ? 'true' : 'false')
+                .replace(/\${optionsSelector}/g, optionsSelector)
+                .replace(/\${btnDisabledClass}/g, btnDisabledClass)
+                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr);
 
             $("#itensCardapio").append(temp);
         });
@@ -432,6 +454,99 @@ cardapio.metodos = {
 
     },
 
+    // Genera el HTML de los selectores de opciones para un producto
+    generarSelectorOpciones: (id, options) => {
+        if (!options || options.length === 0) return '';
+        
+        let html = '<div class="product-options-container">';
+        
+        options.forEach((opt, optIndex) => {
+            let requiredLabel = opt.required ? '<span class="option-required">*</span>' : '';
+            html += `
+                <div class="product-option-group" data-option-index="${optIndex}" data-option-name="${opt.name}" data-required="${opt.required ? 'true' : 'false'}">
+                    <label class="option-label">${opt.name}${requiredLabel}</label>
+                    <div class="option-choices" id="option-choices-${id}-${optIndex}">
+            `;
+            
+            opt.choices.forEach((choice, choiceIndex) => {
+                let choiceId = `${id}-opt${optIndex}-choice${choiceIndex}`;
+                html += `
+                    <button type="button" 
+                            class="option-chip" 
+                            id="${choiceId}"
+                            data-product-id="${id}"
+                            data-option-index="${optIndex}"
+                            data-choice="${choice}"
+                            onclick="cardapio.metodos.seleccionarOpcion('${id}', ${optIndex}, '${choice}', this)">
+                        ${choice}
+                    </button>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        return html;
+    },
+
+    // Selecciona una opción para un producto
+    seleccionarOpcion: (productId, optionIndex, choice, btnElement) => {
+        let escapedId = cardapio.metodos.escaparId(productId);
+        let $card = $("#" + escapedId);
+        
+        // Quitar selección previa de este grupo de opciones
+        $card.find(`.option-chip[data-option-index="${optionIndex}"]`).removeClass('selected');
+        
+        // Marcar la nueva selección
+        $(btnElement).addClass('selected');
+        
+        // Guardar la selección en el data del card
+        let selections = $card.data('selectedOptions') || {};
+        let optionName = $(btnElement).closest('.product-option-group').data('option-name');
+        selections[optionIndex] = { name: optionName, choice: choice };
+        $card.data('selectedOptions', selections);
+        
+        // Verificar si todas las opciones requeridas están seleccionadas
+        cardapio.metodos.verificarOpcionesCompletas(productId);
+    },
+
+    // Verifica si todas las opciones requeridas están seleccionadas
+    verificarOpcionesCompletas: (productId) => {
+        let escapedId = cardapio.metodos.escaparId(productId);
+        let $card = $("#" + escapedId);
+        let $btn = $card.find('.btn-add');
+        
+        // Si el producto no tiene opciones, el botón siempre está habilitado
+        // Usar attr() en lugar de data() para leer el atributo HTML correctamente
+        let hasOptions = $card.attr('data-has-options');
+        if (hasOptions !== 'true') {
+            return true;
+        }
+        
+        let selections = $card.data('selectedOptions') || {};
+        let allComplete = true;
+        
+        // Verificar cada grupo de opciones requeridas
+        $card.find('.product-option-group[data-required="true"]').each(function() {
+            let optIndex = $(this).data('option-index');
+            if (selections[optIndex] === undefined) {
+                allComplete = false;
+            }
+        });
+        
+        if (allComplete) {
+            $btn.removeClass('btn-disabled').prop('disabled', false);
+        } else {
+            $btn.addClass('btn-disabled').prop('disabled', true);
+        }
+        
+        return allComplete;
+    },
+
     // cambiar unidad de peso (lb/kg) para un producto
     cambiarUnidad: (id, unit, precioBase) => {
         let escapedId = cardapio.metodos.escaparId(id);
@@ -489,14 +604,33 @@ cardapio.metodos = {
             let selectedUnit = $card.attr('data-selected-unit') || item[0].unit || 'unidad';
             let selectedPrice = parseFloat($card.attr('data-selected-price')) || item[0].price;
 
-            // Crear un ID único que incluya la unidad para productos con peso
+            // Obtener opciones seleccionadas
+            let selectedOptions = $card.data('selectedOptions') || {};
+            let hasOptions = item[0].options && item[0].options.length > 0;
+            
+            // Verificar que todas las opciones requeridas están seleccionadas
+            if (hasOptions) {
+                let allComplete = cardapio.metodos.verificarOpcionesCompletas(id);
+                if (!allComplete) {
+                    cardapio.metodos.mensagem('Por favor, selecciona todas las opciones requeridas.', 'red');
+                    return;
+                }
+            }
+
+            // Crear un ID único que incluya la unidad y las opciones
             let cartItemId = id;
             let supportsWeight = (item[0].unit === 'lb' || item[0].unit === 'kg' || item[0].unit === 'peso');
             if (supportsWeight) {
                 cartItemId = id + '-' + selectedUnit;
             }
+            
+            // Agregar opciones al ID del carrito para diferenciar variantes
+            if (hasOptions && Object.keys(selectedOptions).length > 0) {
+                let optionsSuffix = Object.values(selectedOptions).map(o => o.choice).join('-');
+                cartItemId = cartItemId + '-' + optionsSuffix;
+            }
 
-            // validar si ya existe ese item en el carrito (con la misma unidad)
+            // validar si ya existe ese item en el carrito (con la misma unidad y opciones)
             let existe = $.grep(MEU_CARRINHO, (elem, index) => { return elem.cartId == cartItemId });
 
             let novaQntd;
@@ -513,16 +647,34 @@ cardapio.metodos = {
                 nuevoItem.cartId = cartItemId;
                 nuevoItem.selectedUnit = selectedUnit;
                 nuevoItem.price = selectedPrice;
+                
+                // Guardar las opciones seleccionadas
+                if (hasOptions && Object.keys(selectedOptions).length > 0) {
+                    nuevoItem.selectedOptions = JSON.parse(JSON.stringify(selectedOptions));
+                }
+                
                 MEU_CARRINHO.push(nuevoItem);
                 novaQntd = qntdAtual;
             }
 
-            // Mensaje con unidad si aplica
+            // Mensaje con unidad y opciones si aplica
             let unitText = supportsWeight ? ` (${selectedUnit})` : '';
-            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name}${unitText} agregado`, 'green');
+            let optionsText = '';
+            if (hasOptions && Object.keys(selectedOptions).length > 0) {
+                optionsText = ' - ' + Object.values(selectedOptions).map(o => `${o.name}: ${o.choice}`).join(', ');
+            }
+            cardapio.metodos.mensagem(`${qntdAtual} × ${item[0].name}${unitText}${optionsText} agregado`, 'green');
 
-            // resetear selector a 1 y actualizar estado visual de la tarjeta
+            // resetear selector a 1, limpiar opciones y actualizar estado visual de la tarjeta
             $("#qntd-" + escapedId).text(1);
+            
+            // Limpiar opciones seleccionadas para la próxima adición
+            if (hasOptions) {
+                $card.data('selectedOptions', {});
+                $card.find('.option-chip').removeClass('selected');
+                $card.find('.btn-add').addClass('btn-disabled').prop('disabled', true);
+            }
+            
             cardapio.metodos.marcarTarjetaEnCarrito(id, novaQntd);
 
             cardapio.metodos.atualizarBadgeTotal();
@@ -694,6 +846,13 @@ cardapio.metodos = {
                     unitLabelCart = `<span class="unit-label-cart">/${e.selectedUnit}</span>`;
                 }
 
+                // Mostrar opciones seleccionadas
+                let optionsBadgeCart = '';
+                if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
+                    let optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(' | ');
+                    optionsBadgeCart = `<span class="options-badge-cart">${optionsText}</span>`;
+                }
+
                 let temp = cardapio.templates.itemCarrinho.replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
                 .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
@@ -702,6 +861,7 @@ cardapio.metodos = {
                 .replace(/\${qntd}/g, e.qntd)
                 .replace(/\${unitBadge}/g, unitBadge)
                 .replace(/\${unitLabelCart}/g, unitLabelCart)
+                .replace(/\${optionsBadgeCart}/g, optionsBadgeCart)
 
                 $("#itensCarrinho").append(temp);
 
@@ -1427,12 +1587,20 @@ cardapio.metodos = {
                 unitLabelResumo = `<span class="unit-label-resumo">/${e.selectedUnit}</span>`;
             }
 
+            // Mostrar opciones seleccionadas
+            let optionsBadgeResumo = '';
+            if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
+                let optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(' | ');
+                optionsBadgeResumo = `<span class="options-badge-resumo">${optionsText}</span>`;
+            }
+
             let temp = cardapio.templates.itemResumo.replace(/\${img}/g, e.img)
                 .replace(/\${nome}/g, e.name)
                 .replace(/\${preco}/g, e.price.toFixed(2).replace('.', ','))
                 .replace(/\${qntd}/g, e.qntd)
                 .replace(/\${unitBadgeResumo}/g, unitBadgeResumo)
-                .replace(/\${unitLabelResumo}/g, unitLabelResumo);
+                .replace(/\${unitLabelResumo}/g, unitLabelResumo)
+                .replace(/\${optionsBadgeResumo}/g, optionsBadgeResumo);
             $("#listaItensResumo").append(temp);
         });
 
@@ -1551,7 +1719,16 @@ cardapio.metodos = {
                 unitPriceLabel = `/${e.selectedUnit}`;
             }
             
+            // Determinar si tiene opciones seleccionadas
+            let optionsText = '';
+            if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
+                optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(', ');
+            }
+            
             texto += `\n${i + 1}. *${e.name}*${unitText}`;
+            if (optionsText) {
+                texto += `\n   • Opciones: ${optionsText}`;
+            }
             texto += `\n   • Cantidad: ${e.qntd}`;
             texto += `\n   • Precio unitario: MN$ ${precioUnit}${unitPriceLabel}`;
             texto += `\n   • Subtotal: MN$ ${subtotalItem}`;
@@ -1665,7 +1842,7 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass}" id="\${id}">
+            <div class="card card-item \${inCartClass}" id="\${id}" data-has-options="\${hasOptions}">
                 \${inCartBadge}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
                 <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
@@ -1679,13 +1856,14 @@ cardapio.templates = {
                     <b>MN$ \${preco}</b>\${unitLabel}
                 </p>
                 \${unitSelector}
+                \${optionsSelector}
                 <div class="add-carrinho">
                     <div class="quantidade-wrapper" aria-label="Seleccionar cantidad">
                         <span class="btn-menos" onclick="cardapio.metodos.diminuirQuantidade('\${id}')" role="button" aria-label="Disminuir cantidad"><i class="fas fa-minus"></i></span>
                         <span class="add-numero-itens" id="qntd-\${id}">1</span>
                         <span class="btn-mais" onclick="cardapio.metodos.aumentarQuantidade('\${id}')" role="button" aria-label="Aumentar cantidad"><i class="fas fa-plus"></i></span>
                     </div>
-                    <button class="btn btn-add" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito">
+                    <button class="btn btn-add \${btnDisabledClass}" onclick="cardapio.metodos.adicionarAoCarrinho('\${id}')" aria-label="Añadir al carrito" \${btnDisabledAttr}>
                         <i class="fa fa-shopping-cart"></i>
                         <span class="btn-add-label">Añadir</span>
                     </button>
@@ -1701,6 +1879,7 @@ cardapio.templates = {
             </div>
             <div class="dados-produto">
                 <p class="title-produto"><b>\${nome}</b>\${unitBadge}</p>
+                \${optionsBadgeCart}
                 <p class="price-produto"><b>MN$ \${preco}</b>\${unitLabelCart}</p>
             </div>
             <div class="add-carrinho">
@@ -1721,6 +1900,7 @@ cardapio.templates = {
                 <p class="title-produto-resumo">
                     <b>\${nome}</b>\${unitBadgeResumo}
                 </p>
+                \${optionsBadgeResumo}
                 <p class="price-produto-resumo">
                     <b>MN$ \${preco}</b>\${unitLabelResumo}
                 </p>
