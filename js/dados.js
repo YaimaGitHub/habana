@@ -171,7 +171,14 @@ var MENU = {
             "name": "Gelatina de diferentes sabores",
             "dsc": "Gelatina de piña",
             "price": 280,
-            "unit": "unidad"
+            "unit": "unidad",
+            "options": [
+                {
+                    "name": "Sabor",
+                    "required": true,
+                    "choices": ["Piña", "Fresa", "Naranja", "Limón", "Uva"]
+                }
+            ]
         },
         {
             "id": "23699-choose-your-own-thin-crust-pizza-4-pack",
@@ -319,7 +326,14 @@ var MENU = {
             "name": "Yogurt Probiótico Yokey - 1.54 litros",
             "dsc": "Yogurt Probiótico Yokey - 1.54 litros",
             "price": 2400,
-            "unit": "unidad"
+            "unit": "unidad",
+            "options": [
+                {
+                    "name": "Sabor",
+                    "required": true,
+                    "choices": ["Fresa", "Natural", "Vainilla", "Coco", "Piña"]
+                }
+            ]
         }
     ],
     "outros": [
