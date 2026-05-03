@@ -1333,7 +1333,7 @@ cardapio.metodos = {
         }
         $("#iconResumenDireccion").attr('class', 'fas fa-store');
         $("#resumenDireccionTitulo").text('Recoger en el local');
-        $("#resumenDireccionValor").text('Farmacia Habana · Calle 23 #456 entre E y F, Vedado');
+        $("#resumenDireccionValor").text('Farmacia Habanaaaaa · Calle 23 #456 entre E y F, Vedado');
         $("#resumenDireccionMunicipio").text('Horario: Lun a Sáb, 9:00 AM - 7:00 PM · Envío gratis');
         $("#resumenDireccionConfirmada").removeClass('hidden');
     },
