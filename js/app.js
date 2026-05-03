@@ -1717,11 +1717,8 @@ cardapio.metodos = {
         let esDomicilio = MEU_ENDERECO.tipo === 'domicilio';
         let total = VALOR_CARRINHO + costoEntrega;
 
-        // Formatear numero sin decimales si es entero
-        let fmt = (n) => {
-            if (Number.isInteger(n)) return n.toString();
-            return n.toFixed(2).replace('.', ',');
-        };
+        // Formatear numero sin decimales
+        let fmt = (n) => Math.round(n).toString();
         
         // Obtener fecha y hora actual
         let d = new Date();
@@ -1733,16 +1730,16 @@ cardapio.metodos = {
         let texto = '';
 
         // === ENCABEZADO ===
-        texto += `        *CABRERA'S SHOP*\n`;
+        texto += `CABRERA'S SHOP\n`;
         texto += `${linea}\n`;
         texto += `Fecha: ${fechaFormateada}  Hora: ${horaFormateada}\n`;
         if (NUMERO_ORDEN) {
             texto += `Orden: ${NUMERO_ORDEN}\n`;
         }
-        texto += `${linea}\n\n`;
+        texto += `${linea}\n`;
 
-        // === DATOS DEL CLIENTE (PRIMERO) ===
-        texto += `*CLIENTE:*\n`;
+        // === DATOS DEL CLIENTE ===
+        texto += `CLIENTE:\n`;
         texto += `${MEU_ENDERECO.complemento}\n`;
         let telText = MEU_ENDERECO.cep;
         if (MEU_ENDERECO.telefonoPais) {
@@ -1750,24 +1747,24 @@ cardapio.metodos = {
         }
         texto += `Tel: ${telText}\n`;
         texto += `Pago: ${MEU_ENDERECO.uf}\n`;
+        texto += `${linea}\n`;
         
-        // Direccion del cliente
+        // === DIRECCION ===
         if (esDomicilio) {
-            texto += `\n*DIRECCION:*\n`;
+            texto += `DIRECCION:\n`;
             texto += `${MEU_ENDERECO.endereco}\n`;
             if (MEU_ENDERECO.bairro) {
-                texto += `${MEU_ENDERECO.bairro}, ${MEU_ENDERECO.municipio}\n`;
-            } else {
-                texto += `${MEU_ENDERECO.municipio}\n`;
+                texto += `${MEU_ENDERECO.bairro}\n`;
             }
+            texto += `${MEU_ENDERECO.municipio}\n`;
             texto += `${MEU_ENDERECO.cidade}\n`;
         } else {
-            texto += `\n*RECOGIDA EN LOCAL*\n`;
+            texto += `RECOGIDA EN LOCAL\n`;
         }
-        texto += `${linea}\n\n`;
+        texto += `${linea}\n`;
 
-        // === PRODUCTOS (FORMATO POS) ===
-        texto += `*PRODUCTOS:*\n`;
+        // === PRODUCTOS ===
+        texto += `PRODUCTOS:\n`;
         $.each(MEU_CARRINHO, (i, e) => {
             let subtotalItem = e.price * e.qntd;
             
@@ -1777,18 +1774,17 @@ cardapio.metodos = {
                 nombreProducto += ` (${e.selectedUnit})`;
             }
             
-            // Formato POS: Producto
-            //              cantidad x precio
+            // Formato POS
             texto += `${nombreProducto}\n`;
             texto += `    ${e.qntd} x ${fmt(e.price)} = ${fmt(subtotalItem)}\n`;
             
-            // Opciones si existen (en linea separada)
+            // Opciones si existen
             if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
                 let optionsText = Object.values(e.selectedOptions).map(o => `${o.choice}`).join(', ');
                 texto += `    (${optionsText})\n`;
             }
         });
-        texto += `${linea}\n\n`;
+        texto += `${linea}\n`;
 
         // === TOTALES ===
         texto += `Subtotal:        ${fmt(VALOR_CARRINHO)}\n`;
