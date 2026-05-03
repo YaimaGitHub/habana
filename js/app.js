@@ -1733,7 +1733,7 @@ cardapio.metodos = {
         let texto = '';
 
         // === ENCABEZADO ===
-        texto += `        *CABRERA'S SHOP*\n`;
+        texto += `        *TIENDITA D'MIMA*\n`;
         texto += `${linea}\n`;
         texto += `Fecha: ${fechaFormateada}  Hora: ${horaFormateada}\n`;
         if (NUMERO_ORDEN) {
