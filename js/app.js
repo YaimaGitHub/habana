@@ -103,8 +103,9 @@ cardapio.metodos = {
         
         $.each(CATEGORIAS, (key, info) => {
             let activeClass = (key === primeraCategoria) ? 'active' : '';
+            // Usar data-category para manejar claves con espacios
             let html = `
-                <a id="menu-${key}" class="categoria-card ${activeClass}" onclick="cardapio.metodos.obterItensCardapio('${key}')">
+                <a id="menu-${key.replace(/\s+/g, '-')}" class="categoria-card ${activeClass}" data-category="${key}" onclick="cardapio.metodos.obterItensCardapio('${key}')">
                     <div class="categoria-icon-wrap">
                         <i class="${info.icone}"></i>
                     </div>
@@ -123,7 +124,8 @@ cardapio.metodos = {
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
             let total = (MENU[key] || []).length;
-            let $badge = $("#menu-" + key + " .categoria-count");
+            // Usar selector de atributo data-category para manejar claves con espacios
+            let $badge = $(".categoria-card[data-category='" + key + "'] .categoria-count");
             if ($badge.length > 0) {
                 $badge.text(total);
             }
@@ -232,7 +234,7 @@ cardapio.metodos = {
         $(".categorias-grid .categoria-card").removeClass('active');
 
         // marcar el menú actual como activo
-        $("#menu-" + categoria).addClass('active');
+        $(".categoria-card[data-category='" + categoria + "']").addClass('active');
 
         // scroll suave en móvil para centrar la categoría activa
         cardapio.metodos.centrarCategoriaActiva(categoria);
@@ -242,7 +244,7 @@ cardapio.metodos = {
     // asegura que la categoría activa sea visible en móvil (scroll horizontal)
     centrarCategoriaActiva: (categoria) => {
         let $container = $(".categorias-grid");
-        let $activo = $("#menu-" + categoria);
+        let $activo = $(".categoria-card[data-category='" + categoria + "']");
         if ($activo.length > 0 && $container.length > 0) {
             let containerWidth = $container.width();
             let activoLeft = $activo.position().left;
@@ -255,10 +257,10 @@ cardapio.metodos = {
     // clique no botão de ver mais
     verMais: () => {
 
-        let $ativo = $(".container-menu a.active");
+        let $ativo = $(".categorias-grid .categoria-card.active");
         if ($ativo.length === 0) return;
-        var ativo = $ativo.attr('id').split('menu-')[1];
-        cardapio.metodos.obterItensCardapio(ativo, true);
+        var categoria = $ativo.data('category');
+        cardapio.metodos.obterItensCardapio(categoria, true);
 
         $("#btnVerMais").addClass('hidden');
 
@@ -398,9 +400,9 @@ cardapio.metodos = {
     // restaura la vista normal: categoría activa (o la primera por defecto)
     salirModoBusqueda: () => {
         $(".categorias-grid").removeClass('modo-busqueda');
-        let ativo = $(".categorias-grid .categoria-card.active").attr('id');
+        let $activo = $(".categorias-grid .categoria-card.active");
         let primeraCategoria = cardapio.primeraCategoria || Object.keys(CATEGORIAS)[0] || 'burgers';
-        let categoria = ativo ? ativo.split('menu-')[1] : primeraCategoria;
+        let categoria = $activo.length > 0 ? $activo.data('category') : primeraCategoria;
         cardapio.metodos.obterItensCardapio(categoria);
     },
 
