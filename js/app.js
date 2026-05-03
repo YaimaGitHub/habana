@@ -103,8 +103,9 @@ cardapio.metodos = {
         
         $.each(CATEGORIAS, (key, info) => {
             let activeClass = (key === primeraCategoria) ? 'active' : '';
+            // Usar data-category para manejar claves con espacios
             let html = `
-                <a id="menu-${key}" class="categoria-card ${activeClass}" onclick="cardapio.metodos.obterItensCardapio('${key}')">
+                <a id="menu-${key.replace(/\s+/g, '-')}" class="categoria-card ${activeClass}" data-category="${key}" onclick="cardapio.metodos.obterItensCardapio('${key}')">
                     <div class="categoria-icon-wrap">
                         <i class="${info.icone}"></i>
                     </div>
@@ -123,7 +124,8 @@ cardapio.metodos = {
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
             let total = (MENU[key] || []).length;
-            let $badge = $("#menu-" + key + " .categoria-count");
+            // Usar selector de atributo data-category para manejar claves con espacios
+            let $badge = $(".categoria-card[data-category='" + key + "'] .categoria-count");
             if ($badge.length > 0) {
                 $badge.text(total);
             }
@@ -232,7 +234,7 @@ cardapio.metodos = {
         $(".categorias-grid .categoria-card").removeClass('active');
 
         // marcar el menú actual como activo
-        $("#menu-" + categoria).addClass('active');
+        $(".categoria-card[data-category='" + categoria + "']").addClass('active');
 
         // scroll suave en móvil para centrar la categoría activa
         cardapio.metodos.centrarCategoriaActiva(categoria);
@@ -242,7 +244,7 @@ cardapio.metodos = {
     // asegura que la categoría activa sea visible en móvil (scroll horizontal)
     centrarCategoriaActiva: (categoria) => {
         let $container = $(".categorias-grid");
-        let $activo = $("#menu-" + categoria);
+        let $activo = $(".categoria-card[data-category='" + categoria + "']");
         if ($activo.length > 0 && $container.length > 0) {
             let containerWidth = $container.width();
             let activoLeft = $activo.position().left;
@@ -255,10 +257,10 @@ cardapio.metodos = {
     // clique no botão de ver mais
     verMais: () => {
 
-        let $ativo = $(".container-menu a.active");
+        let $ativo = $(".categorias-grid .categoria-card.active");
         if ($ativo.length === 0) return;
-        var ativo = $ativo.attr('id').split('menu-')[1];
-        cardapio.metodos.obterItensCardapio(ativo, true);
+        var categoria = $ativo.data('category');
+        cardapio.metodos.obterItensCardapio(categoria, true);
 
         $("#btnVerMais").addClass('hidden');
 
@@ -398,9 +400,9 @@ cardapio.metodos = {
     // restaura la vista normal: categoría activa (o la primera por defecto)
     salirModoBusqueda: () => {
         $(".categorias-grid").removeClass('modo-busqueda');
-        let ativo = $(".categorias-grid .categoria-card.active").attr('id');
+        let $activo = $(".categorias-grid .categoria-card.active");
         let primeraCategoria = cardapio.primeraCategoria || Object.keys(CATEGORIAS)[0] || 'burgers';
-        let categoria = ativo ? ativo.split('menu-')[1] : primeraCategoria;
+        let categoria = $activo.length > 0 ? $activo.data('category') : primeraCategoria;
         cardapio.metodos.obterItensCardapio(categoria);
     },
 
@@ -1712,96 +1714,95 @@ cardapio.metodos = {
 
     },
 
-    // Atualiza o link do botão do WhatsApp (mensaje detallado y organizado)
+    // Atualiza o link do botão do WhatsApp (formato POS Ticketing)
     finalizarPedido: () => {
 
         if (MEU_CARRINHO.length <= 0 || MEU_ENDERECO == null) return;
 
         let costoEntrega = MEU_ENDERECO.costoEntrega || 0;
         let esDomicilio = MEU_ENDERECO.tipo === 'domicilio';
-        let esTransferencia = MEU_ENDERECO.uf === 'Pago por transferencia';
-        // Transferencia NO aplica ningún recargo adicional sobre los productos.
-        let recargoTransferencia = 0;
         let total = VALOR_CARRINHO + costoEntrega;
 
-        let fmt = (n) => n.toFixed(2).replace('.', ',');
-        let separador = '━━━━━━━━━━━━━━━━━━';
+        // Formatear numero sin decimales si es entero
+        let fmt = (n) => {
+            if (Number.isInteger(n)) return n.toString();
+            return n.toFixed(2).replace('.', ',');
+        };
+        
+        // Obtener fecha y hora actual
+        let d = new Date();
+        let pad = (n) => n.toString().padStart(2, '0');
+        let fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+        let horaFormateada = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        
+        let linea = '--------------------------------';
         let texto = '';
 
-        texto += '*NUEVO PEDIDO - Cabrera\'s Shop*\n';
+        // === ENCABEZADO ===
+        texto += `        *CABRERA'S SHOP*\n`;
+        texto += `${linea}\n`;
+        texto += `Fecha: ${fechaFormateada}  Hora: ${horaFormateada}\n`;
         if (NUMERO_ORDEN) {
-            texto += `*N° de orden:* ${NUMERO_ORDEN}\n`;
+            texto += `Orden: ${NUMERO_ORDEN}\n`;
         }
-        texto += separador + '\n\n';
+        texto += `${linea}\n\n`;
 
-        // --- Productos (desglosados con precio unitario, cantidad y subtotal) ---
-        texto += '*PRODUCTOS DEL PEDIDO:*\n';
-        $.each(MEU_CARRINHO, (i, e) => {
-            let subtotalItem = fmt(e.price * e.qntd);
-            let precioUnit = fmt(e.price);
-            
-            // Determinar si tiene unidad de peso
-            let unitText = '';
-            let unitPriceLabel = '';
-            if (e.selectedUnit && e.selectedUnit !== 'unidad') {
-                unitText = ` (${e.selectedUnit})`;
-                unitPriceLabel = `/${e.selectedUnit}`;
-            }
-            
-            // Determinar si tiene opciones seleccionadas
-            let optionsText = '';
-            if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
-                optionsText = Object.values(e.selectedOptions).map(o => `${o.name}: ${o.choice}`).join(', ');
-            }
-            
-            texto += `\n${i + 1}. *${e.name}*${unitText}`;
-            if (optionsText) {
-                texto += `\n   • Opciones: ${optionsText}`;
-            }
-            texto += `\n   • Cantidad: ${e.qntd}`;
-            texto += `\n   • Precio unitario: MN$ ${precioUnit}${unitPriceLabel}`;
-            texto += `\n   • Subtotal: MN$ ${subtotalItem}`;
-        });
-        texto += `\n\n_Subtotal productos: MN$ ${fmt(VALOR_CARRINHO)}_`;
-        texto += '\n\n' + separador + '\n\n';
-
-        // --- Datos del cliente ---
-        texto += '*DATOS DEL CLIENTE:*\n';
-        texto += `• *Nombre:* ${MEU_ENDERECO.complemento}\n`;
+        // === DATOS DEL CLIENTE (PRIMERO) ===
+        texto += `*CLIENTE:*\n`;
+        texto += `${MEU_ENDERECO.complemento}\n`;
         let telText = MEU_ENDERECO.cep;
         if (MEU_ENDERECO.telefonoPais) {
-            telText = `${MEU_ENDERECO.telefonoPais.code} ${MEU_ENDERECO.telefonoDigitos} (${MEU_ENDERECO.telefonoPais.name})`;
+            telText = `${MEU_ENDERECO.telefonoPais.code} ${MEU_ENDERECO.telefonoDigitos}`;
         }
-        texto += `• *Teléfono:* ${telText}\n`;
-        texto += `• *Método de pago:* ${MEU_ENDERECO.uf}`;
-        texto += '\n\n' + separador + '\n\n';
-
-        // --- Entrega ---
+        texto += `Tel: ${telText}\n`;
+        texto += `Pago: ${MEU_ENDERECO.uf}\n`;
+        
+        // Direccion del cliente
         if (esDomicilio) {
-            texto += '*ENTREGA A DOMICILIO:*\n';
-            texto += `• *Dirección:* ${MEU_ENDERECO.endereco}\n`;
-            texto += `• *Reparto / Barrio:* ${MEU_ENDERECO.bairro}\n`;
-            texto += `• *Municipio:* ${MEU_ENDERECO.municipio}\n`;
-            texto += `• *Ciudad:* ${MEU_ENDERECO.cidade}\n`;
-            texto += `• *Costo del envío (${MEU_ENDERECO.municipio}):* MN$ ${fmt(costoEntrega)}\n`;
+            texto += `\n*DIRECCION:*\n`;
+            texto += `${MEU_ENDERECO.endereco}\n`;
+            texto += `${MEU_ENDERECO.bairro}, ${MEU_ENDERECO.municipio}\n`;
+            texto += `${MEU_ENDERECO.cidade}\n`;
         } else {
-            texto += '*RECOGIDA EN EL LOCAL:*\n';
-            texto += `• *Local:* Farmacia Habana\n`;
-            texto += `• *Dirección:* Calle 23 #456 entre E y F, Vedado, Plaza de la Revolución, La Habana\n`;
-            texto += `• *Horario:* Lun a Sáb, 9:00 AM - 7:00 PM\n`;
-            texto += `• *Envío:* Gratis\n`;
+            texto += `\n*RECOGIDA EN LOCAL*\n`;
         }
-        texto += '\n' + separador + '\n\n';
+        texto += `${linea}\n\n`;
 
-        // --- Resumen de pago (desglose completo) ---
-        texto += '*RESUMEN DE PAGO:*\n';
-        texto += `• Subtotal productos: MN$ ${fmt(VALOR_CARRINHO)}\n`;
+        // === PRODUCTOS (FORMATO POS) ===
+        texto += `*PRODUCTOS:*\n`;
+        $.each(MEU_CARRINHO, (i, e) => {
+            let subtotalItem = e.price * e.qntd;
+            
+            // Nombre del producto con unidad si aplica
+            let nombreProducto = e.name;
+            if (e.selectedUnit && e.selectedUnit !== 'unidad') {
+                nombreProducto += ` (${e.selectedUnit})`;
+            }
+            
+            // Formato POS: Producto
+            //              cantidad x precio
+            texto += `${nombreProducto}\n`;
+            texto += `    ${e.qntd} x ${fmt(e.price)} = ${fmt(subtotalItem)}\n`;
+            
+            // Opciones si existen (en linea separada)
+            if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
+                let optionsText = Object.values(e.selectedOptions).map(o => `${o.choice}`).join(', ');
+                texto += `    (${optionsText})\n`;
+            }
+        });
+        texto += `${linea}\n\n`;
+
+        // === TOTALES ===
+        texto += `Subtotal:        ${fmt(VALOR_CARRINHO)}\n`;
         if (esDomicilio) {
-            texto += `• Envío (${MEU_ENDERECO.municipio}): +MN$ ${fmt(costoEntrega)}\n`;
+            texto += `Envio (${MEU_ENDERECO.municipio}):  +${fmt(costoEntrega)}\n`;
         } else {
-            texto += `• Envío (recogida en local): Gratis\n`;
+            texto += `Envio:           GRATIS\n`;
         }
-        texto += `\n*TOTAL A PAGAR: MN$ ${fmt(total)}*\n`;
+        texto += `${linea}\n`;
+        texto += `*TOTAL:          ${fmt(total)}*\n`;
+        texto += `${linea}\n`;
+        texto += `\nGracias por su compra!`;
 
         // converte a URL
         let encode = encodeURIComponent(texto);

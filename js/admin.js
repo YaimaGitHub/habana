@@ -35,6 +35,47 @@ var adminPanel = {
         if (sessionStorage.getItem('adminLoggedIn') === 'true') {
             this.showAdminPanel();
         }
+        
+        // Inicializar eventos de imagen
+        this.initImageEvents();
+    },
+    
+    // Inicializar eventos para preview de imagen por URL
+    initImageEvents: function() {
+        var self = this;
+        var imgInput = document.getElementById('productImg');
+        if (imgInput) {
+            imgInput.addEventListener('input', function() {
+                var url = this.value.trim();
+                if (url) {
+                    self.showImagePreview(url);
+                } else {
+                    document.getElementById('imagePreview').innerHTML = '';
+                }
+            });
+        }
+        
+        // Drag and drop para subida de archivos
+        var fileLabel = document.querySelector('.file-upload-label');
+        if (fileLabel) {
+            fileLabel.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            fileLabel.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            fileLabel.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                var files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('productImgFile').files = files;
+                    self.handleImageUpload({ target: { files: files } });
+                }
+            });
+        }
     },
 
     loadData: function() {
@@ -216,6 +257,19 @@ var adminPanel = {
         // Renderizar productos
         this.renderProducts();
     },
+    
+    // Cargar opciones de categorias en el select del modal
+    loadCategorySelect: function() {
+        var productCategorySelect = document.getElementById('productCategory');
+        productCategorySelect.innerHTML = '';
+        
+        for (var key in localCATEGORIAS) {
+            if (localCATEGORIAS.hasOwnProperty(key)) {
+                var cat = localCATEGORIAS[key];
+                productCategorySelect.innerHTML += '<option value="' + key + '">' + cat.nome + '</option>';
+            }
+        }
+    },
 
     renderProducts: function(filterCat, searchTerm) {
         var grid = document.getElementById('productsGrid');
@@ -292,11 +346,117 @@ var adminPanel = {
             // Limpiar opciones
             document.getElementById('optionsContainer').innerHTML = '';
             this.optionGroupCounter = 0;
+            // Resetear modo de imagen a URL
+            this.toggleImageUploadMode('url');
         }
+    },
+
+    // =====================
+    // SUBIDA DE IMAGENES
+    // =====================
+    
+    // Variable para almacenar la imagen en Base64
+    uploadedImageData: null,
+    
+    // Alternar entre modo URL y modo archivo
+    toggleImageUploadMode: function(mode) {
+        var urlSection = document.getElementById('imageUrlSection');
+        var fileSection = document.getElementById('imageFileSection');
+        var btnUrl = document.getElementById('btnModeUrl');
+        var btnFile = document.getElementById('btnModeFile');
+        
+        if (mode === 'url') {
+            urlSection.classList.remove('hidden');
+            fileSection.classList.add('hidden');
+            btnUrl.classList.add('active');
+            btnFile.classList.remove('active');
+            // Limpiar imagen subida
+            this.uploadedImageData = null;
+            document.getElementById('productImgFile').value = '';
+        } else {
+            urlSection.classList.add('hidden');
+            fileSection.classList.remove('hidden');
+            btnUrl.classList.remove('active');
+            btnFile.classList.add('active');
+            // Limpiar URL
+            document.getElementById('productImg').value = '';
+        }
+    },
+    
+    // Manejar la subida de imagen
+    handleImageUpload: function(event) {
+        var self = this;
+        var file = event.target.files[0];
+        
+        if (!file) return;
+        
+        // Validar tipo de archivo
+        var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            this.showToast('Tipo de archivo no valido. Use JPG, PNG, WebP o GIF.', 'error');
+            event.target.value = '';
+            return;
+        }
+        
+        // Validar tamano (max 5MB)
+        var maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            this.showToast('La imagen es muy grande. Maximo 5MB.', 'error');
+            event.target.value = '';
+            return;
+        }
+        
+        // Leer y mostrar la imagen
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            self.uploadedImageData = e.target.result;
+            self.showImagePreview(e.target.result, file.name);
+        };
+        reader.onerror = function() {
+            self.showToast('Error al leer el archivo', 'error');
+        };
+        reader.readAsDataURL(file);
+    },
+    
+    // Mostrar preview de imagen
+    showImagePreview: function(src, fileName) {
+        var preview = document.getElementById('imagePreview');
+        preview.innerHTML = '\
+            <img src="' + src + '" alt="Preview">\
+            <div class="preview-actions">\
+                <button type="button" class="btn-remove-image" onclick="adminPanel.removeImagePreview()" title="Eliminar imagen">\
+                    <i class="fas fa-times"></i>\
+                </button>\
+            </div>\
+        ';
+        if (fileName) {
+            this.showToast('Imagen cargada: ' + fileName, 'success');
+        }
+    },
+    
+    // Eliminar preview de imagen
+    removeImagePreview: function() {
+        document.getElementById('imagePreview').innerHTML = '';
+        document.getElementById('productImg').value = '';
+        document.getElementById('productImgFile').value = '';
+        this.uploadedImageData = null;
+    },
+    
+    // Obtener la ruta de imagen para guardar
+    getImagePathForSave: function() {
+        // Si hay una imagen subida (Base64), usarla directamente
+        if (this.uploadedImageData) {
+            return this.uploadedImageData;
+        }
+        // Si no, usar la URL ingresada
+        return document.getElementById('productImg').value || './img/icone-pedido.png';
     },
 
     closeProductModal: function() {
         document.getElementById('productModal').classList.add('hidden');
+        // Limpiar datos de imagen subida
+        this.uploadedImageData = null;
+        document.getElementById('productImgFile').value = '';
     },
 
     editProduct: function(category, index) {
@@ -309,10 +469,28 @@ var adminPanel = {
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productUnit').value = product.unit || 'unidad';
         document.getElementById('productDesc').value = product.dsc || '';
-        document.getElementById('productImg').value = product.img || '';
         
-        if (product.img) {
-            document.getElementById('imagePreview').innerHTML = '<img src="' + product.img + '" alt="Preview">';
+        // Manejar imagen
+        var imgSrc = product.img || '';
+        
+        // Determinar si es Base64 o URL
+        if (imgSrc.startsWith('data:image')) {
+            // Es una imagen Base64 subida
+            this.uploadedImageData = imgSrc;
+            this.toggleImageUploadMode('file');
+            document.getElementById('productImg').value = '';
+        } else {
+            // Es una URL
+            this.uploadedImageData = null;
+            this.toggleImageUploadMode('url');
+            document.getElementById('productImg').value = imgSrc;
+        }
+        
+        // Mostrar preview de imagen
+        if (imgSrc) {
+            this.showImagePreview(imgSrc);
+        } else {
+            document.getElementById('imagePreview').innerHTML = '';
         }
         
         // Cargar opciones del producto
@@ -331,7 +509,7 @@ var adminPanel = {
         var price = parseFloat(document.getElementById('productPrice').value);
         var unit = document.getElementById('productUnit').value;
         var desc = document.getElementById('productDesc').value;
-        var img = document.getElementById('productImg').value;
+        var img = this.getImagePathForSave();
         
         // Generar ID si es nuevo
         if (!id) {
@@ -343,7 +521,7 @@ var adminPanel = {
         
         var productData = {
             id: id,
-            img: img || './img/icone-pedido.png',
+            img: img,
             name: name,
             dsc: desc,
             price: price,

@@ -364,9 +364,29 @@
                     <textarea id="productDesc" rows="2" placeholder="Descripcion breve del producto..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>URL de la imagen</label>
-                    <input type="text" id="productImg" placeholder="./img/cardapio/categoria/imagen.jpg">
-                    <div class="image-preview" id="imagePreview"></div>
+                    <label>Imagen del producto</label>
+                    <div class="image-upload-section">
+                        <div class="image-upload-options">
+                            <button type="button" class="upload-option-btn active" onclick="adminPanel.toggleImageUploadMode('url')" id="btnModeUrl">
+                                <i class="fas fa-link"></i> URL
+                            </button>
+                            <button type="button" class="upload-option-btn" onclick="adminPanel.toggleImageUploadMode('file')" id="btnModeFile">
+                                <i class="fas fa-upload"></i> Subir Archivo
+                            </button>
+                        </div>
+                        <div class="image-url-input" id="imageUrlSection">
+                            <input type="text" id="productImg" placeholder="./img/cardapio/categoria/imagen.jpg">
+                        </div>
+                        <div class="image-file-input hidden" id="imageFileSection">
+                            <label class="file-upload-label" for="productImgFile">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Haga clic para seleccionar una imagen</span>
+                                <span class="file-types">JPG, PNG, WebP, GIF (max 5MB)</span>
+                            </label>
+                            <input type="file" id="productImgFile" accept="image/*" onchange="adminPanel.handleImageUpload(event)" class="file-input-hidden">
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
                 </div>
                 
                 <!-- Seccion de Opciones/Agregados -->
