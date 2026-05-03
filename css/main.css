@@ -2394,6 +2394,13 @@ body.modal-abierto {
     margin-left: 2px;
 }
 
+.optional-label {
+    color: var(--color-text-out);
+    font-weight: 400;
+    font-size: 0.85em;
+    margin-left: 4px;
+}
+
 .hint-entrega {
     display: flex;
     align-items: center;

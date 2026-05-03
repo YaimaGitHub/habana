@@ -1208,12 +1208,10 @@ cardapio.metodos = {
         let metodoChecked = $("input[name='metodoPago']:checked").val();
         if (!metodoChecked) return false;
 
-        // domicilio: dirección, barrio y municipio
+        // domicilio: dirección y municipio (reparto/barrio es opcional)
         if (TIPO_ENTREGA === 'domicilio') {
             let endereco = ($("#txtEndereco").val() || '').trim();
-            let bairro = ($("#txtBairro").val() || '').trim();
             if (endereco.length <= 0) return false;
-            if (bairro.length <= 0) return false;
             if (!MUNICIPIO_SELECCIONADO) return false;
         }
 
@@ -1262,19 +1260,13 @@ cardapio.metodos = {
     // Botón "Confirmar/Guardar" del modal
     confirmarEntrega: () => {
 
-        // primero valida lo específico del tipo de entrega
+        // primero valida lo específico del tipo de entrega (reparto/barrio es opcional)
         if (TIPO_ENTREGA === 'domicilio') {
             let endereco = $("#txtEndereco").val().trim();
-            let bairro = $("#txtBairro").val().trim();
 
             if (endereco.length <= 0) {
                 cardapio.metodos.mensagem('El campo Dirección (calle) es obligatorio.');
                 $("#txtEndereco").trigger('focus');
-                return;
-            }
-            if (bairro.length <= 0) {
-                cardapio.metodos.mensagem('El campo Reparto / Barrio es obligatorio.');
-                $("#txtBairro").trigger('focus');
                 return;
             }
             if (!MUNICIPIO_SELECCIONADO) {
@@ -1314,14 +1306,14 @@ cardapio.metodos = {
         let endereco = $("#txtEndereco").val().trim();
         let bairro = $("#txtBairro").val().trim();
 
-        if (TIPO_ENTREGA !== 'domicilio' || !endereco || !bairro || !MUNICIPIO_SELECCIONADO) {
+        if (TIPO_ENTREGA !== 'domicilio' || !endereco || !MUNICIPIO_SELECCIONADO) {
             $("#resumenDireccionConfirmada").addClass('hidden');
             return;
         }
 
         $("#iconResumenDireccion").attr('class', 'fas fa-motorcycle');
         $("#resumenDireccionTitulo").text('Entrega a domicilio');
-        $("#resumenDireccionValor").text(`${endereco} — ${bairro}`);
+        $("#resumenDireccionValor").text(bairro ? `${endereco} — ${bairro}` : endereco);
         $("#resumenDireccionMunicipio").text(
             `Municipio: ${MUNICIPIO_SELECCIONADO.nome} · Envío MN$ ${MUNICIPIO_SELECCIONADO.costo.toFixed(2).replace('.', ',')}`
         );
@@ -1531,10 +1523,10 @@ cardapio.metodos = {
         if (TIPO_ENTREGA === 'domicilio') {
 
             let endereco = $("#txtEndereco").val().trim();
-            let bairro = $("#txtBairro").val().trim();
+            let bairro = $("#txtBairro").val().trim(); // opcional
             let cidade = $("#txtCidade").val().trim();
 
-            if (endereco.length <= 0 || bairro.length <= 0 || !MUNICIPIO_SELECCIONADO) {
+            if (endereco.length <= 0 || !MUNICIPIO_SELECCIONADO) {
                 cardapio.metodos.mensagem('Completa la dirección de entrega antes de continuar.');
                 cardapio.metodos.abrirModalEntrega();
                 return;
@@ -1546,7 +1538,7 @@ cardapio.metodos = {
                 telefonoPais: tel.pais,
                 telefonoDigitos: tel.digitos,
                 endereco: endereco,
-                bairro: bairro,
+                bairro: bairro || '', // puede estar vacío
                 cidade: cidade,
                 uf: uf,
                 complemento: complemento,
@@ -1661,7 +1653,9 @@ cardapio.metodos = {
 
             entregaHTML += cardapio.metodos.filaResumo('fas fa-truck', 'Modalidad:', 'Entrega a domicilio');
             entregaHTML += cardapio.metodos.filaResumo('fas fa-road', 'Dirección:', MEU_ENDERECO.endereco);
-            entregaHTML += cardapio.metodos.filaResumo('fas fa-map-signs', 'Reparto / Barrio:', MEU_ENDERECO.bairro);
+            if (MEU_ENDERECO.bairro) {
+                entregaHTML += cardapio.metodos.filaResumo('fas fa-map-signs', 'Reparto / Barrio:', MEU_ENDERECO.bairro);
+            }
             entregaHTML += cardapio.metodos.filaResumo('fas fa-map-marker-alt', 'Municipio:', `${MEU_ENDERECO.municipio} (MN$ ${(MEU_ENDERECO.costoEntrega || 0).toFixed(2).replace('.', ',')})`);
             entregaHTML += cardapio.metodos.filaResumo('fas fa-city', 'Ciudad:', MEU_ENDERECO.cidade);
         } else if (MEU_ENDERECO && MEU_ENDERECO.tipo === 'local') {
@@ -1761,7 +1755,11 @@ cardapio.metodos = {
         if (esDomicilio) {
             texto += `\n*DIRECCION:*\n`;
             texto += `${MEU_ENDERECO.endereco}\n`;
-            texto += `${MEU_ENDERECO.bairro}, ${MEU_ENDERECO.municipio}\n`;
+            if (MEU_ENDERECO.bairro) {
+                texto += `${MEU_ENDERECO.bairro}, ${MEU_ENDERECO.municipio}\n`;
+            } else {
+                texto += `${MEU_ENDERECO.municipio}\n`;
+            }
             texto += `${MEU_ENDERECO.cidade}\n`;
         } else {
             texto += `\n*RECOGIDA EN LOCAL*\n`;
