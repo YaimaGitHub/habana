@@ -2,11 +2,11 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 2/5/2026, 21:57:52
+ * Generado desde el Panel de Control: 4/5/2026, 2:22:09
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
-var CELULAR_EMPRESA = '5363282554';
+var CELULAR_EMPRESA = '54690878';
 
 // Direccion de la tienda
 var MEU_ENDERECO = null;
