@@ -73,6 +73,10 @@
                     <i class="fas fa-address-book"></i>
                     <span>Contacto</span>
                 </a>
+                <a href="#" class="nav-item" data-section="payments">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Metodos de Pago</span>
+                </a>
                 <a href="#" class="nav-item" data-section="export">
                     <i class="fas fa-download"></i>
                     <span>Exportar</span>
@@ -253,6 +257,52 @@
                     </div>
                 </section>
 
+                <!-- Payments Section -->
+                <section class="content-section" id="section-payments">
+                    <div class="section-header">
+                        <h2>Metodos de Pago</h2>
+                    </div>
+                    <div class="payments-info-banner">
+                        <div class="payments-info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="payments-info-text">
+                            <strong>Configuracion de Metodos de Pago</strong>
+                            <p>Habilite o deshabilite los metodos de pago disponibles para sus clientes. Los cambios se aplicaran inmediatamente en la tienda.</p>
+                        </div>
+                    </div>
+                    <div class="payments-list" id="paymentsList">
+                        <!-- Los metodos de pago se cargan dinamicamente -->
+                    </div>
+                    <div class="payments-recogida-section">
+                        <h3><i class="fas fa-store"></i> Informacion del Punto de Recogida</h3>
+                        <p class="form-description">Esta informacion se mostrara cuando el cliente seleccione "Recoger en el local".</p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre del establecimiento</label>
+                                <input type="text" id="recogidaNombre" placeholder="D'Mima - Tienda de Alimentos">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Direccion del punto de recogida</label>
+                            <textarea id="recogidaDireccion" rows="2" placeholder="Direccion completa..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Horario de atencion</label>
+                                <input type="text" id="recogidaHorario" placeholder="Lun a Sab, 9:00 AM - 7:00 PM">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nota adicional</label>
+                            <input type="text" id="recogidaNota" placeholder="Nota para el cliente...">
+                        </div>
+                        <button class="btn-primary" onclick="adminPanel.savePuntoRecogida()">
+                            <i class="fas fa-save"></i> Guardar Punto de Recogida
+                        </button>
+                    </div>
+                </section>
+
                 <!-- Export Section -->
                 <section class="content-section" id="section-export">
                     <div class="section-header">
@@ -357,6 +407,21 @@
                             <option value="lb">Libra (lb)</option>
                             <option value="kg">Kilogramo (kg)</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Disponibilidad</label>
+                        <select id="productDisponibilidad">
+                            <option value="disponible">Disponible</option>
+                            <option value="agotado">Agotado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div class="disponibilidad-preview" id="disponibilidadPreview">
+                            <span class="badge-disponible"><i class="fas fa-check-circle"></i> Disponible</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">

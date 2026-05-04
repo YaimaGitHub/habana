@@ -68,6 +68,12 @@ cardapio.eventos = {
 
         // poblar el selector de código de país (teléfono)
         cardapio.metodos.renderCodigosPais();
+        
+        // Cargar métodos de pago dinámicamente
+        cardapio.metodos.renderMetodosPago();
+        
+        // Cargar información del punto de recogida
+        cardapio.metodos.renderPuntoRecogida();
 
         // cerrar lightbox con la tecla ESC
         $(document).on('keydown', (ev) => {
@@ -186,8 +192,13 @@ cardapio.metodos = {
             let hasOptions = e.options && e.options.length > 0;
             let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
             let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
-            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
-            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
+            
+            // Verificar disponibilidad del producto
+            let isAgotado = e.disponibilidad === 'agotado';
+            let btnDisabledClass = (hasRequiredOptions || isAgotado) ? 'btn-disabled' : '';
+            let btnDisabledAttr = (hasRequiredOptions || isAgotado) ? 'disabled' : '';
+            let agotadoClass = isAgotado ? 'producto-agotado' : '';
+            let agotadoOverlay = isAgotado ? '<div class="agotado-overlay-tienda"><span>AGOTADO</span></div>' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -205,7 +216,9 @@ cardapio.metodos = {
                 .replace(/\${hasOptions}/g, hasOptions ? 'true' : 'false')
                 .replace(/\${optionsSelector}/g, optionsSelector)
                 .replace(/\${btnDisabledClass}/g, btnDisabledClass)
-                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr);
+                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr)
+                .replace(/\${agotadoClass}/g, agotadoClass)
+                .replace(/\${agotadoOverlay}/g, agotadoOverlay);
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -365,8 +378,13 @@ cardapio.metodos = {
             let hasOptions = e.options && e.options.length > 0;
             let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
             let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
-            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
-            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
+            
+            // Verificar disponibilidad del producto
+            let isAgotado = e.disponibilidad === 'agotado';
+            let btnDisabledClass = (hasRequiredOptions || isAgotado) ? 'btn-disabled' : '';
+            let btnDisabledAttr = (hasRequiredOptions || isAgotado) ? 'disabled' : '';
+            let agotadoClass = isAgotado ? 'producto-agotado' : '';
+            let agotadoOverlay = isAgotado ? '<div class="agotado-overlay-tienda"><span>AGOTADO</span></div>' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -384,7 +402,9 @@ cardapio.metodos = {
                 .replace(/\${hasOptions}/g, hasOptions ? 'true' : 'false')
                 .replace(/\${optionsSelector}/g, optionsSelector)
                 .replace(/\${btnDisabledClass}/g, btnDisabledClass)
-                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr);
+                .replace(/\${btnDisabledAttr}/g, btnDisabledAttr)
+                .replace(/\${agotadoClass}/g, agotadoClass)
+                .replace(/\${agotadoOverlay}/g, agotadoOverlay);
 
             $("#itensCardapio").append(temp);
         });
@@ -1336,11 +1356,93 @@ cardapio.metodos = {
     //  MÉTODO DE PAGO (tarjetas)
     // ============================================================
 
+    // Renderiza dinámicamente los métodos de pago habilitados
+    renderMetodosPago: () => {
+        let $cont = $("#metodosPagoContainer");
+        if ($cont.length === 0) return;
+
+        // Verificar si existe METODOS_PAGO, sino usar valores por defecto
+        let metodos = (typeof METODOS_PAGO !== 'undefined') ? METODOS_PAGO : [
+            { id: 'efectivo', nombre: 'Pago en efectivo', icono: 'fas fa-money-bill-wave', descripcion: 'Paga al momento de recibir', habilitado: true },
+            { id: 'transferencia', nombre: 'Pago por transferencia', icono: 'fas fa-university', descripcion: 'Transferencia bancaria', habilitado: true }
+        ];
+
+        // Filtrar solo los habilitados
+        let habilitados = metodos.filter(m => m.habilitado);
+        
+        if (habilitados.length === 0) {
+            $cont.html('<p class="text-center text-muted">No hay métodos de pago disponibles.</p>');
+            return;
+        }
+
+        let html = '';
+        let isFirst = true;
+        habilitados.forEach((m) => {
+            let selectedClass = isFirst ? 'selected' : '';
+            let checkedAttr = isFirst ? 'checked' : '';
+            html += `
+                <label class="metodo-pago-card ${selectedClass}" data-metodo="${m.id}">
+                    <input type="radio" name="metodoPago" value="${m.nombre}" ${checkedAttr} onchange="cardapio.metodos.seleccionarMetodoPago('${m.id}')" />
+                    <div class="metodo-pago-icon"><i class="${m.icono}"></i></div>
+                    <div class="metodo-pago-info">
+                        <span class="metodo-pago-title">${m.nombre}</span>
+                        <span class="metodo-pago-dsc">${m.descripcion}</span>
+                    </div>
+                    <div class="metodo-pago-check"><i class="fas fa-check"></i></div>
+                </label>
+            `;
+            isFirst = false;
+        });
+
+        $cont.html(html);
+        
+        // Seleccionar el primer método por defecto
+        if (habilitados.length > 0) {
+            $("#ddlUf").val(habilitados[0].nombre);
+        }
+    },
+
+    // Renderiza la información del punto de recogida
+    renderPuntoRecogida: () => {
+        // Verificar si existe PUNTO_RECOGIDA, sino usar valores por defecto
+        let punto = (typeof PUNTO_RECOGIDA !== 'undefined') ? PUNTO_RECOGIDA : {
+            nombre: "D'Mima - Tienda de Alimentos",
+            direccion: "Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.",
+            horario: "Lun a Sab, 9:00 AM - 7:00 PM",
+            nota: "Te contactaremos por telefono cuando tu pedido este listo para recoger."
+        };
+
+        // Actualizar los elementos del DOM
+        let $nombre = $("#puntoRecogidaNombre");
+        let $direccion = $("#puntoRecogidaDireccion span");
+        let $horario = $("#puntoRecogidaHorario span");
+        let $nota = $("#puntoRecogidaNota span");
+
+        if ($nombre.length > 0 && punto.nombre) {
+            $nombre.html(`<b>${punto.nombre}</b>`);
+        }
+        if ($direccion.length > 0 && punto.direccion) {
+            $direccion.text(punto.direccion);
+        }
+        if ($horario.length > 0 && punto.horario) {
+            $horario.text(punto.horario);
+        }
+        if ($nota.length > 0 && punto.nota) {
+            $nota.text(punto.nota);
+        }
+    },
+
     seleccionarMetodoPago: (metodo) => {
         $(".metodo-pago-card").removeClass('selected');
         $(`.metodo-pago-card[data-metodo='${metodo}']`).addClass('selected');
 
-        if (metodo === 'transferencia') {
+        // Buscar el método en METODOS_PAGO para obtener el nombre correcto
+        let metodos = (typeof METODOS_PAGO !== 'undefined') ? METODOS_PAGO : [];
+        let metodoObj = metodos.find(m => m.id === metodo);
+        
+        if (metodoObj) {
+            $("#ddlUf").val(metodoObj.nombre);
+        } else if (metodo === 'transferencia') {
             $("#ddlUf").val('Pago por transferencia');
         } else {
             $("#ddlUf").val('Pago en efectivo');
@@ -1870,12 +1972,13 @@ cardapio.templates = {
 
     item: `
         <div class="col-12 col-lg-3 col-md-3 col-sm-6 mb-5 animated fadeInUp">
-            <div class="card card-item \${inCartClass}" id="\${id}" data-has-options="\${hasOptions}">
+            <div class="card card-item \${inCartClass} \${agotadoClass}" id="\${id}" data-has-options="\${hasOptions}">
                 \${inCartBadge}
                 <span class="card-badge-categoria"><i class="\${categoriaIcone}"></i> \${categoriaNome}</span>
                 <div class="img-produto" onclick="cardapio.metodos.abrirLightbox('\${img}', '\${nome}')" role="button" tabindex="0" aria-label="Ampliar imagen de \${nome}" title="Toca para ampliar">
                     <img src="\${img}" alt="\${nome}" />
                     <span class="img-zoom-hint" aria-hidden="true"><i class="fas fa-search-plus"></i></span>
+                    \${agotadoOverlay}
                 </div>
                 <p class="title-produto text-center mt-4">
                     <b>\${nome}</b>

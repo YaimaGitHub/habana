@@ -4,26 +4,6 @@ var CONVERSION_LB_KG = 2.20462;
 var MENU = {
     "churrasco": [
         {
-            "id": "carne-de-res",
-            "img": "./img/cardapio/Carnico/carne-res.jpg",
-            "name": "Carne de Res",
-            "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
-            "price": 1650,
-            "unit": "lb",
-            "options": [
-                {
-                    "name": "jaba",
-                    "required": false,
-                    "choices": [
-                        {
-                            "name": "jaba",
-                            "price": 8
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "id": "ribs-brisket-and-burnt-ends",
             "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
             "name": "Higado de pollo",
@@ -110,6 +90,27 @@ var MENU = {
             "dsc": "Pechugas de Pollo - Lar (2Kg)",
             "price": 4400,
             "unit": "unidad"
+        },
+        {
+            "id": "carne-de-res",
+            "img": "./img/cardapio/Carnico/carne-res.jpg",
+            "name": "Carne de Res",
+            "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
+            "price": 1650,
+            "unit": "lb",
+            "disponibilidad": "agotado",
+            "options": [
+                {
+                    "name": "jaba",
+                    "required": false,
+                    "choices": [
+                        {
+                            "name": "jaba",
+                            "price": 8
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "burgers": [

@@ -16,6 +16,13 @@ var localCONTACT = {
     address: '',
     storeName: ''
 };
+var localMETODOS_PAGO = [];
+var localPUNTO_RECOGIDA = {
+    nombre: '',
+    direccion: '',
+    horario: '',
+    nota: ''
+};
 
 // Estado de la aplicacion
 var isLoggedIn = false;
@@ -114,6 +121,28 @@ var adminPanel = {
         }
 
         localCONTACT.storeName = "D'Mima";
+
+        // Cargar metodos de pago
+        if (typeof METODOS_PAGO !== 'undefined') {
+            localMETODOS_PAGO = JSON.parse(JSON.stringify(METODOS_PAGO));
+        } else {
+            localMETODOS_PAGO = [
+                { id: 'efectivo', nombre: 'Pago en efectivo', icono: 'fas fa-money-bill-wave', descripcion: 'Paga al momento de recibir', habilitado: true },
+                { id: 'transferencia', nombre: 'Pago por transferencia', icono: 'fas fa-university', descripcion: 'Transferencia bancaria', habilitado: true }
+            ];
+        }
+
+        // Cargar punto de recogida
+        if (typeof PUNTO_RECOGIDA !== 'undefined') {
+            localPUNTO_RECOGIDA = JSON.parse(JSON.stringify(PUNTO_RECOGIDA));
+        } else {
+            localPUNTO_RECOGIDA = {
+                nombre: "D'Mima - Tienda de Alimentos",
+                direccion: "Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.",
+                horario: "Lun a Sab, 9:00 AM - 7:00 PM",
+                nota: "Te contactaremos por telefono cuando tu pedido este listo para recoger."
+            };
+        }
     },
 
     // =====================
@@ -188,6 +217,7 @@ var adminPanel = {
             'categories': 'Gestion de Categorias',
             'shipping': 'Municipios y Envios',
             'contact': 'Informacion de Contacto',
+            'payments': 'Metodos de Pago',
             'export': 'Exportar Configuracion'
         };
         document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Panel de Control';
@@ -230,6 +260,7 @@ var adminPanel = {
         this.loadCategories();
         this.loadMunicipios();
         this.loadContact();
+        this.loadPayments();
     },
 
     // =====================
@@ -294,17 +325,26 @@ var adminPanel = {
                     var hasOptions = product.options && product.options.length > 0;
                     var optionsBadge = hasOptions ? '<span class="options-badge" title="Tiene opciones/variantes"><i class="fas fa-list"></i> ' + product.options.length + '</span>' : '';
                     
+                    // Verificar disponibilidad
+                    var isAgotado = product.disponibilidad === 'agotado';
+                    var disponibilidadBadge = isAgotado 
+                        ? '<span class="stock-badge stock-agotado"><i class="fas fa-times-circle"></i> Agotado</span>' 
+                        : '<span class="stock-badge stock-disponible"><i class="fas fa-check-circle"></i> Disponible</span>';
+                    var cardClass = isAgotado ? 'product-card product-agotado' : 'product-card';
+                    
                     var card = document.createElement('div');
-                    card.className = 'product-card';
+                    card.className = cardClass;
                     card.innerHTML = '\
                         <div class="product-image">\
                             <img src="' + product.img + '" alt="' + product.name + '" onerror="this.src=\'./img/icone-pedido.png\'">\
                             ' + optionsBadge + '\
+                            ' + (isAgotado ? '<div class="agotado-overlay"><span>AGOTADO</span></div>' : '') + '\
                         </div>\
                         <div class="product-info">\
                             <span class="product-category"><i class="' + catInfo.icone + '"></i> ' + catInfo.nome + '</span>\
                             <h3>' + product.name + '</h3>\
                             <p class="product-price">MN$ ' + product.price.toFixed(2).replace('.', ',') + '</p>\
+                            ' + disponibilidadBadge + '\
                         </div>\
                         <div class="product-actions">\
                             <button class="btn-edit" onclick="adminPanel.editProduct(\'' + cat + '\', ' + index + ')">\
@@ -348,6 +388,9 @@ var adminPanel = {
             this.optionGroupCounter = 0;
             // Resetear modo de imagen a URL
             this.toggleImageUploadMode('url');
+            // Resetear disponibilidad
+            document.getElementById('productDisponibilidad').value = 'disponible';
+            this.updateDisponibilidadPreview('disponible');
         }
     },
 
@@ -468,7 +511,11 @@ var adminPanel = {
         document.getElementById('productCategory').value = category;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productUnit').value = product.unit || 'unidad';
+        document.getElementById('productDisponibilidad').value = product.disponibilidad || 'disponible';
         document.getElementById('productDesc').value = product.dsc || '';
+        
+        // Actualizar preview de disponibilidad
+        this.updateDisponibilidadPreview(product.disponibilidad || 'disponible');
         
         // Manejar imagen
         var imgSrc = product.img || '';
@@ -508,6 +555,7 @@ var adminPanel = {
         var category = document.getElementById('productCategory').value;
         var price = parseFloat(document.getElementById('productPrice').value);
         var unit = document.getElementById('productUnit').value;
+        var disponibilidad = document.getElementById('productDisponibilidad').value;
         var desc = document.getElementById('productDesc').value;
         var img = this.getImagePathForSave();
         
@@ -525,7 +573,8 @@ var adminPanel = {
             name: name,
             dsc: desc,
             price: price,
-            unit: unit
+            unit: unit,
+            disponibilidad: disponibilidad
         };
         
         // Agregar opciones solo si existen
@@ -981,13 +1030,16 @@ var adminPanel = {
         
         localCONTACT.whatsapp = whatsapp;
         
-        // Actualizar variable global
+        // Actualizar variable global para que se refleje en toda la tienda
         if (typeof CELULAR_EMPRESA !== 'undefined') {
             CELULAR_EMPRESA = whatsapp;
         }
         
+        // Actualizar el numero en window para que app.js lo use
+        window.CELULAR_EMPRESA = whatsapp;
+        
         this.updateDashboard();
-        this.showToast('WhatsApp actualizado correctamente. Recuerde exportar la configuracion para guardar los cambios permanentemente.', 'success');
+        this.showToast('WhatsApp actualizado y sincronizado en toda la tienda', 'success');
     },
 
     saveAddress: function() {
@@ -1073,7 +1125,15 @@ var adminPanel = {
         content += municipiosStr + '\n\n';
         
         content += '// Metadata de las categorias: nombre visible, icono y clave interna\n';
-        content += categoriasStr + '\n';
+        content += categoriasStr + '\n\n';
+        
+        // Generar metodos de pago
+        content += '// Metodos de pago disponibles en la tienda\n';
+        content += 'var METODOS_PAGO = ' + JSON.stringify(localMETODOS_PAGO, null, 4) + ';\n\n';
+        
+        // Generar punto de recogida
+        content += '// Informacion del punto de recogida\n';
+        content += 'var PUNTO_RECOGIDA = ' + JSON.stringify(localPUNTO_RECOGIDA, null, 4) + ';\n';
         
         return content;
     },
@@ -1249,6 +1309,98 @@ var adminPanel = {
                 container.removeChild(toast);
             }, 300);
         }, 4000);
+    },
+
+    // =====================
+    // METODOS DE PAGO
+    // =====================
+
+    loadPayments: function() {
+        var list = document.getElementById('paymentsList');
+        list.innerHTML = '';
+        var self = this;
+        
+        localMETODOS_PAGO.forEach(function(metodo, index) {
+            var item = document.createElement('div');
+            item.className = 'payment-item' + (metodo.habilitado ? '' : ' disabled');
+            item.innerHTML = '\
+                <div class="payment-icon"><i class="' + metodo.icono + '"></i></div>\
+                <div class="payment-info">\
+                    <h3>' + metodo.nombre + '</h3>\
+                    <p>' + metodo.descripcion + '</p>\
+                </div>\
+                <div class="payment-toggle">\
+                    <label class="toggle-switch">\
+                        <input type="checkbox" ' + (metodo.habilitado ? 'checked' : '') + ' onchange="adminPanel.togglePaymentMethod(' + index + ', this.checked)">\
+                        <span class="toggle-slider"></span>\
+                    </label>\
+                    <span class="toggle-label">' + (metodo.habilitado ? 'Habilitado' : 'Deshabilitado') + '</span>\
+                </div>\
+            ';
+            list.appendChild(item);
+        });
+        
+        // Cargar datos del punto de recogida
+        document.getElementById('recogidaNombre').value = localPUNTO_RECOGIDA.nombre || '';
+        document.getElementById('recogidaDireccion').value = localPUNTO_RECOGIDA.direccion || '';
+        document.getElementById('recogidaHorario').value = localPUNTO_RECOGIDA.horario || '';
+        document.getElementById('recogidaNota').value = localPUNTO_RECOGIDA.nota || '';
+    },
+
+    togglePaymentMethod: function(index, enabled) {
+        localMETODOS_PAGO[index].habilitado = enabled;
+        
+        // Actualizar variable global
+        if (typeof METODOS_PAGO !== 'undefined') {
+            METODOS_PAGO = JSON.parse(JSON.stringify(localMETODOS_PAGO));
+        }
+        
+        // Recargar lista para actualizar estilos
+        this.loadPayments();
+        
+        var methodName = localMETODOS_PAGO[index].nombre;
+        this.showToast('Metodo "' + methodName + '" ' + (enabled ? 'habilitado' : 'deshabilitado'), enabled ? 'success' : 'warning');
+    },
+
+    savePuntoRecogida: function() {
+        var nombre = document.getElementById('recogidaNombre').value.trim();
+        var direccion = document.getElementById('recogidaDireccion').value.trim();
+        var horario = document.getElementById('recogidaHorario').value.trim();
+        var nota = document.getElementById('recogidaNota').value.trim();
+        
+        if (!nombre || !direccion) {
+            this.showToast('Complete al menos el nombre y la direccion', 'error');
+            return;
+        }
+        
+        localPUNTO_RECOGIDA = {
+            nombre: nombre,
+            direccion: direccion,
+            horario: horario,
+            nota: nota
+        };
+        
+        // Actualizar variable global
+        if (typeof PUNTO_RECOGIDA !== 'undefined') {
+            PUNTO_RECOGIDA = JSON.parse(JSON.stringify(localPUNTO_RECOGIDA));
+        }
+        
+        this.showToast('Punto de recogida actualizado correctamente', 'success');
+    },
+
+    // =====================
+    // DISPONIBILIDAD DE PRODUCTOS
+    // =====================
+    
+    updateDisponibilidadPreview: function(value) {
+        var preview = document.getElementById('disponibilidadPreview');
+        if (!preview) return;
+        
+        if (value === 'agotado') {
+            preview.innerHTML = '<span class="badge-agotado"><i class="fas fa-times-circle"></i> Agotado</span>';
+        } else {
+            preview.innerHTML = '<span class="badge-disponible"><i class="fas fa-check-circle"></i> Disponible</span>';
+        }
     }
 };
 
@@ -1275,4 +1427,12 @@ document.addEventListener('DOMContentLoaded', function() {
             preview.innerHTML = '';
         }
     });
+    
+    // Preview de disponibilidad
+    var disponibilidadSelect = document.getElementById('productDisponibilidad');
+    if (disponibilidadSelect) {
+        disponibilidadSelect.addEventListener('change', function() {
+            adminPanel.updateDisponibilidadPreview(this.value);
+        });
+    }
 });

@@ -707,29 +707,29 @@
                             <div class="info-local info-local-modal">
                                 <div class="info-local-icon"><i class="fas fa-store"></i></div>
                                 <div class="info-local-body">
-                                    <p class="info-local-title"><b>D'Mima - Tienda de Alimentos</b></p>
-                                    <p class="info-local-addr">
+                                    <p class="info-local-title" id="puntoRecogidaNombre"><b>D'Mima - Tienda de Alimentos</b></p>
+                                    <p class="info-local-addr" id="puntoRecogidaDireccion">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.
+                                        <span>Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.</span>
                                     </p>
-                                    <p class="info-local-hours">
+                                    <p class="info-local-hours" id="puntoRecogidaHorario">
                                         <i class="far fa-clock"></i>
-                                        Lun a Sáb, 9:00 AM - 7:00 PM
+                                        <span>Lun a Sab, 9:00 AM - 7:00 PM</span>
                                     </p>
-                                    <p class="info-local-nota">
+                                    <p class="info-local-nota" id="puntoRecogidaNota">
                                         <i class="fas fa-info-circle"></i>
-                                        Te contactaremos por teléfono cuando tu pedido esté listo para recoger.
+                                        <span>Te contactaremos por telefono cuando tu pedido este listo para recoger.</span>
                                     </p>
                                 </div>
                             </div>
                             <div class="ventajas-local">
                                 <div class="ventaja-local-item">
                                     <i class="fas fa-check-circle"></i>
-                                    <span>Sin costo de envío</span>
+                                    <span>Sin costo de envio</span>
                                 </div>
                                 <div class="ventaja-local-item">
                                     <i class="fas fa-check-circle"></i>
-                                    <span>Atención personalizada</span>
+                                    <span>Atencion personalizada</span>
                                 </div>
                                 <div class="ventaja-local-item">
                                     <i class="fas fa-check-circle"></i>
@@ -744,26 +744,8 @@
                                 <span class="form-section-num">3</span>
                                 <span class="form-section-label">Método de pago <span class="req-asterisk">*</span></span>
                             </div>
-                            <div class="metodo-pago-group" role="radiogroup" aria-label="Método de pago">
-                                <label class="metodo-pago-card selected" data-metodo="efectivo">
-                                    <input type="radio" name="metodoPago" value="Pago en efectivo" checked onchange="cardapio.metodos.seleccionarMetodoPago('efectivo')" />
-                                    <div class="metodo-pago-icon"><i class="fas fa-money-bill-wave"></i></div>
-                                    <div class="metodo-pago-info">
-                                        <span class="metodo-pago-title">Pago en efectivo</span>
-                                        <span class="metodo-pago-dsc">Paga al momento de recibir</span>
-                                    </div>
-                                    <div class="metodo-pago-check"><i class="fas fa-check"></i></div>
-                                </label>
-
-                                <label class="metodo-pago-card" data-metodo="transferencia">
-                                    <input type="radio" name="metodoPago" value="Pago por transferencia" onchange="cardapio.metodos.seleccionarMetodoPago('transferencia')" />
-                                    <div class="metodo-pago-icon"><i class="fas fa-university"></i></div>
-                                    <div class="metodo-pago-info">
-                                        <span class="metodo-pago-title">Pago por transferencia</span>
-                                        <span class="metodo-pago-dsc">Transferencia bancaria</span>
-                                    </div>
-                                    <div class="metodo-pago-check"><i class="fas fa-check"></i></div>
-                                </label>
+                            <div class="metodo-pago-group" id="metodosPagoContainer" role="radiogroup" aria-label="Método de pago">
+                                <!-- Los métodos de pago se cargan dinámicamente desde JS -->
                             </div>
                         </div>
 
