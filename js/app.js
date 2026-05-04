@@ -283,7 +283,7 @@ cardapio.metodos = {
     //  BÚSQUEDA EN TIEMPO REAL (filtra todos los productos)
     // ============================================================
 
-    // normaliza el texto: min��sculas + sin acentos, para búsqueda tolerante
+    // normaliza el texto: minúsculas + sin acentos, para búsqueda tolerante
     normalizarTexto: (texto) => {
         if (texto == null) return '';
         return String(texto)
@@ -1819,33 +1819,10 @@ cardapio.metodos = {
         let esDomicilio = MEU_ENDERECO.tipo === 'domicilio';
         let total = VALOR_CARRINHO + costoEntrega;
 
-        // Ancho del ticket POS (32 caracteres para 58mm, 42 para 80mm)
-        const ANCHO_TICKET = 32;
-        
-        // Formatear numero con 2 decimales
-        let fmt = (n) => n.toFixed(2);
-        
-        // Alinear texto a la derecha
-        let alinearDer = (texto, ancho) => texto.padStart(ancho);
-        
-        // Crear linea con texto a izquierda y derecha
-        let lineaDoble = (izq, der) => {
-            let espacios = ANCHO_TICKET - izq.length - der.length;
-            if (espacios < 1) espacios = 1;
-            return izq + ' '.repeat(espacios) + der;
-        };
-        
-        // Centrar texto
-        let centrar = (texto) => {
-            let espacios = Math.floor((ANCHO_TICKET - texto.length) / 2);
-            if (espacios < 0) espacios = 0;
-            return ' '.repeat(espacios) + texto;
-        };
-        
-        // Truncar texto si es muy largo
-        let truncar = (texto, max) => {
-            if (texto.length > max) return texto.substring(0, max - 2) + '..';
-            return texto;
+        // Formatear numero sin decimales si es entero
+        let fmt = (n) => {
+            if (Number.isInteger(n)) return n.toString();
+            return n.toFixed(2).replace('.', ',');
         };
         
         // Obtener fecha y hora actual
@@ -1854,24 +1831,21 @@ cardapio.metodos = {
         let fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
         let horaFormateada = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
         
-        let linea = '='.repeat(ANCHO_TICKET);
-        let lineaSimple = '-'.repeat(ANCHO_TICKET);
+        let linea = '--------------------------------';
         let texto = '';
 
         // === ENCABEZADO ===
+        texto += `        *TIENDITA D'MIMA*\n`;
         texto += `${linea}\n`;
-        texto += `${centrar("TIENDITA D'MIMA")}\n`;
-        texto += `${centrar("Pedido por WhatsApp")}\n`;
-        texto += `${linea}\n`;
-        texto += `${lineaDoble('Fecha: ' + fechaFormateada, horaFormateada)}\n`;
+        texto += `Fecha: ${fechaFormateada}  Hora: ${horaFormateada}\n`;
         if (NUMERO_ORDEN) {
-            texto += `Orden #: ${NUMERO_ORDEN}\n`;
+            texto += `Orden: ${NUMERO_ORDEN}\n`;
         }
-        texto += `${lineaSimple}\n`;
+        texto += `${linea}\n\n`;
 
-        // === DATOS DEL CLIENTE ===
-        texto += `CLIENTE:\n`;
-        texto += `${truncar(MEU_ENDERECO.complemento, ANCHO_TICKET)}\n`;
+        // === DATOS DEL CLIENTE (PRIMERO) ===
+        texto += `*CLIENTE:*\n`;
+        texto += `${MEU_ENDERECO.complemento}\n`;
         let telText = MEU_ENDERECO.cep;
         if (MEU_ENDERECO.telefonoPais) {
             telText = `${MEU_ENDERECO.telefonoPais.code} ${MEU_ENDERECO.telefonoDigitos}`;
@@ -1879,26 +1853,23 @@ cardapio.metodos = {
         texto += `Tel: ${telText}\n`;
         texto += `Pago: ${MEU_ENDERECO.uf}\n`;
         
-        // Tipo de entrega y direccion
-        texto += `${lineaSimple}\n`;
+        // Direccion del cliente
         if (esDomicilio) {
-            texto += `ENTREGA A DOMICILIO:\n`;
-            texto += `${truncar(MEU_ENDERECO.endereco, ANCHO_TICKET)}\n`;
+            texto += `\n*DIRECCION:*\n`;
+            texto += `${MEU_ENDERECO.endereco}\n`;
             if (MEU_ENDERECO.bairro) {
-                texto += `${truncar(MEU_ENDERECO.bairro + ', ' + MEU_ENDERECO.municipio, ANCHO_TICKET)}\n`;
+                texto += `${MEU_ENDERECO.bairro}, ${MEU_ENDERECO.municipio}\n`;
             } else {
                 texto += `${MEU_ENDERECO.municipio}\n`;
             }
             texto += `${MEU_ENDERECO.cidade}\n`;
         } else {
-            texto += `RECOGIDA EN TIENDA\n`;
+            texto += `\n*RECOGIDA EN LOCAL*\n`;
         }
-        texto += `${linea}\n`;
+        texto += `${linea}\n\n`;
 
-        // === PRODUCTOS ===
-        texto += `CANT  DESCRIPCION        IMPORTE\n`;
-        texto += `${lineaSimple}\n`;
-        
+        // === PRODUCTOS (FORMATO POS) ===
+        texto += `*PRODUCTOS:*\n`;
         $.each(MEU_CARRINHO, (i, e) => {
             let subtotalItem = e.price * e.qntd;
             
@@ -1908,40 +1879,30 @@ cardapio.metodos = {
                 nombreProducto += ` (${e.selectedUnit})`;
             }
             
-            // Formato: CANT  PRODUCTO       IMPORTE
-            let cantStr = e.qntd.toString().padEnd(4);
-            let importeStr = fmt(subtotalItem);
-            let maxNombre = ANCHO_TICKET - 4 - importeStr.length - 2;
-            let nombreTrunc = truncar(nombreProducto, maxNombre);
+            // Formato POS: Producto
+            //              cantidad x precio
+            texto += `${nombreProducto}\n`;
+            texto += `    ${e.qntd} x ${fmt(e.price)} = ${fmt(subtotalItem)}\n`;
             
-            texto += `${cantStr} ${lineaDoble(nombreTrunc, importeStr).substring(4)}\n`;
-            
-            // Precio unitario
-            texto += `     @${fmt(e.price)} c/u\n`;
-            
-            // Opciones si existen
+            // Opciones si existen (en linea separada)
             if (e.selectedOptions && Object.keys(e.selectedOptions).length > 0) {
-                let optionsText = Object.values(e.selectedOptions).map(o => o.choice).join(', ');
-                texto += `     [${truncar(optionsText, ANCHO_TICKET - 7)}]\n`;
+                let optionsText = Object.values(e.selectedOptions).map(o => `${o.choice}`).join(', ');
+                texto += `    (${optionsText})\n`;
             }
         });
-        
-        texto += `${linea}\n`;
+        texto += `${linea}\n\n`;
 
         // === TOTALES ===
-        texto += `${lineaDoble('SUBTOTAL:', '$' + fmt(VALOR_CARRINHO))}\n`;
+        texto += `Subtotal:        ${fmt(VALOR_CARRINHO)}\n`;
         if (esDomicilio) {
-            texto += `${lineaDoble('ENVIO (' + truncar(MEU_ENDERECO.municipio, 10) + '):', '+$' + fmt(costoEntrega))}\n`;
+            texto += `Envio (${MEU_ENDERECO.municipio}):  +${fmt(costoEntrega)}\n`;
         } else {
-            texto += `${lineaDoble('ENVIO:', 'GRATIS')}\n`;
+            texto += `Envio:           GRATIS\n`;
         }
         texto += `${linea}\n`;
-        texto += `${lineaDoble('TOTAL A PAGAR:', '$' + fmt(total))}\n`;
+        texto += `*TOTAL:          ${fmt(total)}*\n`;
         texto += `${linea}\n`;
-        
-        // === PIE DE TICKET ===
-        texto += `\n${centrar("Gracias por su compra!")}\n`;
-        texto += `${centrar("Conserve este comprobante")}\n`;
+        texto += `\nGracias por su compra!`;
 
         // converte a URL
         let encode = encodeURIComponent(texto);
