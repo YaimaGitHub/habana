@@ -2,11 +2,11 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 4/5/2026, 6:32:32
+ * Generado desde el Panel de Control: 4/5/2026, 2:22:09
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
-var CELULAR_EMPRESA = '5363282554';
+var CELULAR_EMPRESA = '54690878';
 
 // Direccion de la tienda
 var MEU_ENDERECO = null;
@@ -45,26 +45,14 @@ var CATEGORIAS = {
 
 // Metodos de pago disponibles en la tienda
 var METODOS_PAGO = [
-    {
-        "id": "efectivo",
-        "nombre": "Pago en efectivo",
-        "icono": "fas fa-money-bill-wave",
-        "descripcion": "Paga al momento de recibir",
-        "habilitado": true
-    },
-    {
-        "id": "transferencia",
-        "nombre": "Pago por transferencia",
-        "icono": "fas fa-university",
-        "descripcion": "Transferencia bancaria",
-        "habilitado": false
-    }
+    { id: 'efectivo', nombre: 'Pago en efectivo', icono: 'fas fa-money-bill-wave', descripcion: 'Paga al momento de recibir', habilitado: true },
+    { id: 'transferencia', nombre: 'Pago por transferencia', icono: 'fas fa-university', descripcion: 'Transferencia bancaria', habilitado: true }
 ];
 
 // Informacion del punto de recogida
 var PUNTO_RECOGIDA = {
-    "nombre": "D'Mima - Tienda de Alimentos",
-    "direccion": "Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.",
-    "horario": "Lun a Sab, 9:00 AM - 7:00 PM",
-    "nota": "Te contactaremos por telefono cuando tu pedido este listo para recoger."
+    nombre: "D'Mima - Tienda de Alimentos",
+    direccion: "Calle Perdomo #425 entre Maceo y Adrian, Regla, La Habana.",
+    horario: "Lun a Sab, 9:00 AM - 7:00 PM",
+    nota: "Te contactaremos por telefono cuando tu pedido este listo para recoger."
 };
