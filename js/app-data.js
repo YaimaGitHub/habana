@@ -13,24 +13,24 @@ var MEU_ENDERECO = null;
 
 // Municipios de La Habana con costo de envio (en MN / CUP)
 var MUNICIPIOS_HABANA = [
-    { id: 'regla', nome: 'Regla', costo: 200 },
-    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 }
-    { id: 'Guanabacoa', nome: 'Guanabacoa (Habana nueva)', costo: 300 },
-    { id: 'Guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
-    { id: 'Guanabacoa', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
-    { id: 'Guanabacoa', nome: 'Guanabacoa (Reparto Chiva)', costo: 400 },
-    { id: 'Guanabacoa', nome: 'Reparto Mañana', costo: 450 },
     { id: 'centro-habana', nome: 'Centro Habana', costo: 2000 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Calzada vieja)', costo: 500 },
-    { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 2500 },
+    { id: 'cerro', nome: 'Cerro', costo: 250 },
     { id: 'diez-de-octubre', nome: 'Diez de Octubre', costo: 2500 },
+    { id: 'playa', nome: 'Playa', costo: 350 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Reparto Chiva)', costo: 400 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
+    { id: 'Guanabacoa', nome: 'Reparto Mañana', costo: 450 },
+    { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 2500 },
+    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 },
+    { id: 'regla', nome: 'Regla', costo: 200 },
     { id: 'habana-del-este', nome: 'Habana del Este (Bahía)', costo: 1000 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Habana nueva)', costo: 300 },
+    { id: 'Vedado', nome: 'Vedado', costo: 2500 },
     { id: 'Villa Panamericana', nome: 'Villa Panamericana', costo: 1500 },
     { id: 'Reparto Camilo Cienfuegos', nome: 'Reparto Camilo Cienfuegos', costo: 2000 }
-    { id: 'cerro', nome: 'Cerro', costo: 1800 },
-    { id: 'playa', nome: 'Playa', costo: 350 },   
-    { id: 'Vedado', nome: 'Vedado', costo: 2500 },  
 ];
 
 // Metadata de las categorias: nombre visible, icono y clave interna
