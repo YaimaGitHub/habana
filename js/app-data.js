@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 4/5/2026, 6:32:32
+ * Generado desde el Panel de Control: 5/5/2026, 2:53:45
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -13,19 +13,19 @@ var MEU_ENDERECO = null;
 
 // Municipios de La Habana con costo de envio (en MN / CUP)
 var MUNICIPIOS_HABANA = [
-    { id: 'habana-vieja', nome: 'Habana Vieja', costo: 200 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
     { id: 'centro-habana', nome: 'Centro Habana', costo: 200 },
     { id: 'plaza', nome: 'Plaza de la Revolución', costo: 250 },
     { id: 'cerro', nome: 'Cerro', costo: 250 },
     { id: 'diez-de-octubre', nome: 'Diez de Octubre', costo: 250 },
     { id: 'playa', nome: 'Playa', costo: 350 },
-    { id: 'marianao', nome: 'Marianao', costo: 400 },
-    { id: 'la-lisa', nome: 'La Lisa', costo: 450 },
-    { id: 'boyeros', nome: 'Boyeros', costo: 400 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Reparto Chiva)', costo: 400 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
     { id: 'arroyo-naranjo', nome: 'Arroyo Naranjo', costo: 400 },
-    { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 350 },
-    { id: 'guanabacoa', nome: 'Guanabacoa', costo: 400 },
-    { id: 'regla', nome: 'Regla', costo: 300 },
+    { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 2500 },
+    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 },
+    { id: 'regla', nome: 'Regla', costo: 200 },
     { id: 'habana-del-este', nome: 'Habana del Este', costo: 450 },
     { id: 'cotorro', nome: 'Cotorro', costo: 500 }
 ];
