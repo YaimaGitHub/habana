@@ -36,14 +36,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "Amitriptilina",
-            "img": "./img/cardapio/Carnico/Lomo de cerdo NATURAL.webp",
-            "name": "Lomo de cerdo (Natural)",
-            "dsc": "Lomo de cerdo (Natural)",
-            "price": 1200,
-            "unit": "lb"
-        },
-        {
             "id": "super2",
             "img": "./img/cardapio/Carnico/Mollejas de Pollo Aurora 1kg.webp",
             "name": "Mollejas de Pollo Aurora 1kg",
@@ -57,14 +49,6 @@ var MENU = {
             "name": "Paletas de Cerdo deshuesada",
             "dsc": "Paletas de Cerdo deshuesada",
             "price": 1100,
-            "unit": "lb"
-        },
-        {
-            "id": "pechuga-de-pollo-sin-hueso-10-lb",
-            "img": "./img/cardapio/Carnico/Pechuga de pollo sin hueso 10 lb.jpeg",
-            "name": "Pechuga de pollo sin hueso 10 lb",
-            "dsc": "Pechuga de pollo sin hueso 10 lb",
-            "price": 900,
             "unit": "lb"
         },
         {
@@ -84,12 +68,31 @@ var MENU = {
             "unit": "unidad"
         },
         {
+            "id": "Amitriptilina",
+            "img": "./img/cardapio/Carnico/Lomo de cerdo NATURAL.webp",
+            "name": "Lomo de cerdo (Natural)",
+            "dsc": "Lomo de cerdo (Natural)",
+            "price": 1249.99,
+            "unit": "lb",
+            "disponibilidad": "disponible"
+        },
+        {
             "id": "pechugas-de-pollo-lar-2kg-",
             "img": "./img/cardapio/Carnico/Pechugas de Pollo - Lar (2Kg).webp",
             "name": "Pechugas de Pollo - Lar (2Kg)",
             "dsc": "Pechugas de Pollo - Lar (2Kg)",
             "price": 4400,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
+        },
+        {
+            "id": "pechuga-de-pollo-sin-hueso-10-lb",
+            "img": "./img/cardapio/Carnico/Pechuga de pollo sin hueso 10 lb.jpeg",
+            "name": "Pechuga de pollo sin hueso 10 lb",
+            "dsc": "Pechuga de pollo sin hueso 10 lb",
+            "price": 900,
+            "unit": "lb",
+            "disponibilidad": "agotado"
         },
         {
             "id": "carne-de-res",
@@ -98,7 +101,7 @@ var MENU = {
             "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
             "price": 1650,
             "unit": "lb",
-            "disponibilidad": "agotado",
+            "disponibilidad": "disponible",
             "options": [
                 {
                     "name": "jaba",
@@ -143,8 +146,9 @@ var MENU = {
             "img": "./img/cardapio/Mercado/Azucar.webp",
             "name": "Azucar 1KG",
             "dsc": "Azucar 1KG",
-            "price": 690,
-            "unit": "unidad"
+            "price": 719.98,
+            "unit": "unidad",
+            "disponibilidad": "disponible"
         },
         {
             "id": "burger-au-poivre-kit-4-pack",

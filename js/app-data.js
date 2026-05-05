@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 5/5/2026, 3:16:08
+ * Generado desde el Panel de Control: 4/5/2026, 11:11:04 p.m.
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -29,7 +29,7 @@ var MUNICIPIOS_HABANA = [
     { id: 'Villa Panamericana', nome: 'Villa Panamericana', costo: 1500 },
     { id: 'Reparto Camilo Cienfuegos', nome: 'Reparto Camilo Cienfuegos', costo: 2000 },
     { id: 'cerro', nome: 'Cerro', costo: 1800 },
-    { id: 'playa', nome: 'Playa', costo: 3000 },   
+    { id: 'playa', nome: 'Playa', costo: 3000 },
     { id: 'Vedado', nome: 'Vedado', costo: 2500 }
 ];
 
