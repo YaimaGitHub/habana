@@ -29,7 +29,7 @@ var MUNICIPIOS_HABANA = [
     { id: 'Villa Panamericana', nome: 'Villa Panamericana', costo: 1500 },
     { id: 'Reparto Camilo Cienfuegos', nome: 'Reparto Camilo Cienfuegos', costo: 2000 },
     { id: 'cerro', nome: 'Cerro', costo: 1800 },
-    { id: 'playa', nome: 'Playa', costo: 350 },   
+    { id: 'playa', nome: 'Playa', costo: 3000 },   
     { id: 'Vedado', nome: 'Vedado', costo: 2500 }
 ];
 
