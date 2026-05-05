@@ -8,8 +8,9 @@ var MENU = {
             "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
             "name": "Higado de pollo",
             "dsc": "Higado de pollo",
-            "price": 780,
-            "unit": "unidad"
+            "price": 790,
+            "unit": "unidad",
+            "disponibilidad": "disponible"
         },
         {
             "id": "woodford-reserve-mint-julep-syrup",
@@ -74,7 +75,7 @@ var MENU = {
             "dsc": "Pechugas de Pollo - Lar (2Kg)",
             "price": 4400,
             "unit": "unidad",
-            "disponibilidad": "agotado"
+            "disponibilidad": "disponible"
         },
         {
             "id": "pechuga-de-pollo-sin-hueso-10-lb",
@@ -300,6 +301,15 @@ var MENU = {
             "price": 3000,
             "unit": "unidad",
             "disponibilidad": "disponible"
+        },
+        {
+            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
+            "img": "./img/cardapio/Mercado/Fanguito (Leche Condensada).webp",
+            "name": "Fanguito (Leche Condensada)",
+            "dsc": "Fanguito (Leche Condensada)",
+            "price": 550,
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         }
     ],
     "sobremesas": [
@@ -376,14 +386,6 @@ var MENU = {
         }
     ],
     "outros": [
-        {
-            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
-            "img": "./img/cardapio/Mercado/Fanguito (Leche Condensada).webp",
-            "name": "Fanguito (Leche Condensada)",
-            "dsc": "Fanguito (Leche Condensada)",
-            "price": 550,
-            "unit": "unidad"
-        },
         {
             "id": "17481-jewish-dessert-3-pack",
             "img": "./img/cardapio/Confituras/Galletas Crokantinas.webp",
@@ -470,20 +472,33 @@ var MENU = {
     ],
     "steaks": [
         {
-            "id": "2-lou-malnatis-deep-dish-pizzas",
-            "img": "./img/cardapio/Harinas y Levaduras/Harina.webp",
-            "name": "Harina por libra",
-            "dsc": "Harina por libra",
-            "price": 350,
-            "unit": "lb"
-        },
-        {
             "id": "choose-your-own-ice-cream-donuts-6-pack",
             "img": "./img/cardapio/Harinas y Levaduras/Levadura Apalav.jpg",
             "name": "Levadura Apalav (500g)",
             "dsc": "Levadura Apalav (500g)",
             "price": 1500,
             "unit": "unidad"
+        },
+        {
+            "id": "2-lou-malnatis-deep-dish-pizzas",
+            "img": "./img/cardapio/Harinas y Levaduras/Harina.webp",
+            "name": "Harina por libra",
+            "dsc": "Harina por libra",
+            "price": 350,
+            "unit": "lb",
+            "disponibilidad": "disponible",
+            "options": [
+                {
+                    "name": "jabas",
+                    "required": true,
+                    "choices": [
+                        {
+                            "name": "jabas",
+                            "price": 8
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "Condimentos": [
@@ -615,7 +630,20 @@ var MENU = {
             "name": "Frijoles Colorados",
             "dsc": "Frijoles Colorados",
             "price": 375,
-            "unit": "lb"
+            "unit": "lb",
+            "disponibilidad": "disponible",
+            "options": [
+                {
+                    "name": "jabas",
+                    "required": true,
+                    "choices": [
+                        {
+                            "name": "jabas",
+                            "price": 8
+                        }
+                    ]
+                }
+            ]
         },
         {
             "id": "005-kings-carolina-oink-sampler",
@@ -647,7 +675,20 @@ var MENU = {
             "name": "Arroz Guayanés por libra",
             "dsc": "Arroz Guayanés por libra",
             "price": 290,
-            "unit": "lb"
+            "unit": "lb",
+            "disponibilidad": "disponible",
+            "options": [
+                {
+                    "name": "jabas",
+                    "required": true,
+                    "choices": [
+                        {
+                            "name": "jabas",
+                            "price": 8
+                        }
+                    ]
+                }
+            ]
         },
         {
             "id": "shake-shack-shackburger-16-packkk",
