@@ -4,14 +4,6 @@ var CONVERSION_LB_KG = 2.20462;
 var MENU = {
     "churrasco": [
         {
-            "id": "ribs-brisket-and-burnt-ends",
-            "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
-            "name": "Higado de pollo",
-            "dsc": "Higado de pollo",
-            "price": 780,
-            "unit": "unidad"
-        },
-        {
             "id": "woodford-reserve-mint-julep-syrup",
             "img": "./img/cardapio/Carnico/Hígado de res.jpg",
             "name": "Hígado de res",
@@ -68,15 +60,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "pechugas-de-pollo-lar-2kg-",
-            "img": "./img/cardapio/Carnico/Pechugas de Pollo - Lar (2Kg).webp",
-            "name": "Pechugas de Pollo - Lar (2Kg)",
-            "dsc": "Pechugas de Pollo - Lar (2Kg)",
-            "price": 4400,
-            "unit": "unidad",
-            "disponibilidad": "agotado"
-        },
-        {
             "id": "pechuga-de-pollo-sin-hueso-10-lb",
             "img": "./img/cardapio/Carnico/Pechuga de pollo sin hueso 10 lb.jpeg",
             "name": "Pechuga de pollo sin hueso 10 lb",
@@ -113,6 +96,15 @@ var MENU = {
             "dsc": "Lomo de cerdo (Natural)",
             "price": 1250,
             "unit": "lb",
+            "disponibilidad": "disponible"
+        },
+        {
+            "id": "pechugas-de-pollo-lar-2kg-",
+            "img": "./img/cardapio/Carnico/Pechugas de Pollo - Lar (2Kg).webp",
+            "name": "Pechugas de Pollo - Lar (2Kg)",
+            "dsc": "Pechugas de Pollo - Lar (2Kg)",
+            "price": 4400,
+            "unit": "unidad",
             "disponibilidad": "disponible"
         }
     ],
@@ -302,13 +294,13 @@ var MENU = {
             "disponibilidad": "disponible"
         },
         {
-            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
-            "img": "./img/cardapio/Mercado/Fanguito (Leche Condensada).webp",
-            "name": "Fanguito (Leche Condensada)",
-            "dsc": "Fanguito (Leche Condensada)",
-            "price": 550,
+            "id": "ribs-brisket-and-burnt-ends",
+            "img": "./img/cardapio/Carnico/Higado de pollo.jpg",
+            "name": "Higado de pollo",
+            "dsc": "Higado de pollo",
+            "price": 790,
             "unit": "unidad",
-            "disponibilidad": "agotado"
+            "disponibilidad": "disponible"
         }
     ],
     "sobremesas": [
@@ -385,6 +377,15 @@ var MENU = {
         }
     ],
     "outros": [
+        {
+            "id": "brooklyn-blackout-cookie-brownie-combo-pack-2-tins",
+            "img": "./img/cardapio/Mercado/Fanguito (Leche Condensada).webp",
+            "name": "Fanguito (Leche Condensada)",
+            "dsc": "Fanguito (Leche Condensada)",
+            "price": 550,
+            "unit": "unidad",
+            "disponibilidad": "agotado"
+        },
         {
             "id": "17481-jewish-dessert-3-pack",
             "img": "./img/cardapio/Confituras/Galletas Crokantinas.webp",
