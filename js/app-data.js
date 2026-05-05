@@ -14,7 +14,7 @@ var MEU_ENDERECO = null;
 // Municipios de La Habana con costo de envio (en MN / CUP)
 var MUNICIPIOS_HABANA = [
     { id: 'regla', nome: 'Regla', costo: 200 },
-    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 }
+    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Habana nueva)', costo: 300 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
