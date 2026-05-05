@@ -68,15 +68,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "Amitriptilina",
-            "img": "./img/cardapio/Carnico/Lomo de cerdo NATURAL.webp",
-            "name": "Lomo de cerdo (Natural)",
-            "dsc": "Lomo de cerdo (Natural)",
-            "price": 1249.99,
-            "unit": "lb",
-            "disponibilidad": "disponible"
-        },
-        {
             "id": "pechugas-de-pollo-lar-2kg-",
             "img": "./img/cardapio/Carnico/Pechugas de Pollo - Lar (2Kg).webp",
             "name": "Pechugas de Pollo - Lar (2Kg)",
@@ -114,6 +105,15 @@ var MENU = {
                     ]
                 }
             ]
+        },
+        {
+            "id": "Amitriptilina",
+            "img": "./img/cardapio/Carnico/Lomo de cerdo NATURAL.webp",
+            "name": "Lomo de cerdo (Natural)",
+            "dsc": "Lomo de cerdo (Natural)",
+            "price": 1250,
+            "unit": "lb",
+            "disponibilidad": "disponible"
         }
     ],
     "burgers": [
@@ -146,7 +146,7 @@ var MENU = {
             "img": "./img/cardapio/Mercado/Azucar.webp",
             "name": "Azucar 1KG",
             "dsc": "Azucar 1KG",
-            "price": 719.98,
+            "price": 720,
             "unit": "unidad",
             "disponibilidad": "disponible"
         },
