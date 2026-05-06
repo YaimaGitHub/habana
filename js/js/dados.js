@@ -148,7 +148,7 @@ var MENU = {
             "img": "./img/cardapio/Mercado/Azucar.webp",
             "name": "Azucar 1KG",
             "dsc": "Azucar 1KG",
-            "price": 720,
+            "price": 750,
             "unit": "unidad",
             "disponibilidad": "disponible"
         },
