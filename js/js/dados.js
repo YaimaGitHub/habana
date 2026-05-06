@@ -442,7 +442,8 @@ var MENU = {
             "name": "Mortadela Seara 1 kg",
             "dsc": "Mortadela Seara 1 kg",
             "price": 1180,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "salchicha-de-pollo-oderich-340g-",
