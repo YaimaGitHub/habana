@@ -347,6 +347,15 @@ var MENU = {
                     ]
                 }
             ]
+        },
+        {
+            "id": "wood-fired-pizzas-best-seller-4-pack",
+            "img": "./img/cardapio/Confituras/Natilla.webp",
+            "name": "Natilla",
+            "dsc": "Natilla",
+            "price": 220,
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         }
     ],
     "sobremesas": [
@@ -407,14 +416,6 @@ var MENU = {
             "name": "Galletas sueltas de Soda Crokantinas",
             "dsc": "Galletas sueltas de Soda Crokantinas",
             "price": 190,
-            "unit": "unidad"
-        },
-        {
-            "id": "wood-fired-pizzas-best-seller-4-pack",
-            "img": "./img/cardapio/Confituras/Natilla.webp",
-            "name": "Natilla",
-            "dsc": "Natilla",
-            "price": 220,
             "unit": "unidad"
         },
         {
