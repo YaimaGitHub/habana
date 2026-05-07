@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 6/5/2026, 8:49:29 p.m.
+ * Generado desde el Panel de Control: 6/5/2026, 9:09:30 p.m.
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -19,7 +19,7 @@ var MUNICIPIOS_HABANA = [
     { id: 'Guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
     { id: 'Guanabacoa', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
-    { id: 'Guanabacoa', nome: 'Guanabacoa (Reparto Chiva)', costo: 400 },
+    { id: 'Guanabacoa', nome: 'Guanabacoa (Reparto Chibas)', costo: 400 },
     { id: 'Guanabacoa', nome: 'Reparto Mañana', costo: 450 },
     { id: 'centro-habana', nome: 'Centro Habana', costo: 2000 },
     { id: 'Guanabacoa', nome: 'Guanabacoa (Calzada vieja)', costo: 500 },
