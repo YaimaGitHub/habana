@@ -18,7 +18,8 @@ var MENU = {
             "name": "Hígado de res",
             "dsc": "Hígado de res",
             "price": 900,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "sea-salted-caramel-swirl-cheesecake",
@@ -49,8 +50,9 @@ var MENU = {
             "img": "./img/cardapio/Carnico/Picadillo MDM.jpg",
             "name": "Picadillo MDM",
             "dsc": "Picadillo MDM",
-            "price": 320,
-            "unit": "lb"
+            "price": 325,
+            "unit": "lb",
+            "disponibilidad": "disponible"
         },
         {
             "id": "muslos-de-pollo-10-lb-",
@@ -67,7 +69,7 @@ var MENU = {
             "dsc": "Pechugas de Pollo - Lar (2Kg)",
             "price": 4400,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "pechuga-de-pollo-sin-hueso-10-lb",
@@ -76,7 +78,7 @@ var MENU = {
             "dsc": "Pechuga de pollo sin hueso 10 lb",
             "price": 900,
             "unit": "lb",
-            "disponibilidad": "agotado"
+            "disponibilidad": "disponible"
         },
         {
             "id": "carne-de-res",
@@ -124,8 +126,9 @@ var MENU = {
             "img": "./img/cardapio/Mercado/aseite sublime.jpg",
             "name": "Aceite 900Ml",
             "dsc": "Aceite Sublime del gordo",
-            "price": 1190,
-            "unit": "unidad"
+            "price": 1220,
+            "unit": "unidad",
+            "disponibilidad": "disponible"
         },
         {
             "id": "shake-shack-shackburger-8-pack",
@@ -133,7 +136,8 @@ var MENU = {
             "name": "Aceituna Verde Con Hueso",
             "dsc": "Aceituna Verde Con Hueso",
             "price": 1000,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "double-stack-burger-kit-for-4",
@@ -225,7 +229,8 @@ var MENU = {
             "name": "Jabita de Leche en polvo 1Kg",
             "dsc": "Jabita de Leche en polvo 1Kg",
             "price": 2230,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "6-lou-malnatis-deep-dish-pizzas",
@@ -347,6 +352,24 @@ var MENU = {
                     ]
                 }
             ]
+        },
+        {
+            "id": "wood-fired-pizzas-best-seller-4-pack",
+            "img": "./img/cardapio/Confituras/Natilla.webp",
+            "name": "Natilla",
+            "dsc": "Natilla",
+            "price": 220,
+            "unit": "unidad",
+            "disponibilidad": "agotado"
+        },
+        {
+            "id": "hong-kong-boba-tea-kit-for-6",
+            "img": "./img/cardapio/Quesos y Embutidos/QUESO-GOUDA-VIMA.webp",
+            "name": "Queso Gouda Vima 3Kg Aprox.",
+            "dsc": "Queso Gouda Vima 3Kg Aprox.",
+            "price": 14500,
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         }
     ],
     "sobremesas": [
@@ -410,14 +433,6 @@ var MENU = {
             "unit": "unidad"
         },
         {
-            "id": "wood-fired-pizzas-best-seller-4-pack",
-            "img": "./img/cardapio/Confituras/Natilla.webp",
-            "name": "Natilla",
-            "dsc": "Natilla",
-            "price": 220,
-            "unit": "unidad"
-        },
-        {
             "id": "papas-potato-china-110g",
             "img": "./img/cardapio/Confituras/Papas potato china 110g.jpg",
             "name": "Papas potato china 110g",
@@ -427,14 +442,6 @@ var MENU = {
         }
     ],
     "pizzas": [
-        {
-            "id": "hong-kong-boba-tea-kit-for-6",
-            "img": "./img/cardapio/Quesos y Embutidos/QUESO-GOUDA-VIMA.webp",
-            "name": "Queso Gouda Vima 3Kg Aprox.",
-            "dsc": "Queso Gouda Vima 3Kg Aprox.",
-            "price": 14500,
-            "unit": "unidad"
-        },
         {
             "id": "super1",
             "img": "./img/cardapio/Quesos y Embutidos/Mortadela Seara 1 kg.webp",
