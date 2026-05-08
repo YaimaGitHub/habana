@@ -336,7 +336,7 @@ var MENU = {
             "dsc": "Carne de res fresca de primera calidad, los paquetes vienen por más de 2Lb",
             "price": 1650,
             "unit": "lb",
-            "disponibilidad": "agotado",
+            "disponibilidad": "disponible",
             "options": [
                 {
                     "name": "jaba",
