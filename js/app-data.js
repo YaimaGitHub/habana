@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 9/5/2026, 7:22:41 p.m.
+ * Generado desde el Panel de Control: 9/5/2026, 7:27:37 p.m.
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -14,15 +14,15 @@ var MEU_ENDERECO = null;
 // Municipios de La Habana con costo de envio (en MN / CUP)
 var MUNICIPIOS_HABANA = [
     { id: 'regla', nome: 'Regla', costo: 200 },
-    { id: 'guanabacoa ', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 },
-    { id: 'guanabacoa', nome: 'Guanabacoa (Habana nueva)', costo: 300 },
-    { id: 'guanabacoa', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
-    { id: 'guanabacoa', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
-    { id: 'Guanabacoa', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
-    { id: 'guanabacoa', nome: 'Guanabacoa (Reparto Chibas)', costo: 400 },
-    { id: 'guanabacoa', nome: 'Reparto Mañana', costo: 450 },
+    { id: 'guanabacoa1', nome: 'Guanabacoa (Semáforo-Machaco)', costo: 500 },
+    { id: 'guanabacoa2', nome: 'Guanabacoa (Habana nueva)', costo: 300 },
+    { id: 'guanabacoa3', nome: 'Guanabacoa (Parque - Roble)', costo: 700 },
+    { id: 'guanabacoa4', nome: 'Guanabacoa (Nalón - Mikito - Hata - Roble)', costo: 1000 },
+    { id: 'Guanabacoa5', nome: 'Guanabacoa Machaco - Mikito', costo: 700 },
+    { id: 'guanabacoa6', nome: 'Guanabacoa (Reparto Chibas)', costo: 400 },
+    { id: 'guanabacoa7', nome: 'Reparto Mañana', costo: 450 },
     { id: 'centro-habana', nome: 'Centro Habana', costo: 2000 },
-    { id: 'guanabacoa', nome: 'Guanabacoa (Calzada vieja)', costo: 500 },
+    { id: 'guanabacoa8', nome: 'Guanabacoa (Calzada vieja)', costo: 500 },
     { id: 'san-miguel', nome: 'San Miguel del Padrón', costo: 2500 },
     { id: 'diez-de-octubre', nome: 'Diez de Octubre', costo: 2500 },
     { id: 'habana-del-este', nome: 'Habana del Este (Bahía)', costo: 1000 },
