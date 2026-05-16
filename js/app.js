@@ -126,10 +126,14 @@ cardapio.metodos = {
         cardapio.primeraCategoria = primeraCategoria;
     },
 
-    // actualizar el contador (badge) de cada categoría en el menú
+    // actualizar el contador (badge) de cada categoría en el menú (excluyendo agotados)
     atualizarContadoresCategorias: () => {
         $.each(CATEGORIAS, (key, info) => {
-            let total = (MENU[key] || []).length;
+            // Contar solo productos disponibles (no agotados)
+            let productosCategoria = MENU[key] || [];
+            let total = productosCategoria.filter(function(e) {
+                return e.disponibilidad !== 'agotado';
+            }).length;
             // Usar selector de atributo data-category para manejar claves con espacios
             let $badge = $(".categoria-card[data-category='" + key + "'] .categoria-count");
             if ($badge.length > 0) {
@@ -152,7 +156,11 @@ cardapio.metodos = {
             $(".categorias-grid").removeClass('modo-busqueda');
         }
 
-        var filtro = MENU[categoria] || [];
+        // Filtrar productos: excluir los agotados de la tienda
+        var filtroOriginal = MENU[categoria] || [];
+        var filtro = filtroOriginal.filter(function(e) {
+            return e.disponibilidad !== 'agotado';
+        });
         var infoCat = CATEGORIAS[categoria] || { nome: '', icone: '' };
 
         if (!vermais) {
@@ -193,12 +201,9 @@ cardapio.metodos = {
             let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
             let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
             
-            // Verificar disponibilidad del producto
-            let isAgotado = e.disponibilidad === 'agotado';
-            let btnDisabledClass = (hasRequiredOptions || isAgotado) ? 'btn-disabled' : '';
-            let btnDisabledAttr = (hasRequiredOptions || isAgotado) ? 'disabled' : '';
-            let agotadoClass = isAgotado ? 'producto-agotado' : '';
-            let agotadoOverlay = isAgotado ? '<div class="agotado-overlay-tienda"><span>AGOTADO</span></div>' : '';
+            // Los productos agotados ya están filtrados, solo verificar opciones requeridas
+            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
+            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -217,8 +222,8 @@ cardapio.metodos = {
                 .replace(/\${optionsSelector}/g, optionsSelector)
                 .replace(/\${btnDisabledClass}/g, btnDisabledClass)
                 .replace(/\${btnDisabledAttr}/g, btnDisabledAttr)
-                .replace(/\${agotadoClass}/g, agotadoClass)
-                .replace(/\${agotadoOverlay}/g, agotadoOverlay);
+                .replace(/\${agotadoClass}/g, '')
+                .replace(/\${agotadoOverlay}/g, '');
 
             // botão ver mais foi clicado (12 itens)
             if (vermais && i >= 47 && i < 60) {
@@ -317,10 +322,13 @@ cardapio.metodos = {
 
         $("#btnLimparBusca").removeClass('hidden');
 
-        // recolectar coincidencias en todas las categorías
+        // recolectar coincidencias en todas las categorías (excluir agotados)
         let resultados = [];
         $.each(MENU, (cat, items) => {
             $.each(items || [], (i, e) => {
+                // Excluir productos agotados de la búsqueda en la tienda
+                if (e.disponibilidad === 'agotado') return;
+                
                 let nomeNorm = cardapio.metodos.normalizarTexto(e.name);
                 let dscNorm = cardapio.metodos.normalizarTexto(e.dsc);
                 if (nomeNorm.indexOf(query) !== -1 || dscNorm.indexOf(query) !== -1) {
@@ -379,12 +387,9 @@ cardapio.metodos = {
             let optionsSelector = hasOptions ? cardapio.metodos.generarSelectorOpciones(e.id, e.options) : '';
             let hasRequiredOptions = hasOptions && e.options.some(opt => opt.required);
             
-            // Verificar disponibilidad del producto
-            let isAgotado = e.disponibilidad === 'agotado';
-            let btnDisabledClass = (hasRequiredOptions || isAgotado) ? 'btn-disabled' : '';
-            let btnDisabledAttr = (hasRequiredOptions || isAgotado) ? 'disabled' : '';
-            let agotadoClass = isAgotado ? 'producto-agotado' : '';
-            let agotadoOverlay = isAgotado ? '<div class="agotado-overlay-tienda"><span>AGOTADO</span></div>' : '';
+            // Los productos agotados ya están filtrados de la búsqueda
+            let btnDisabledClass = hasRequiredOptions ? 'btn-disabled' : '';
+            let btnDisabledAttr = hasRequiredOptions ? 'disabled' : '';
 
             let temp = cardapio.templates.item
                 .replace(/\${img}/g, e.img)
@@ -403,8 +408,8 @@ cardapio.metodos = {
                 .replace(/\${optionsSelector}/g, optionsSelector)
                 .replace(/\${btnDisabledClass}/g, btnDisabledClass)
                 .replace(/\${btnDisabledAttr}/g, btnDisabledAttr)
-                .replace(/\${agotadoClass}/g, agotadoClass)
-                .replace(/\${agotadoOverlay}/g, agotadoOverlay);
+                .replace(/\${agotadoClass}/g, '')
+                .replace(/\${agotadoOverlay}/g, '');
 
             $("#itensCardapio").append(temp);
         });

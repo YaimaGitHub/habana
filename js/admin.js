@@ -375,10 +375,9 @@ var adminPanel = {
         document.getElementById('productModal').classList.remove('hidden');
         document.getElementById('productModalTitle').textContent = isEdit ? 'Editar Producto' : 'Nuevo Producto';
         
-        // Cargar categorias en el select
-        this.loadCategorySelect();
-        
+        // Solo cargar categorias si NO es edición (en edición ya se cargaron en editProduct)
         if (!isEdit) {
+            this.loadCategorySelect();
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             document.getElementById('productOldCategory').value = '';
@@ -505,9 +504,13 @@ var adminPanel = {
     editProduct: function(category, index) {
         var product = localMENU[category][index];
         
+        // Primero cargar las categorías en el select ANTES de asignar valores
+        this.loadCategorySelect();
+        
         document.getElementById('productId').value = product.id;
         document.getElementById('productOldCategory').value = category;
         document.getElementById('productName').value = product.name;
+        // Asignar la categoría del producto después de cargar el select
         document.getElementById('productCategory').value = category;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productUnit').value = product.unit || 'unidad';
