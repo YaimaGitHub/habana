@@ -375,10 +375,9 @@ var adminPanel = {
         document.getElementById('productModal').classList.remove('hidden');
         document.getElementById('productModalTitle').textContent = isEdit ? 'Editar Producto' : 'Nuevo Producto';
         
-        // Cargar categorias en el select
-        this.loadCategorySelect();
-        
+        // Solo cargar categorias si NO es edición (en edición ya se cargaron en editProduct)
         if (!isEdit) {
+            this.loadCategorySelect();
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             document.getElementById('productOldCategory').value = '';
