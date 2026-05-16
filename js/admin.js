@@ -505,9 +505,13 @@ var adminPanel = {
     editProduct: function(category, index) {
         var product = localMENU[category][index];
         
+        // Primero cargar las categorías en el select ANTES de asignar valores
+        this.loadCategorySelect();
+        
         document.getElementById('productId').value = product.id;
         document.getElementById('productOldCategory').value = category;
         document.getElementById('productName').value = product.name;
+        // Asignar la categoría del producto después de cargar el select
         document.getElementById('productCategory').value = category;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productUnit').value = product.unit || 'unidad';
