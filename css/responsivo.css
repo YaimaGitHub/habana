@@ -14,11 +14,20 @@
 
 }
 
+/* Por defecto ocultar elementos solo-movil */
+.mobile-only {
+    display: none !important;
+}
+
 /* Tablets e Celulares (col) 0px a 767px */
 @media (max-width: 767px) {
 
     .no-mobile {
         display: none!important;
+    }
+
+    .mobile-only {
+        display: block !important;
     }
 
     .col-one {
