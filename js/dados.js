@@ -288,7 +288,7 @@ var MENU = {
             "dsc": "Yogurt Probiótico Yokey - 1.54 litros",
             "price": 2400,
             "unit": "unidad",
-            "disponibilidad": "disponible",
+            "disponibilidad": "agotado",
             "options": [
                 {
                     "name": "Sabor",
