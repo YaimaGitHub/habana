@@ -666,7 +666,8 @@ var MENU = {
             "name": "Salsa picante Chili BADIA (150mL)",
             "dsc": "Salsa picante Chili BADIA (150mL)",
             "price": 1000,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "saz-n-con-cilantro-y-achiote",
