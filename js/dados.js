@@ -235,7 +235,7 @@ var MENU = {
             "dsc": "Sardinas en Tomate Docanned",
             "price": 550,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "sopa-de-fideos-instant-neos-vitarella",
