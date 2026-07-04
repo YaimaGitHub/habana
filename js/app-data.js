@@ -2,7 +2,7 @@
  * D'Mima - Datos Compartidos
  * Este archivo contiene los datos de configuracion que son compartidos
  * entre la tienda (index.html) y el panel de control (admin.html)
- * Generado desde el Panel de Control: 3/7/2026, 8:34:34 p.m.
+ * Generado desde el Panel de Control: 3/7/2026, 9:29:46 p.m.
  */
 
 // Numero de WhatsApp para pedidos (sin el +)
@@ -37,7 +37,7 @@ var MUNICIPIOS_HABANA = [
 var CATEGORIAS = {
     "burgers": { nome: "Mercado", icone: "fas fa-store" },
     "pizzas": { nome: "Quesos y Embutidos", icone: "fas fa-bacon" },
-    "churrasco": { nome: "Carnico", icone: "fas fa-drumstick-bite" },
+    "churrasco": { nome: "Carnico y Congelados", icone: "fas fa-drumstick-bite" },
     "steaks": { nome: "Harinas y Levaduras", icone: "fas fa-bread-slice" },
     "bebidas": { nome: "Liquidos", icone: "fas fa-tint" },
     "sobremesas": { nome: "Aseo", icone: "fas fa-soap" },
