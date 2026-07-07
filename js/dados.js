@@ -46,7 +46,7 @@ var MENU = {
             "dsc": "Muslos de pollo (10 lb)",
             "price": 5300,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "pechugas-de-pollo-lar-2kg-",
@@ -82,7 +82,7 @@ var MENU = {
             "dsc": "30 huevos",
             "price": 2100,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "picadillo-tubo-400g",
@@ -183,7 +183,7 @@ var MENU = {
             "dsc": "Azucar 1KG",
             "price": 880,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "burger-au-poivre-kit-4-pack",
@@ -346,13 +346,13 @@ var MENU = {
             "dsc": "refresco",
             "price": 780,
             "unit": "unidad",
-            "disponibilidad": "disponible",
+            "disponibilidad": "agotado",
             "options": [
                 {
                     "name": "sabor",
                     "required": false,
                     "choices": [
-                        "tukola",
+                        "limon",
                         "naranja"
                     ]
                 }
@@ -513,7 +513,7 @@ var MENU = {
             "dsc": "",
             "price": 4100,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "leche-condensada-rellena",
@@ -634,7 +634,8 @@ var MENU = {
             "name": "Jabón de lavar miya 150g",
             "dsc": "Jabón de lavar miya 150g",
             "price": 260,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "papel-higi-nico",
