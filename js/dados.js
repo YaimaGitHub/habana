@@ -109,7 +109,7 @@ var MENU = {
             "dsc": "",
             "price": 620,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "papas-prefritas-1kg",
@@ -145,7 +145,7 @@ var MENU = {
             "dsc": "",
             "price": 1500,
             "unit": "unidad",
-            "disponibilidad": "agotado"
+            "disponibilidad": "disponible"
         },
         {
             "id": "paquete-de-solomillo",
@@ -473,7 +473,7 @@ var MENU = {
             "dsc": "",
             "price": 390,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "culeros-lulla-baby-etapas-2-a-la-6-",
@@ -899,7 +899,7 @@ var MENU = {
             "dsc": "hamburguesa de prodal",
             "price": 600,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "hong-kong-boba-tea-kit-for-6",
@@ -1122,7 +1122,7 @@ var MENU = {
             "dsc": "",
             "price": 920,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "pasta-para-bocadito",
