@@ -755,7 +755,7 @@ var MENU = {
             "dsc": "",
             "price": 250,
             "unit": "unidad",
-            "disponibilidad": "disponible",
+            "disponibilidad": "agotado",
             "options": [
                 {
                     "name": "Sabores",
