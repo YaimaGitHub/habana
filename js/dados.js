@@ -109,7 +109,7 @@ var MENU = {
             "dsc": "",
             "price": 620,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "papas-prefritas-1kg",
@@ -154,7 +154,7 @@ var MENU = {
             "dsc": "",
             "price": 1390,
             "unit": "lb",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "mollejas-de-pollo",
@@ -181,7 +181,7 @@ var MENU = {
             "img": "./img/cardapio/Mercado/Atun en Aceite 140 gramos.webp",
             "name": "Atun en Aceite 140 gramos",
             "dsc": "Atun en Aceite 140 gramos",
-            "price": 560,
+            "price": 580,
             "unit": "unidad",
             "disponibilidad": "disponible"
         },
@@ -308,7 +308,8 @@ var MENU = {
             "name": "Vinagre La Esperanza ( 1L )",
             "dsc": "Vinagre La Esperanza ( 1L )",
             "price": 300,
-            "unit": "unidad"
+            "unit": "unidad",
+            "disponibilidad": "agotado"
         },
         {
             "id": "vino-seco-la-esperanza-1000-g-",
@@ -317,7 +318,7 @@ var MENU = {
             "dsc": "Vino Seco La Esperanza (1000 g)",
             "price": 350,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "papas-prefritas-2-5kg",
@@ -644,7 +645,7 @@ var MENU = {
             "dsc": "Detergente Marwa 400g",
             "price": 1100,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "sea-salted-caramel-swirl-cheesecake",
@@ -888,7 +889,7 @@ var MENU = {
             "dsc": "",
             "price": 670,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "queso-crema-prairie",
