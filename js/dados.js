@@ -37,7 +37,7 @@ var MENU = {
             "dsc": "Picadillo MDM",
             "price": 450,
             "unit": "lb",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "muslos-de-pollo-10-lb-",
@@ -136,7 +136,7 @@ var MENU = {
             "dsc": "",
             "price": 2500,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "paquete-de-alitas-de-pollo",
@@ -1104,7 +1104,7 @@ var MENU = {
             "dsc": "Tomato Ketchup KURTZ (680g)",
             "price": 1300,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "ketchup-oderich-tradicional-premium-270gr",
