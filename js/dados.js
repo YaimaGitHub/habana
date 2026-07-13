@@ -127,7 +127,7 @@ var MENU = {
             "dsc": "",
             "price": 3850,
             "unit": "unidad",
-            "disponibilidad": "disponible"
+            "disponibilidad": "agotado"
         },
         {
             "id": "naylon-de-muslo-de-pollo",
